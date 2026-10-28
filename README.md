@@ -72,7 +72,7 @@ Controller  →  Service  →  Repository  →  MariaDB
 ```
 
 ```
-backend/src/main/java/com/noctua/huertos/
+backend/src/main/java/com/huertos/
 ├── domain/        Entidades JPA, tal como salen del diagrama de clases validado
 ├── repository/    Interfaces de Spring Data JPA
 ├── service/       Interfaces con la lógica de negocio

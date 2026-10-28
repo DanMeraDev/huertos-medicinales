@@ -8,7 +8,7 @@
 		<version>4.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.noctua</groupId>
+	<groupId>com.huertos</groupId>
 	<artifactId>huertos-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>huertos-api</name>
