@@ -8,6 +8,10 @@ Relacionados: [Estructura del back](../backend/estructura.md) · [Estructura del
 
 **Quien hace el commit es el autor del código, lo haya escrito o no la IA.** Debe poder explicar cada línea en la revisión del Pull Request. Si no entiende una parte, no la sube.
 
+### Sin firmas de la IA
+
+Ningún commit, Pull Request, issue, archivo de código ni documento lleva firmas o menciones de la herramienta usada: ni `Co-Authored-By`, ni "Generated with ...", ni el nombre del asistente. Varios asistentes las agregan solos; se borran antes del commit. El autor es la persona.
+
 ## 2. Reglas para todo el código
 
 ### Solo lo necesario
@@ -105,6 +109,7 @@ Reglas obligatorias para el código que generes:
 - Front: sin any, llamadas al back solo desde los archivos *Api.ts usando
   api/client.ts, componentes como funciones con exportación con nombre.
 - Si una prueba falla, corrige el código, no la prueba.
+- No agregues firmas ni menciones tuyas en commits, PRs ni código.
 ```
 
 ## 8. Revisión antes del commit
@@ -112,6 +117,7 @@ Reglas obligatorias para el código que generes:
 Antes de hacer commit de código generado con IA, se revisa:
 
 - [ ] Entiendo cada línea y podría explicarla en la revisión.
+- [ ] El commit no tiene `Co-Authored-By` ni menciones de la IA.
 - [ ] Solo cambia lo que pide el issue; descarté los cambios en otros archivos.
 - [ ] No hay comentarios, salvo el Javadoc que exige el estándar.
 - [ ] No hay código sin usar, código comentado, `TODO`, `console.log` ni `System.out`.

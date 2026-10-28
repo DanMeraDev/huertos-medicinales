@@ -14,6 +14,23 @@ Las reglas completas están en `docs/reglas/uso-de-ia.md`. La estructura de cada
 - Nombres del negocio en español; sufijos técnicos en inglés (`Controller`, `Service`, `Repository`, `Request`, `Response`).
 - Si una prueba falla, corrige el código, no la prueba.
 
+## Autoría
+
+- No agregues firmas, menciones ni atribuciones de herramientas de IA en ningún lugar: ni `Co-Authored-By`, ni "Generated with ...", ni nombres de asistentes en commits, títulos o descripciones de Pull Requests, issues, comentarios del código ni documentación.
+- Los commits se hacen con la identidad de Git de la persona que trabaja; no se cambia `user.name` ni `user.email`.
+
+## Commits y Pull Requests
+
+Formato completo en `docs/reglas/estandar-commits.md`. Resumen:
+
+- Conventional Commits en español: `<tipo>(<ámbito>): <descripción>`.
+- Tipos: `feat`, `fix`, `test`, `refactor`, `docs`, `style`, `build`, `ci`, `chore`, `release`.
+- Ámbitos: `back`, `front`, `db`, `docker`, `ci`, `docs`. Si toca back y front a la vez, sin ámbito.
+- Descripción en presente y tercera persona (`agrega`, `corrige`), en minúscula, sin punto final, máximo 72 caracteres en total.
+- Pie opcional: `Cierra #<número>` o `Refs #<número>`.
+- El título del Pull Request sigue el mismo formato, porque se fusiona con squash.
+- Ramas desde `develop`: `feature/CU-XX-descripcion`, `fix/<issue>-descripcion`, `docs/...`, `chore/...`. Nunca push directo a `main` ni a `develop`, ni `push --force` en ramas compartidas.
+
 ## Back (`backend/`, paquete `com.huertos`)
 
 - Capas: `controller` → `service` (interfaz) / `service/impl` → `repository` → `model`. Además `dto`, `mapper`, `config`, `exception`.
