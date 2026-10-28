@@ -2,6 +2,8 @@
 
 Aplicación web gamificada para el registro y seguimiento de huertos medicinales comunitarios, según los lineamientos del MSP. Proyecto de ISWD652 Calidad de Software, período 2026B, Noctua Solutions.
 
+La [guía de ejecución en Windows](docs/guia-de-ejecucion.md) explica paso a paso la instalación, el `.env` en IntelliJ y VS Code, y los errores comunes.
+
 ## Requisitos
 
 - Docker con Docker Compose
@@ -73,7 +75,7 @@ Las pruebas de integración del back levantan su propia MariaDB con Testcontaine
 huertos-medicinales/
 ├── backend/                Spring Boot 4.1, Java 21, Maven
 ├── frontend/               React 19, TypeScript, Vite
-├── docs/                   reglas de trabajo del equipo
+├── docs/                   guía de ejecución y reglas de trabajo del equipo
 ├── .github/
 │   ├── workflows/          CI del back y del front (corren solo si cambia su carpeta)
 │   ├── ISSUE_TEMPLATE/     plantillas de caso de uso, defecto y tarea
@@ -132,6 +134,7 @@ Cada endpoint que use el front se simula en `src/test/mocks/handlers.ts`, de mod
 
 ## Reglas de trabajo
 
+- [Guía de ejecución en Windows](docs/guia-de-ejecucion.md)
 - [Flujo de trabajo con Git](docs/flujo-de-trabajo-git.md)
 - [Estándar de commits](docs/estandar-commits.md)
 - [Estándar de GitHub Issues](docs/estandar-issues.md)

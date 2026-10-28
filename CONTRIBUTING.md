@@ -1,5 +1,7 @@
 # Cómo contribuir
 
+Para instalar y correr el proyecto, sigue la [guía de ejecución en Windows](docs/guia-de-ejecucion.md).
+
 Antes de crear un issue, una rama o un Pull Request, revisa las reglas del equipo:
 
 1. [Flujo de trabajo con Git](docs/flujo-de-trabajo-git.md): ramas, Pull Requests, revisión y cierre de incrementos.

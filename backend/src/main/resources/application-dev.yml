@@ -1,7 +1,13 @@
 # Desarrollo en la máquina de cada integrante, con la base de docker-compose.
 spring:
+  config:
+    # Lee el .env de la raíz del repo, tanto si se ejecuta desde backend/ (IntelliJ, terminal)
+    # como desde la raíz (VS Code). Las variables de entorno reales tienen prioridad.
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
   datasource:
-    url: ${DB_URL:jdbc:mariadb://localhost:3306/huertos}
+    url: ${DB_URL:jdbc:mariadb://localhost:${DB_PORT:3306}/${DB_NAME:huertos}}
     username: ${DB_USER:huertos}
     password: ${DB_PASSWORD:huertos}
   jpa:
@@ -12,7 +18,7 @@ spring:
 
 app:
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+    allowed-origins: ${CORS_ORIGINS:http://localhost:${WEB_PORT:5173}}
 
 management:
   endpoint:
