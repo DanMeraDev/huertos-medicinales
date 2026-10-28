@@ -2,17 +2,9 @@
 
 Aplicación web gamificada para el registro y seguimiento de huertos medicinales comunitarios, según los lineamientos del MSP. Proyecto de ISWD652 Calidad de Software, período 2026B, Noctua Solutions.
 
-La [guía de ejecución en Windows](docs/guia-de-ejecucion.md) explica paso a paso la instalación, el `.env` en IntelliJ y VS Code, y los errores comunes.
+## Inicio rápido
 
-## Requisitos
-
-- Docker con Docker Compose
-- Java 21 (solo para desarrollar el back fuera de Docker)
-- Node.js 22 (solo para desarrollar el front fuera de Docker)
-
-Maven no hace falta instalarlo: el back usa el wrapper `./mvnw`.
-
-## Levantar todo
+Con Docker Desktop abierto:
 
 ```bash
 cp .env.example .env
@@ -29,53 +21,25 @@ docker compose up -d --build
 
 `GET /api/ping` recorre Controller, Service, Repository y la base de datos, y responde 200 con la versión de MariaDB. Si responde, la arquitectura está conectada de punta a punta.
 
-## Desarrollo diario
+Para instalar las herramientas en Windows y trabajar en local, sigue [Primeros pasos](docs/primeros-pasos.md).
 
-Para trabajar con recarga en caliente, deja solo la base en Docker y corre el back y el front en tu máquina:
+## Tecnologías
 
-```bash
-docker compose up -d db
-
-cd backend && ./mvnw spring-boot:run      # DevTools recarga al recompilar
-cd frontend && npm install && npm run dev # Vite redirige /api al puerto 8080
-```
-
-## Perfiles de Spring Boot
-
-| Perfil | Cuándo se usa | Cómo se activa | Diferencias |
-|---|---|---|---|
-| `dev` | Desarrollo local y `docker compose up` | Por defecto | Valores por defecto para la base local, SQL visible en consola, log `DEBUG` de `com.huertos`, Swagger activo, detalle completo en `/actuator/health` |
-| `test` | Pruebas automáticas (`./mvnw verify`, CI) | Automático al correr las pruebas | La base la levanta Testcontainers; log reducido |
-| `prod` | Entorno desplegado | `SPRING_PROFILES_ACTIVE=prod` | Sin valores por defecto: si falta `DB_URL`, `DB_USER`, `DB_PASSWORD` o `CORS_ORIGINS`, no arranca. Swagger apagado (se enciende con `SWAGGER_ENABLED=true`), errores sin detalles internos |
-
-```
-backend/src/main/resources/
-├── application.yml        común a todos los perfiles
-├── application-dev.yml
-└── application-prod.yml
-backend/src/test/resources/
-└── application-test.yml
-```
-
-Para levantar el stack con `prod`, cambia `SPRING_PROFILES_ACTIVE` en `.env` y vuelve a ejecutar `docker compose up -d`.
-
-## Pruebas
-
-```bash
-cd backend && ./mvnw verify      # JUnit 5, Mockito, Testcontainers; cobertura en target/site/jacoco
-cd frontend && npm run test:run  # Vitest, Testing Library, MSW
-cd frontend && npm run coverage  # con cobertura
-```
-
-Las pruebas de integración del back levantan su propia MariaDB con Testcontainers, así que necesitan Docker encendido.
+| Parte | Tecnologías |
+|---|---|
+| Back | Java 21, Spring Boot 4.1, Spring Data JPA, Spring Security, Flyway, springdoc (Swagger), MapStruct, Lombok |
+| Front | React 19, TypeScript, Vite |
+| Base de datos | MariaDB 11.4 |
+| Pruebas | JUnit 5, Mockito, Testcontainers, JaCoCo, Vitest, Testing Library, MSW |
+| Infraestructura | Docker Compose, GitHub Actions |
 
 ## Estructura del repositorio
 
 ```
 huertos-medicinales/
-├── backend/                Spring Boot 4.1, Java 21, Maven
-├── frontend/               React 19, TypeScript, Vite
-├── docs/                   guía de ejecución y reglas de trabajo del equipo
+├── backend/                Spring Boot (ver docs/backend/estructura.md)
+├── frontend/               React + Vite (ver docs/frontend/estructura.md)
+├── docs/                   documentación del proyecto
 ├── .github/
 │   ├── workflows/          CI del back y del front (corren solo si cambia su carpeta)
 │   ├── ISSUE_TEMPLATE/     plantillas de caso de uso, defecto y tarea
@@ -85,56 +49,14 @@ huertos-medicinales/
 └── CONTRIBUTING.md         enlaces a las reglas de trabajo
 ```
 
-## Arquitectura del back
+## Documentación
 
-Arquitectura en capas. Cada petición entra por el controller y baja hasta la base sin saltarse capas:
+Todo está en [`docs/`](docs/README.md):
 
-```
-Controller  →  Service  →  Repository  →  MariaDB
-   (dto)                    (model)
-```
+| Área | Estructura | Ejecución | Errores comunes |
+|---|---|---|---|
+| Back | [estructura](docs/backend/estructura.md) | [ejecución](docs/backend/ejecucion.md) | [errores](docs/backend/errores-comunes.md) |
+| Front | [estructura](docs/frontend/estructura.md) | [ejecución](docs/frontend/ejecucion.md) | [errores](docs/frontend/errores-comunes.md) |
+| Base de datos | [estructura](docs/db/estructura.md) | [ejecución](docs/db/ejecucion.md) | [errores](docs/db/errores-comunes.md) |
 
-```
-backend/src/main/java/com/huertos/
-├── model/         Entidades JPA, tal como salen del diagrama de clases validado
-├── repository/    Interfaces de Spring Data JPA
-├── service/       Interfaces con la lógica de negocio
-│   └── impl/      Implementaciones de esas interfaces
-├── controller/    Endpoints REST bajo /api
-├── dto/           Requests y responses; los controllers nunca exponen entidades
-├── mapper/        Mappers de MapStruct entre entidades y DTOs
-├── config/        Seguridad, CORS, beans generales
-└── exception/     Excepciones propias y manejo global (@RestControllerAdvice)
-
-backend/src/main/resources/
-├── application*.yml
-└── db/migration/  Migraciones Flyway (V1__..., V2__...)
-```
-
-Reglas:
-
-- **Nombres:** `ComunidadController`, `ComunidadService`, `ComunidadServiceImpl`, `ComunidadRepository`, `Comunidad` (entidad), `ComunidadRequest` y `ComunidadResponse` (DTOs), `ComunidadMapper`.
-- **Esquema:** solo lo cambia Flyway. Hibernate está en `ddl-auto: validate`, así que si una entidad no coincide con las tablas, la aplicación no arranca. Una migración que ya está en `develop` no se edita nunca: se crea otra nueva.
-- **Errores:** se lanzan excepciones del paquete `exception` y `GlobalExceptionHandler` las convierte en respuestas con formato ProblemDetail. Los controllers no arman respuestas de error a mano.
-- **Seguridad:** el API es sin estado. Hoy solo son públicas `/api/ping`, la salud y Swagger; todo lo demás responde 403 hasta que se implemente la autenticación JWT (caso de uso de inicio de sesión).
-- **Pruebas por capa:** Service con Mockito (sin Spring), Controller con `@WebMvcTest` y el servicio simulado, y flujos completos con `@SpringBootTest` + Testcontainers. Los ejemplos están en `PingServiceImplTest`, `PingControllerTest` y `PingIntegrationTest`.
-
-## Arquitectura del front
-
-```
-frontend/src/
-├── api/           Cliente HTTP único (client.ts); nadie más llama a fetch
-├── features/      Una carpeta por caso de uso: llamadas al API, componentes y sus pruebas
-├── components/    Componentes reutilizables entre features
-├── pages/         Pantallas que arman features
-└── test/          Configuración de Vitest y respuestas simuladas del API (MSW)
-```
-
-Cada endpoint que use el front se simula en `src/test/mocks/handlers.ts`, de modo que las pruebas del front no dependen de que el back esté levantado.
-
-## Reglas de trabajo
-
-- [Guía de ejecución en Windows](docs/guia-de-ejecucion.md)
-- [Flujo de trabajo con Git](docs/flujo-de-trabajo-git.md)
-- [Estándar de commits](docs/estandar-commits.md)
-- [Estándar de GitHub Issues](docs/estandar-issues.md)
+Reglas de trabajo: [flujo con Git](docs/reglas/flujo-de-trabajo-git.md) · [commits](docs/reglas/estandar-commits.md) · [GitHub Issues](docs/reglas/estandar-issues.md)

@@ -82,8 +82,8 @@ develop ──┬─────────────────────
 
 - El código hace lo que pide el issue y cumple sus criterios de aceptación.
 - Hay pruebas para lo nuevo y pasan.
-- Respeta la arquitectura en capas del README (el controller no accede al repositorio, las entidades no se exponen en la API).
-- Si cambia el esquema, hay una migración Flyway nueva y no se editó ninguna existente.
+- Respeta la [estructura del back](../backend/estructura.md) y del [front](../frontend/estructura.md): el controller no accede al repositorio, las entidades no se exponen en la API y ningún componente llama a `fetch` directamente.
+- Si cambia el esquema, hay una migración Flyway nueva y no se editó ninguna existente (ver [estructura de la base](../db/estructura.md)).
 - No hay credenciales, claves ni datos personales reales.
 - Los endpoints nuevos están documentados en Swagger.
 
