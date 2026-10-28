@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-huertos}
+      MARIADB_USER: ${DB_USER:-huertos}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-huertos}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:mariadb://db:3306/${DB_NAME:-huertos}
+      DB_USER: ${DB_USER:-huertos}
+      DB_PASSWORD: ${DB_PASSWORD:-huertos}
+      CORS_ORIGINS: http://localhost:${WEB_PORT:-5173}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "${WEB_PORT:-5173}:80"
+    depends_on:
+      - api
+
+volumes:
+  db-data:
