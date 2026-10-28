@@ -7,5 +7,6 @@ Antes de crear un issue, una rama o un Pull Request, revisa las reglas del equip
 1. [Flujo de trabajo con Git](docs/reglas/flujo-de-trabajo-git.md): ramas, Pull Requests, revisión y cierre de incrementos.
 2. [Estándar de commits](docs/reglas/estandar-commits.md): formato de los mensajes y de los títulos de PR.
 3. [Estándar de GitHub Issues](docs/reglas/estandar-issues.md): tipos, etiquetas, hitos, tablero y definición de terminado.
+4. [Uso de IA para escribir código](docs/reglas/uso-de-ia.md): si usas IA, el código debe cumplir estas reglas.
 
 Antes de programar en una parte, lee su estructura: [back](docs/backend/estructura.md), [front](docs/frontend/estructura.md) o [base de datos](docs/db/estructura.md).

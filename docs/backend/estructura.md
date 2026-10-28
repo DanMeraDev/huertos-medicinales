@@ -278,17 +278,96 @@ Las pruebas viven en `src/test/java/com/huertos/`, con los **mismos paquetes** q
 - **Métodos:** describen el comportamiento esperado, por ejemplo `registrarRechazaNombreVacio()`.
 - **Base de pruebas:** las de integración importan `TestcontainersConfiguration`, que levanta MariaDB 11.4 en un contenedor desechable. No usan la base de `docker compose`.
 
-## 6. Recursos
+## 6. Configuración (`application.yml`)
+
+### 6.1 YAML en lugar de `application.properties`
+
+La configuración de Spring Boot está en archivos **`application.yml`**. Cumplen la misma función que `application.properties`, en otro formato: YAML agrupa las propiedades por niveles y se lee mejor cuando son muchas.
+
+```properties
+# application.properties (NO se usa en este proyecto)
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.open-in-view=false
+```
+
+```yaml
+# application.yml (equivalente)
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+```
+
+> **No crees un `application.properties`.** Si existen los dos formatos, Spring carga ambos, y cuando una propiedad está en los dos gana la del `.properties`. El resultado son valores que "no cambian" aunque edites el `.yml`. Muchos tutoriales y asistentes de IA lo crean por costumbre: si aparece, se pasa su contenido al `.yml` y se borra.
+
+### 6.2 Archivos
 
 | Archivo | Contenido |
 |---|---|
-| `application.yml` | Lo común: Flyway, `ddl-auto: validate`, puerto, Actuator, Swagger |
+| `application.yml` | Lo común a todos los entornos: Flyway, `ddl-auto: validate`, puerto, Actuator, Swagger |
 | `application-dev.yml` | Desarrollo: lee el `.env`, muestra el SQL, log `DEBUG` |
 | `application-prod.yml` | Producción: sin valores por defecto, Swagger apagado |
 | `application-test.yml` (en `test/resources`) | Pruebas: log reducido; la base la pone Testcontainers |
 | `db/migration/` | Migraciones Flyway; ver [estructura de la base](../db/estructura.md) |
 
-Los perfiles se explican en [Ejecución del back](ejecucion.md#6-perfiles).
+Spring carga primero `application.yml` y después el archivo del perfil activo, que **sobrescribe** las propiedades repetidas. Los perfiles se explican en [Ejecución del back](ejecucion.md#6-perfiles).
+
+### 6.3 Dónde va una propiedad nueva
+
+| Si el valor... | Va en |
+|---|---|
+| Es igual en todos los entornos | `application.yml` |
+| Cambia entre desarrollo y producción | `application-dev.yml` y `application-prod.yml` |
+| Solo afecta a las pruebas | `src/test/resources/application-test.yml` |
+| Es una clave, contraseña o token | **En ningún archivo.** Se lee de una variable de entorno: `${NOMBRE_VARIABLE}` |
+| Depende de cada integrante (puertos, datos locales) | En el `.env`, y en el `.yml` se lee con `${VARIABLE:valor_por_defecto}` |
+
+Las propiedades propias del proyecto van bajo el prefijo `app:`, para no confundirlas con las de Spring:
+
+```yaml
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+  gamificacion:
+    puntos-por-actividad: 10
+```
+
+### 6.4 Leer una propiedad desde el código
+
+Para un valor suelto, con `@Value`, como en `SecurityConfig`:
+
+```java
+@Value("${app.cors.allowed-origins}") List<String> origins
+```
+
+Para un grupo de valores relacionados, con un `record` y `@ConfigurationProperties`:
+
+```java
+@ConfigurationProperties(prefix = "app.gamificacion")
+public record GamificacionProperties(int puntosPorActividad) {
+}
+```
+
+Se registra con `@ConfigurationPropertiesScan` en `HuertosApiApplication` y se inyecta por constructor como cualquier otro bean. Spring convierte `puntos-por-actividad` en `puntosPorActividad`.
+
+### 6.5 Cambiar un valor sin editar archivos
+
+Cualquier propiedad se puede sobrescribir con una variable de entorno: se escribe en mayúsculas, con `_` en lugar de puntos y guiones. Por ejemplo, `spring.jpa.show-sql` se convierte en `SPRING_JPA_SHOW_SQL=false`.
+
+Prioridad, de mayor a menor:
+
+1. Variables de entorno del sistema, del IDE o de `docker-compose.yml`.
+2. El `.env` de la raíz, solo con el perfil `dev`.
+3. El archivo del perfil activo (`application-dev.yml`).
+4. `application.yml`.
+
+### 6.6 Errores frecuentes de YAML
+
+- **La sangría importa:** se usan **2 espacios** por nivel y **nunca tabulaciones**. Una sangría mal puesta mueve la propiedad a otro grupo y Spring la ignora sin avisar.
+- **Después de `:` va un espacio:** `port: 8080`, no `port:8080`.
+- **Comillas** para valores con caracteres especiales como `*`, `#` o `:` al inicio: `include: "*"`.
+- **Una propiedad, un lugar:** si la misma clave aparece dos veces en el mismo archivo, el back no arranca y el log muestra `found duplicate key` con el nombre de la clave.
 
 ## 7. Convenciones de código
 

@@ -46,7 +46,8 @@ huertos-medicinales/
 │   └── pull_request_template.md
 ├── docker-compose.yml      MariaDB + API + front
 ├── .env.example
-└── CONTRIBUTING.md         enlaces a las reglas de trabajo
+├── CONTRIBUTING.md         enlaces a las reglas de trabajo
+└── AGENTS.md               reglas para asistentes de IA
 ```
 
 ## Documentación
@@ -59,4 +60,4 @@ Todo está en [`docs/`](docs/README.md):
 | Front | [estructura](docs/frontend/estructura.md) | [ejecución](docs/frontend/ejecucion.md) | [errores](docs/frontend/errores-comunes.md) |
 | Base de datos | [estructura](docs/db/estructura.md) | [ejecución](docs/db/ejecucion.md) | [errores](docs/db/errores-comunes.md) |
 
-Reglas de trabajo: [flujo con Git](docs/reglas/flujo-de-trabajo-git.md) · [commits](docs/reglas/estandar-commits.md) · [GitHub Issues](docs/reglas/estandar-issues.md)
+Reglas de trabajo: [flujo con Git](docs/reglas/flujo-de-trabajo-git.md) · [commits](docs/reglas/estandar-commits.md) · [GitHub Issues](docs/reglas/estandar-issues.md) · [uso de IA](docs/reglas/uso-de-ia.md)
