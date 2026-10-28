@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/noctua-solutions.jpg" alt="Noctua Solutions" width="600">
+</p>
+
 # Huertos Medicinales Comunitarios
 
 Aplicación web gamificada para el registro y seguimiento de huertos medicinales comunitarios, según los lineamientos del MSP. Proyecto de ISWD652 Calidad de Software, período 2026B, Noctua Solutions.
@@ -61,3 +65,10 @@ Todo está en [`docs/`](docs/README.md):
 | Base de datos | [estructura](docs/db/estructura.md) | [ejecución](docs/db/ejecucion.md) | [errores](docs/db/errores-comunes.md) |
 
 Reglas de trabajo: [flujo con Git](docs/reglas/flujo-de-trabajo-git.md) · [commits](docs/reglas/estandar-commits.md) · [GitHub Issues](docs/reglas/estandar-issues.md) · [uso de IA](docs/reglas/uso-de-ia.md)
+
+---
+
+<p align="center">
+  <img src="docs/assets/noctua-buho.png" alt="Logo de Noctua Solutions" width="64"><br>
+  Desarrollado por <strong>Noctua Solutions</strong>
+</p>
