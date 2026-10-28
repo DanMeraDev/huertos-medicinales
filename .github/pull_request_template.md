@@ -1,4 +1,4 @@
-## Caso de uso
+## Issue
 
 Cierra #<!-- número del issue -->
 

@@ -6,8 +6,11 @@ labels: bug
 ---
 
 **Caso de uso o pantalla:**
-**Severidad:** crítica / alta / media / baja
 **Caso de prueba en Qase:**
+**Entorno:** local / Docker Compose · navegador y versión
+**Commit o versión:**
+
+<!-- Agrega también la etiqueta de severidad: sev:crítica, sev:alta, sev:media o sev:baja. -->
 
 ## Pasos para reproducir
 

@@ -54,12 +54,14 @@ Las pruebas de integración del back levantan su propia MariaDB con Testcontaine
 huertos-medicinales/
 ├── backend/                Spring Boot 4.1, Java 21, Maven
 ├── frontend/               React 19, TypeScript, Vite
+├── docs/                   reglas de trabajo del equipo
 ├── .github/
 │   ├── workflows/          CI del back y del front (corren solo si cambia su carpeta)
-│   ├── ISSUE_TEMPLATE/     plantillas de caso de uso y de defecto
+│   ├── ISSUE_TEMPLATE/     plantillas de caso de uso, defecto y tarea
 │   └── pull_request_template.md
 ├── docker-compose.yml      MariaDB + API + front
-└── .env.example
+├── .env.example
+└── CONTRIBUTING.md         enlaces a las reglas de trabajo
 ```
 
 ## Arquitectura del back
@@ -109,28 +111,8 @@ frontend/src/
 
 Cada endpoint que use el front se simula en `src/test/mocks/handlers.ts`, de modo que las pruebas del front no dependen de que el back esté levantado.
 
-## Flujo de trabajo con Git
+## Reglas de trabajo
 
-**Ramas**
-
-- `main`: lo entregado. Solo recibe merges desde `develop` al cerrar un incremento, con etiqueta (`v0.1`, `v0.2`, ...).
-- `develop`: integración del incremento en curso.
-- Ramas de trabajo desde `develop`, cortas y con el caso de uso en el nombre:
-  - `feature/CU-01-registro-comunidad`
-  - `fix/BUG-07-ranking-duplicado`
-
-**Reglas**
-
-- Nadie hace push directo a `main` ni a `develop`.
-- Todo entra por Pull Request hacia `develop`, con al menos una aprobación y el CI en verde.
-- Cada issue corresponde a un caso de uso (`CU-01: Registro de comunidad`), creado con la plantilla. El PR lo cierra con `Cierra #<número>`.
-- Antes de abrir el PR: `git pull origin develop` y resolver conflictos en tu rama.
-- Mensajes de commit en imperativo y cortos: `Agrega validación de cédula en registro de miembro`.
-
-**Configurar la protección de ramas (una sola vez, el dueño del repo)**
-
-En GitHub, *Settings → Branches → Add branch ruleset*, para `main` y `develop`:
-
-- Require a pull request before merging, con 1 aprobación
-- Require status checks to pass: `Backend / test` y `Frontend / test`
-- Block force pushes
+- [Flujo de trabajo con Git](docs/flujo-de-trabajo-git.md)
+- [Estándar de commits](docs/estandar-commits.md)
+- [Estándar de GitHub Issues](docs/estandar-issues.md)
