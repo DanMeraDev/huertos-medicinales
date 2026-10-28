@@ -68,12 +68,12 @@ Arquitectura en capas. Cada petición entra por el controller y baja hasta la ba
 
 ```
 Controller  →  Service  →  Repository  →  MariaDB
-   (dto)                    (domain)
+   (dto)                    (model)
 ```
 
 ```
 backend/src/main/java/com/huertos/
-├── domain/        Entidades JPA, tal como salen del diagrama de clases validado
+├── model/         Entidades JPA, tal como salen del diagrama de clases validado
 ├── repository/    Interfaces de Spring Data JPA
 ├── service/       Interfaces con la lógica de negocio
 │   └── impl/      Implementaciones de esas interfaces
