@@ -1,10 +1,9 @@
+# Configuración común a todos los perfiles. Lo propio de cada entorno va en application-<perfil>.yml.
 spring:
   application:
     name: huertos-api
-  datasource:
-    url: ${DB_URL:jdbc:mariadb://localhost:3306/huertos}
-    username: ${DB_USER:huertos}
-    password: ${DB_PASSWORD:huertos}
+  profiles:
+    default: dev
   jpa:
     # El esquema lo controla Flyway; Hibernate solo valida que las entidades coincidan.
     hibernate:
@@ -16,10 +15,6 @@ spring:
 
 server:
   port: ${PORT:8080}
-
-app:
-  cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
 
 management:
   endpoints:

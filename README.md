@@ -38,6 +38,25 @@ cd backend && ./mvnw spring-boot:run      # DevTools recarga al recompilar
 cd frontend && npm install && npm run dev # Vite redirige /api al puerto 8080
 ```
 
+## Perfiles de Spring Boot
+
+| Perfil | Cuándo se usa | Cómo se activa | Diferencias |
+|---|---|---|---|
+| `dev` | Desarrollo local y `docker compose up` | Por defecto | Valores por defecto para la base local, SQL visible en consola, log `DEBUG` de `com.huertos`, Swagger activo, detalle completo en `/actuator/health` |
+| `test` | Pruebas automáticas (`./mvnw verify`, CI) | Automático al correr las pruebas | La base la levanta Testcontainers; log reducido |
+| `prod` | Entorno desplegado | `SPRING_PROFILES_ACTIVE=prod` | Sin valores por defecto: si falta `DB_URL`, `DB_USER`, `DB_PASSWORD` o `CORS_ORIGINS`, no arranca. Swagger apagado (se enciende con `SWAGGER_ENABLED=true`), errores sin detalles internos |
+
+```
+backend/src/main/resources/
+├── application.yml        común a todos los perfiles
+├── application-dev.yml
+└── application-prod.yml
+backend/src/test/resources/
+└── application-test.yml
+```
+
+Para levantar el stack con `prod`, cambia `SPRING_PROFILES_ACTIVE` en `.env` y vuelve a ejecutar `docker compose up -d`.
+
 ## Pruebas
 
 ```bash
@@ -86,7 +105,7 @@ backend/src/main/java/com/huertos/
 └── exception/     Excepciones propias y manejo global (@RestControllerAdvice)
 
 backend/src/main/resources/
-├── application.yml
+├── application*.yml
 └── db/migration/  Migraciones Flyway (V1__..., V2__...)
 ```
 

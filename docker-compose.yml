@@ -19,6 +19,7 @@ services:
   api:
     build: ./backend
     environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
       DB_URL: jdbc:mariadb://db:3306/${DB_NAME:-huertos}
       DB_USER: ${DB_USER:-huertos}
       DB_PASSWORD: ${DB_PASSWORD:-huertos}

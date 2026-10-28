@@ -1,0 +1,24 @@
+# Desarrollo en la máquina de cada integrante, con la base de docker-compose.
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mariadb://localhost:3306/huertos}
+    username: ${DB_USER:huertos}
+    password: ${DB_PASSWORD:huertos}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.huertos: DEBUG

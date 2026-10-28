@@ -1,0 +1,15 @@
+# Pruebas automáticas. La base la levanta Testcontainers (TestcontainersConfiguration),
+# así que aquí no se configura el datasource.
+app:
+  cors:
+    allowed-origins: http://localhost:5173
+
+spring:
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    com.huertos: INFO
+    org.testcontainers: INFO

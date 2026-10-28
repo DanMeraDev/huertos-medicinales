@@ -1,0 +1,33 @@
+# Entorno desplegado. Sin valores por defecto: si falta una variable, la aplicación no arranca.
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: false
+
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS}
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+server:
+  error:
+    include-stacktrace: never
+    include-message: never
+
+logging:
+  level:
+    root: INFO
+    com.huertos: INFO
