@@ -22,7 +22,7 @@ docker compose up -d --build
 | Front | http://localhost:5173 |
 | API | http://localhost:8080/api |
 | Swagger | http://localhost:8080/swagger-ui.html |
-| Salud del API | http://localhost:8080/actuator/health |
+| Ping del API | http://localhost:8080/api/ping |
 | MariaDB | localhost:3306 (usuario y clave en `.env`) |
 
 `GET /api/ping` recorre Controller, Service, Repository y la base de datos, y responde 200 con la versión de MariaDB. Si responde, la arquitectura está conectada de punta a punta.
