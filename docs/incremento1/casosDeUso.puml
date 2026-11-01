@@ -1,0 +1,75 @@
+@startuml Incremento1_General_HuertosMedicinales
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+' === ACTORES HUMANOS Y JERARQUÍA DE ROLES ===
+actor "Usuario No Registrado" as UnregUser
+actor "Miembro" as Miembro
+actor "Responsable de\nComunidad" as RespComunidad
+actor "Administrador\n(MSP)" as Admin
+
+Miembro <|-- RespComunidad
+RespComunidad <|-- Admin
+
+rectangle "Sistema de Huertos Medicinales Comunitarios - INCREMENTO 1 (Martes 3, 23:59)" {
+
+  package "1. Módulo Acceso y Roles (Franciel)" {
+    usecase "AR-CU01: Registrar cuenta\nde usuario" as AR_CU01
+    usecase "AR-CU02: Iniciar sesión y\nautenticar usuario" as AR_CU02
+    usecase "AR-CU03: Asignar y\nactualizar roles" as AR_CU03
+  }
+
+  package "2. Módulo Comunidades y Miembros (Erick)" {
+    usecase "CM-UC01: Registrar comunidad\nde siembra" as CM_UC01
+    usecase "CM-UC03: Gestionar información de\ncontacto del responsable" as CM_UC03
+    usecase "CM-UC05: Registrar miembro en la\ncomunidad (Nivel Aprendiz)" as CM_UC05
+    usecase "CM-UC09: Consultar ficha del miembro\n(datos y nivel)" as CM_UC09
+  }
+
+  package "3. Módulo Huerto Real (Sabina)" {
+    usecase "HR-CU01: Registrar Huerto Real\n(ubicación, área, suelo, agua, abono)" as HR_CU01
+    usecase "HR-CU02: Configurar Diseño\ndel Huerto" as HR_CU02
+    usecase "HR-CU03: Definir Cercas\nde Seguridad" as HR_CU03
+  }
+
+  package "4. Módulo Catálogo de Plantas (Anderson)" {
+    usecase "CP-UC04: Registrar nueva planta\n(incluye fotografía y cualidad térmica)" as CP_UC04
+    usecase "CP-UC10: Consultar el listado\nde las plantas (precarga MSP)" as CP_UC10
+    usecase "CP-UC11: Consultar ficha técnica\nde las plantas" as CP_UC11
+  }
+
+  package "5. Módulo Bodega Material Vegetal (Anderson)" {
+    usecase "BO-CU01: Registrar ingreso\nde material vegetal" as BO_CU01
+    usecase "BO-CU02: Consultar inventario\nde material vegetal" as BO_CU02
+  }
+}
+
+' === RELACIONES ===
+' 1. Acceso y Roles
+UnregUser --> AR_CU01
+Miembro --> AR_CU02
+Admin --> AR_CU03
+
+' 2. Comunidades y Miembros
+RespComunidad --> CM_UC01
+CM_UC01 ..> CM_UC03 : <<include>>
+RespComunidad --> CM_UC05
+Miembro --> CM_UC09
+
+' 3. Huerto Real
+RespComunidad --> HR_CU01
+RespComunidad --> HR_CU02
+RespComunidad --> HR_CU03
+
+' 4. Catálogo de Plantas
+RespComunidad --> CP_UC04
+Miembro --> CP_UC10
+Miembro --> CP_UC11
+CP_UC10 <.. CP_UC11 : <<extend>>
+
+' 5. Bodega
+RespComunidad --> BO_CU01
+RespComunidad --> BO_CU02
+
+@enduml
