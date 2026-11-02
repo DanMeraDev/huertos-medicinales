@@ -8,7 +8,7 @@ Documentos relacionados: [Estándar de commits](estandar-commits.md) · [Estánd
 
 | Rama | Para qué | Quién escribe en ella |
 |---|---|---|
-| `main` | Versión entregada. Cada cierre de incremento queda etiquetado. | Solo merges desde `develop`, al cerrar un incremento |
+| `main` | Versión entregada. Cada cierre de incremento queda etiquetado. | Solo el Pull Request desde `develop` al cerrar un incremento, con dos aprobaciones |
 | `develop` | Integración del incremento en curso. Siempre debe compilar y pasar el CI. | Solo Pull Requests aprobados |
 | Ramas de trabajo | Un issue por rama. Se crean desde `develop` y se borran al fusionarse. | Quien tiene asignado el issue |
 
@@ -69,7 +69,7 @@ develop ──┬─────────────────────
 
 ## 3. Pull Requests
 
-- **Destino:** siempre `develop`. Solo los cierres de incremento y los `hotfix/` van a `main`.
+- **Destino:** siempre `develop`, sea caso de uso, tarea, defecto o documentación. A `main` solo llega el Pull Request de `develop` al cerrar un incremento.
 - **Título:** sigue el [estándar de commits](estandar-commits.md), porque con *Squash and merge* el título del PR se convierte en el commit que queda en `develop`.
   ```
   feat(back): registra comunidades con su responsable (CM-CU01)
@@ -94,7 +94,7 @@ Quien revisa aprueba, o pide cambios explicando qué y por qué. No se aprueba e
 Al terminar cada incremento, quien coordina:
 
 1. Confirma que `develop` está en verde y que QA validó los casos de uso del incremento.
-2. Abre un PR de `develop` hacia `main` titulado `release: incremento 1` y lo fusiona con *Create a merge commit* (sin squash, para conservar la historia).
+2. Abre un PR de `develop` hacia `main` titulado `release: incremento 1`. Necesita la aprobación de dos integrantes y se fusiona con *Create a merge commit* (sin squash, para conservar la historia).
 3. Etiqueta la versión en `main`:
    ```bash
    git switch main && git pull
@@ -113,14 +113,15 @@ Al terminar cada incremento, quien coordina:
 
 Solo para un defecto grave en lo ya entregado en `main`:
 
-1. Rama `hotfix/<número>-<descripcion>` desde `main`.
-2. PR hacia `main`, con una aprobación y el CI en verde.
-3. Se etiqueta con la versión siguiente de parche (`v0.1.1`).
-4. Se fusiona también `main` en `develop` para no perder la corrección.
+1. Rama `hotfix/<número>-<descripcion>` desde `develop`.
+2. PR hacia `develop`, con una aprobación y el CI en verde.
+3. PR de `develop` hacia `main`, con dos aprobaciones, como en el cierre de un incremento.
+4. Se etiqueta con la versión siguiente de parche (`v0.1.1`).
 
 ## 6. Prohibido
 
 - Hacer push directo a `main` o a `develop`.
+- Abrir un Pull Request hacia `main` desde una rama que no sea `develop`.
 - Usar `git push --force` en ramas compartidas. En tu propia rama solo con `--force-with-lease`.
 - Editar una migración Flyway que ya está en `develop`.
 - Subir el archivo `.env`, carpetas `target/`, `node_modules/` o `dist/`.
@@ -131,7 +132,7 @@ Solo para un defecto grave en lo ya entregado en `main`:
 En GitHub, *Settings → Rules → Rulesets → New branch ruleset*, uno para `main` y otro para `develop`, con:
 
 - **Restrict deletions**
-- **Require a pull request before merging**, con 1 aprobación y *Dismiss stale approvals* activado
+- **Require a pull request before merging**, con 2 aprobaciones en `main` y 1 en `develop`, y *Dismiss stale approvals* activado
 - **Require status checks to pass**: `Backend / test` y `Frontend / test`
 - **Block force pushes**
 
