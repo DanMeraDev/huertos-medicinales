@@ -1,85 +1,115 @@
 ---
 name: Caso de Uso
-about: Especificación estándar de caso de uso para análisis, implementación técnica y pruebas automatizadas.
+about: Especificación de caso de uso 1:1 con el análisis (PUDS) y diseño técnico exacto para el Agente de IA.
 title: "CU-XX: [Nombre del Caso de Uso]"
 labels: ["caso-de-uso"]
 ---
 
-## 1. Información General
+<!--
+================================================================================
+GUÍA RÁPIDA PARA EL EQUIPO (Y REGLAS PARA EL AGENTE DE IA):
+1. Esta Issue es el contrato funcional y técnico. La IA NO debe inventar nombres
+   de clases, endpoints, tablas ni campos que no estén especificados aquí.
+2. El agente debe respetar estrictamente `AGENTS.md`, `CLAUDE.md` y `docs/`.
+3. Reemplaza todos los textos entre corchetes `[...]` antes de crear la Issue.
+================================================================================
+-->
 
-* **Código:** `MOD-UCXX`
-* **Incremento / Sprint:** `[Sprint o Incremento]`
-* **Actor Principal:** `[Rol de usuario que ejecuta la acción]`
-* **Descripción:** `[Breve resumen de qué permite hacer y cuál es el objetivo de negocio]`
-* **Dependencias:** `[Issues requeridos previamente, ej: Depende de #00]`
+## 1. Información General (PUDS)
+
+* **Código:** `[MOD-UCXX]` <!-- Ej: CM-UC05 (Módulo: Comunidades y Miembros) -->
+* **Incremento:** `Incremento [X]` <!-- Ej: Incremento 1 -->
+* **Actor Principal:** `[Nombre del Rol]` <!-- Ej: Responsable de Comunidad -->
+* **Descripción:** `[Qué permite hacer este caso de uso, para quién y con qué objetivo de negocio]` <!-- Ej: Permite al responsable de una comunidad de siembra dar de alta a un voluntario participante dentro de su comunidad, inicializando su ruta de evolución en el nivel Aprendiz. -->
+* **Dependencias:** `[Ninguna / Depende de #XX]`
 
 ### Precondiciones
-1. `[Estado inicial del sistema, sesión activa o datos requeridos]`
+<!-- Estado previo requerido en el sistema antes de ejecutar el caso de uso -->
+1. `[Precondición 1]` <!-- Ej: El usuario ha iniciado sesión con el rol RESPONSABLE_COMUNIDAD. -->
+2. `[Precondición 2]` <!-- Ej: Existe una Comunidad registrada y asociada al responsable actual. -->
 
 ### Postcondiciones
-1. `[Cambios persistentes resultantes en el sistema o estado final]`
+<!-- Qué cambia exactamente a nivel de datos/estado cuando el flujo termina con éxito -->
+1. `[Postcondición 1]` <!-- Ej: Se persiste un nuevo registro en la tabla miembros vinculado a comunidad_id. -->
+2. `[Postcondición 2]` <!-- Ej: El miembro queda registrado con nivel = 'APRENDIZ', puntos_acumulados = 0 y activo = true. -->
 
 ---
 
 ## 2. Escenario Básico (Flujo Principal Actor - Sistema)
 
-1. El **[Actor]** accede a `[Ruta / Pantalla / Menú]` y ejecuta la acción `[Nombre de la acción / Botón]`.
-2. El **Sistema** presenta `[Formulario / Modal / Vista]` solicitando:
-   - `nombreCampo1` (`tipo_dato`, `restricciones`, `obligatorio/opcional`)
-   - `nombreCampo2` (`tipo_dato`, `restricciones`, `obligatorio/opcional`)
-3. El **[Actor]** diligencia los datos solicitados y confirma mediante `[Botón de confirmación]`.
-4. El **Sistema** valida formatos de entrada, reglas de negocio y restricciones de unicidad.
-5. El **Sistema** procesa la información y aplica los valores por defecto correspondientes.
-6. El **Sistema** persiste los cambios y retorna `HTTP [Código de éxito: 200 OK / 201 Created]` con el recurso resultante.
-7. El **Sistema** muestra mensaje de confirmación y actualiza la vista correspondiente.
+<!-- Describe paso a paso la interacción. Usa backticks (`) para los nombres exactos de propiedades JSON/DTO -->
+1. El **[Actor Principal]** accede a la sección `"[Ruta o Menú en UI]"` y pulsa el botón **"`[Texto del Botón]`"**.
+2. El **Sistema** despliega `[el formulario / modal / vista]` solicitando:
+   - `[Etiqueta del campo 1]` (`nombrePropiedad1`: `[tipo de dato, restricciones, ej: texto, máx. 13 caracteres]`)
+   - `[Etiqueta del campo 2]` (`nombrePropiedad2`: `[valores permitidos / enum, ej: MASCULINO, FEMENINO, OTRO]`)
+   - `[Etiqueta del campo 3]` (`nombrePropiedad3`: `[obligatorio / opcional]`)
+3. El **[Actor Principal]** completa los datos requeridos y pulsa **"`[Texto del Botón de Envío]`"**.
+4. El **Sistema** valida el formato de los campos y verifica `[regla de negocio o unicidad, ej: que la identificación no esté ya registrada en la misma comunidad]`.
+5. El **Sistema** asigna por defecto `[valores iniciales, ej: nivel APRENDIZ, 0 puntos]` y la fecha/hora actual usando el `Clock` inyectado del sistema (`ClockConfig.java`).
+6. El **Sistema** guarda el registro en la base de datos y retorna el código HTTP `[201 Created / 200 OK]` con los datos del recurso.
+7. El **Sistema** `[cierra el modal / limpia el formulario]`, muestra una notificación de éxito y actualiza `[la tabla / vista en pantalla]`.
 
 ---
 
-## 3. Escenarios Alternativos y Excepciones
+## 3. Escenarios Alternativos (Excepciones y Reglas de Negocio)
 
-<!-- Formato: [Paso][Letra]. [Condición de fallo] (Código HTTP): comportamiento del sistema -->
-* **[Paso]a. Error de validación de campos obligatorios o formato (HTTP 400 Bad Request):**
-  - **Condición:** Si `[campo]` no cumple con el formato o se encuentra vacío.
-  - **Comportamiento:** El Sistema rechaza la petición, retorna el detalle del campo erróneo y mantiene los datos válidos en pantalla.
-* **[Paso]b. Conflicto por recurso duplicado (HTTP 409 Conflict):**
-  - **Condición:** Si ya existe un registro con el mismo `[campo único / identificador]`.
-  - **Comportamiento:** El Sistema rechaza la operación e informa al usuario: *"Mensaje de error esperado"*.
-* **[Paso]c. Recurso relacionado no encontrado (HTTP 404 Not Found):**
-  - **Condición:** Si el identificador foráneo `[id_recurso]` no existe en la persistencia.
-  - **Comportamiento:** El Sistema interrumpe la ejecución y retorna la excepción de recurso no encontrado.
-
----
-
-## 4. Análisis y Diseño Técnico
-
-### 4.1. Capa Frontend (Boundary)
-- [ ] **Componentes / Vistas (`src/features/[modulo]/...`):**
-  - `Formulario[Recurso].tsx`: Formulario con inputs controlados y validaciones del lado del cliente.
-  - `Tabla[Recurso].tsx` o `Detalle[Recurso].tsx`: Renderizado de datos y manejo de estados (loading, error, éxito).
-- [ ] **Cliente API (`src/features/[modulo]/api/...`):**
-  - Funciones de consumo HTTP tipadas (`crear...`, `listar...`, `actualizar...`).
-
-### 4.2. Capa Backend (Control & Lógica de Negocio)
-- [ ] **Controller (`[paquete].controller`):**
-  - `[METODO_HTTP] /api/[recursos]` -> Recibe `[Nombre]Request`, retorna `HTTP [Código]` con `[Nombre]Response`.
-- [ ] **Service & Dominio (`[paquete].service`):**
-  - Interfaz e implementación con reglas de validación, manejo de excepciones y lógica de dominio.
-- [ ] **DTOs / Records / Mappers:**
-  - Definición de contratos de entrada/salida y mapeo hacia/desde entidades.
-
-### 4.3. Capa de Datos y Persistencia (Entity)
-- [ ] **Migración de Base de Datos:**
-  - Script de migración (ej: `VXX__[descripcion].sql`) con creación de tablas, llaves foráneas e índices.
-- [ ] **Entidad (`[paquete].model` o `[paquete].entity`):**
-  - Mapeo de la tabla `[nombre_tabla]` con sus atributos y relaciones.
-- [ ] **Repository (`[paquete].repository`):**
-  - Métodos de consulta y persistencia necesarios.
+<!--
+El Agente de IA debe mapear estos errores usando Bean Validation (@Valid) y el
+GlobalExceptionHandler.java existente en com.huertos.exception (ProblemDetail / HTTP Status).
+-->
+* **4a. Campos obligatorios vacíos o formato inválido (HTTP 400 Bad Request):**
+  - **Condición:** Si `[campo1]`, `[campo2]` están vacíos o no cumplen `[restricción, ej: @NotBlank, @Past, @Email]`.
+  - **Comportamiento:** El Sistema rechaza la petición (mediante Bean Validation en el `record` Request y manejo en `GlobalExceptionHandler`) e informa en pantalla el campo exacto con error sin borrar los demás datos digitados.
+* **4b. Conflicto de negocio / Registro duplicado (HTTP 409 Conflict / 400 Bad Request):**
+  - **Condición:** Si `[condición de duplicidad o violación de regla de negocio]`.
+  - **Comportamiento:** El Sistema lanza excepción de negocio y muestra el mensaje exacto: *"`[Mensaje de error para el usuario]`"*.
+* **4c. Recurso relacionado no encontrado (HTTP 404 Not Found):**
+  - **Condición:** Si el `[recursoId]` enviado no existe en la base de datos.
+  - **Comportamiento:** El Sistema lanza `RecursoNoEncontradoException`.
 
 ---
 
-## 5. Criterios de Aceptación y Pruebas Requeridas
+## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
-- [ ] **Prueba Unitaria de Servicio:** Cobertura de lógica de negocio, validaciones y flujos alternativos.
-- [ ] **Prueba de Integración / Controlador:** Verificación de serialización, códigos HTTP de respuesta y filtros de excepción.
-- [ ] **Prueba de Componente Frontend:** Comprobación de renderizado inicial, interacción del usuario y manejo de respuestas mockeadas.
-- [ ] **Aceptación Funcional (E2E / Manual):** Ejecución completa del flujo principal sin anomalías de interfaz ni errores de consola.
+<!--
+Marca con [x] las capas que toca este Caso de Uso y especifica los nombres exactos
+respetando la estructura del repositorio (docs/backend/estructura.md, docs/frontend/estructura.md, docs/db/estructura.md).
+-->
+
+### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [ ] **Feature (`frontend/src/features/[nombre-modulo]/`):**
+  - `[NombreFormularioModal].tsx`: `[Descripción de inputs controlados, tipos de input, selects y botones]`.
+  - `[NombreTablaOVista].tsx`: `[Descripción de columnas, badges visuales, estados de carga/error]`.
+  - `[modulo]Api.ts`: Funciones `[crearRecurso(...)]` y `[listarRecursos(...)]` usando el cliente base `frontend/src/api/client.ts`.
+- [ ] **Página / Ruteo (`frontend/src/pages/`):**
+  - Integración en `[NombrePage].tsx` o actualización en `App.tsx` (si aplica).
+
+### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
+- [ ] **Controller (`com.huertos.controller.[Nombre]Controller.java`):**
+  - `POST /api/[ruta-recurso]` -> Recibe `[CrearRecursoRequest]` (`record`), retorna `201 Created` con `[RecursoResponse]` (`record`).
+  - `GET /api/[ruta-recurso]` -> Retorna `200 OK` con `List<[RecursoResponse]>`.
+- [ ] **DTOs (`com.huertos.dto`):**
+  - `[CrearRecursoRequest].java` (`record` con anotaciones `jakarta.validation.constraints.*`).
+  - `[RecursoResponse].java` (`record`).
+- [ ] **Service (`com.huertos.service.[Nombre]Service.java` y `com.huertos.service.impl.[Nombre]ServiceImpl.java`):**
+  - Lógica de negocio, validación de duplicados, inyección por constructor de repositorios y `java.time.Clock`.
+- [ ] **Mapper (`com.huertos.mapper.[Nombre]Mapper.java`):**
+  - Conversión limpia entre la entidad `[Nombre]` y los records `[CrearRecursoRequest]` / `[RecursoResponse]`.
+
+### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
+- [ ] **Migración Flyway (`backend/src/main/resources/db/migration/V[X]__[descripcion_snake_case].sql`):**
+  - Creación/alteración de tabla `[nombre_tabla_plural]` con columnas: `id`, `[columna_1]`, `[columna_2]`, `creado_en`, constraints (`PRIMARY KEY`, `FOREIGN KEY`, `UNIQUE`).
+- [ ] **Entidad JPA (`com.huertos.model.[NombreEntidad].java`):**
+  - Mapeo de `@Entity` y `@Table(name = "[nombre_tabla_plural]")`, enums asociados y relaciones.
+- [ ] **Repository (`com.huertos.repository.[Nombre]Repository.java`):**
+  - Interfaz que extiende `JpaRepository<[NombreEntidad], [TipoId]>` y métodos de consulta derivados (ej: `existsBy...`, `findBy...`).
+
+---
+
+## 5. Criterios de Aceptación y Pruebas Requeridas (CI/CD)
+
+<!-- Todo PR debe pasar los workflows .github/workflows/backend.yml y frontend.yml -->
+- [ ] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/[Nombre]ServiceImplTest.java`):** Con JUnit 5 y Mockito (`@ExtendWith(MockitoExtension.class)`), verificando el flujo principal (con `Clock.fixed(...)`) y las excepciones de los flujos alternativos.
+- [ ] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/[Nombre]ControllerTest.java`):** Con `@WebMvcTest`, verificando respuestas `201 Created` / `200 OK` y errores `400 Bad Request` / `404 Not Found`.
+- [ ] **Prueba de Integración (Opcional / Si toca consultas complejas en BD):** Con `@SpringBootTest` e `@Import(TestcontainersConfiguration.class)` contra PostgreSQL real.
+- [ ] **Prueba de Componente Frontend (`frontend/src/features/[nombre-modulo]/[Componente].test.tsx`):** Con Vitest, Testing Library y MSW (registrando los mocks en `frontend/src/test/mocks/handlers.ts`), verificando renderizado, envío de formulario y mensajes de error.
