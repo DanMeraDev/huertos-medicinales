@@ -1,15 +1,84 @@
 :root {
-  font-family: system-ui, sans-serif;
-  color: #1d2a1f;
-  background: #f6f8f3;
+  --color-primario: #2d5a3f;
+  --color-primario-interaccion: #224430;
+  --color-secundario: #7c5a38;
+  --color-secundario-interaccion: #63472c;
+  --color-fondo: #f6f8f3;
+  --color-superficie: #ffffff;
+  --color-superficie-alt: #edf1ea;
+  --color-texto: #1d2a1f;
+  --color-texto-secundario: #526154;
+  --color-texto-inverso: #ffffff;
+  --color-borde: #d3ded2;
+  --color-exito: #2e7d32;
+  --color-error: #c62828;
+  --color-advertencia: #d97706;
+
+  --fuente-principal: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --texto-xs: 0.75rem;
+  --texto-sm: 0.875rem;
+  --texto-base: 1rem;
+  --texto-lg: 1.125rem;
+  --texto-xl: 1.25rem;
+  --texto-2xl: 1.5rem;
+  --texto-3xl: 1.875rem;
+  --texto-4xl: 2.25rem;
+
+  --peso-normal: 400;
+  --peso-medio: 500;
+  --peso-seminegrita: 600;
+  --peso-negrita: 700;
+
+  --interlineado-apretado: 1.25;
+  --interlineado-normal: 1.5;
+
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 0.75rem;
+  --espacio-4: 1rem;
+  --espacio-5: 1.25rem;
+  --espacio-6: 1.5rem;
+  --espacio-8: 2rem;
+  --espacio-10: 2.5rem;
+  --espacio-12: 3rem;
+  --espacio-16: 4rem;
+
+  --radio-sm: 0.25rem;
+  --radio-md: 0.5rem;
+  --radio-lg: 0.75rem;
+  --radio-full: 9999px;
+  --borde-ancho: 1px;
+
+  --sombra-sm: 0 1px 2px 0 rgba(29, 42, 31, 0.05);
+  --sombra-md: 0 4px 6px -1px rgba(29, 42, 31, 0.08), 0 2px 4px -2px rgba(29, 42, 31, 0.06);
+  --sombra-lg: 0 10px 15px -3px rgba(29, 42, 31, 0.1), 0 4px 6px -4px rgba(29, 42, 31, 0.06);
+
+  --ancho-maximo: 75rem;
+  --ancho-lectura: 40rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-base);
+  line-height: var(--interlineado-normal);
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .inicio {
-  max-width: 40rem;
+  max-width: var(--ancho-lectura);
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: var(--espacio-12) var(--espacio-4);
 }

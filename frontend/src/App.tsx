@@ -1,5 +1,10 @@
+import { Layout } from './components/Layout'
 import { InicioPage } from './pages/InicioPage'
 
 export default function App() {
-  return <InicioPage />
+  return (
+    <Layout>
+      <InicioPage />
+    </Layout>
+  )
 }
