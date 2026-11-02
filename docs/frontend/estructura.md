@@ -85,7 +85,7 @@ Gracias a esto, las pruebas del front no necesitan el back levantado.
 
 > El código es solo ilustrativo, para mostrar dónde va cada pieza.
 
-Para *CU-01: Registro de comunidad*:
+Para *CM-CU01: Registro de comunidad*:
 
 ```
 frontend/src/

@@ -29,7 +29,7 @@ Formato completo en `docs/reglas/estandar-commits.md`. Resumen:
 - Descripción en presente y tercera persona (`agrega`, `corrige`), en minúscula, sin punto final, máximo 72 caracteres en total.
 - Pie opcional: `Cierra #<número>` o `Refs #<número>`.
 - El título del Pull Request sigue el mismo formato, porque se fusiona con squash.
-- Ramas desde `develop`: `feature/CU-XX-descripcion`, `fix/<issue>-descripcion`, `docs/...`, `chore/...`. Nunca push directo a `main` ni a `develop`, ni `push --force` en ramas compartidas.
+- Ramas desde `develop`: `feature/<MÓDULO>-CUNN-descripcion`, `fix/<issue>-descripcion`, `docs/...`, `chore/...`. Nunca push directo a `main` ni a `develop`, ni `push --force` en ramas compartidas.
 
 ## Back (`backend/`, paquete `com.huertos`)
 

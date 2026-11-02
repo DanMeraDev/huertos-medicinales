@@ -1,7 +1,7 @@
-# Especificación de Caso de Uso: UC05 - Registrar miembro en la comunidad
+# Especificación de Caso de Uso: CM-CU05 - Registrar miembro en la comunidad
 
 ## 1. Información General (PUDS)
-* **Código:** CM-UC05 (Módulo: Comunidades y Miembros)
+* **Código:** CM-CU05 (Módulo: Comunidades y Miembros)
 * **Incremento:** Incremento 1
 * **Actor Principal:** Responsable de Comunidad
 * **Descripción:** Permite al responsable de una comunidad de siembra dar de alta a un voluntario participante dentro de su comunidad, inicializando su ruta de evolución en el nivel Aprendiz.
@@ -30,9 +30,9 @@
 * **4a. Campos obligatorios vacíos o fecha futura (HTTP 400 Bad Request):**
   - Si `nombreCompleto`, `identificacion`, `fechaNacimiento` o `genero` están vacíos, o si `fechaNacimiento` es posterior a la fecha actual del `Clock`:
   - El Sistema rechaza la petición (mediante Bean Validation `@NotBlank`, `@Past`, `@NotNull` en el DTO y manejo en `GlobalExceptionHandler`) e informa en pantalla el campo exacto con error sin borrar los demás datos digitados.
-* **4b. Miembro duplicado en la comunidad (HTTP 409 Conflict / 400 Bad Request):**
+* **4b. Miembro duplicado en la comunidad (HTTP 409 Conflict):**
   - Si ya existe un miembro con la misma `identificacion` en esa comunidad:
-  - El Sistema lanza excepción de negocio y muestra el mensaje: *"Ya existe un miembro con esa identificación registrado en esta comunidad"*.
+  - El Sistema lanza `ConflictoException` (convertida a HTTP 409 por `GlobalExceptionHandler`) y muestra el mensaje: *"Ya existe un miembro con esa identificación registrado en esta comunidad"*.
 * **4c. Comunidad no encontrada (HTTP 404 Not Found):**
   - Si el `comunidadId` enviado no existe en base de datos, el Sistema lanza `RecursoNoEncontradoException`.
 
