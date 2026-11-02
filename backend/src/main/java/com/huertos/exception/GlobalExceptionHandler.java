@@ -2,8 +2,10 @@ package com.huertos.exception;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,16 +19,40 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
     ProblemDetail manejarNoEncontrado(RecursoNoEncontradoException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ProblemDetail manejarValidacion(MethodArgumentNotValidException ex) {
         Map<String, String> errores = new LinkedHashMap<>();
+
         ex.getBindingResult().getFieldErrors()
-                .forEach(e -> errores.putIfAbsent(e.getField(), e.getDefaultMessage()));
-        ProblemDetail problema = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Datos no válidos");
+                .forEach(e -> errores.putIfAbsent(
+                        e.getField(),
+                        e.getDefaultMessage()));
+
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Datos no válidos");
+
         problema.setProperty("errores", errores);
+
         return problema;
+    }
+
+    @ExceptionHandler(ConflictoException.class)
+    public ResponseEntity<Map<String, Object>> handleConflicto(
+            ConflictoException ex) {
+
+        Map<String, Object> body = Map.of(
+                "error", "Conflicto de datos",
+                "mensaje", ex.getMessage(),
+                "status", HttpStatus.CONFLICT.value());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(body);
     }
 }
