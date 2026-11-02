@@ -20,7 +20,7 @@ Documentos relacionados: [Estándar de commits](estandar-commits.md) · [Estánd
 
 | Tipo | Cuándo | Ejemplo |
 |---|---|---|
-| `feature/` | Un caso de uso | `feature/CU-01-registro-comunidad` |
+| `feature/` | Un caso de uso | `feature/CM-CU01-registro-comunidad` |
 | `fix/` | Un defecto reportado | `fix/45-ranking-duplicado` |
 | `test/` | Solo pruebas, sin cambiar funcionalidad | `test/52-pruebas-e2e-registro` |
 | `docs/` | Solo documentación | `docs/30-diagrama-clases-inc1` |
@@ -29,8 +29,8 @@ Documentos relacionados: [Estándar de commits](estandar-commits.md) · [Estánd
 
 Reglas del nombre:
 
-- La referencia es el código del caso de uso (`CU-01`) o, si no es un caso de uso, el número del issue (`45`).
-- Todo en minúsculas salvo el código `CU`, palabras separadas con guion, sin tildes ni ñ.
+- La referencia es el código del caso de uso (`CM-CU01`) o, si no es un caso de uso, el número del issue (`45`).
+- Todo en minúsculas salvo el código del caso de uso, palabras separadas con guion, sin tildes ni ñ.
 - Corta: entre dos y cinco palabras.
 
 ## 2. Ciclo de trabajo de un issue
@@ -38,7 +38,7 @@ Reglas del nombre:
 ```
 develop ──┬─────────────────────────────────●── develop
           │                                 │ (squash merge)
-          └── feature/CU-01-registro-comunidad
+          └── feature/CM-CU01-registro-comunidad
                  test → código → refactor → PR
 ```
 
@@ -47,7 +47,7 @@ develop ──┬─────────────────────
    ```bash
    git switch develop
    git pull
-   git switch -c feature/CU-01-registro-comunidad
+   git switch -c feature/CM-CU01-registro-comunidad
    ```
 3. **Trabajar con TDD.** Primero la prueba que falla, luego el código que la hace pasar y al final el refactor. Haz commits pequeños siguiendo el [estándar de commits](estandar-commits.md).
 4. **Mantener la rama al día.** Si `develop` avanzó mientras trabajabas, trae sus cambios a tu rama y resuelve los conflictos en tu rama, nunca en `develop`.
@@ -62,7 +62,7 @@ develop ──┬─────────────────────
    ```
 6. **Subir la rama y abrir el Pull Request hacia `develop`.**
    ```bash
-   git push -u origin feature/CU-01-registro-comunidad
+   git push -u origin feature/CM-CU01-registro-comunidad
    ```
 7. **Revisión.** Al menos una aprobación de otro integrante y el CI en verde. Los comentarios de revisión se atienden con nuevos commits en la misma rama.
 8. **Fusión.** Quien abrió el PR lo fusiona con *Squash and merge* una vez aprobado. La rama se borra después de fusionar.
@@ -72,7 +72,7 @@ develop ──┬─────────────────────
 - **Destino:** siempre `develop`. Solo los cierres de incremento y los `hotfix/` van a `main`.
 - **Título:** sigue el [estándar de commits](estandar-commits.md), porque con *Squash and merge* el título del PR se convierte en el commit que queda en `develop`.
   ```
-  feat(back): registra comunidades con su responsable (CU-01)
+  feat(back): registra comunidades con su responsable (CM-CU01)
   ```
 - **Descripción:** se llena con la plantilla e incluye `Cierra #<número>` para que el issue se cierre solo al fusionar.
 - **Tamaño:** un PR resuelve un solo issue. Si pasa de unas 400 líneas cambiadas, conviene dividirlo.

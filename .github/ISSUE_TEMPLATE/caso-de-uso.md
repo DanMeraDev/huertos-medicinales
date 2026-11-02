@@ -1,7 +1,7 @@
 ---
 name: Caso de Uso
 about: Especificación de caso de uso 1:1 con el análisis (PUDS) y diseño técnico exacto para el Agente de IA.
-title: "CU-XX: [Nombre del Caso de Uso]"
+title: "[MÓDULO]-CUNN: [Nombre del Caso de Uso]"
 labels: ["caso-de-uso"]
 ---
 
@@ -12,12 +12,16 @@ GUÍA RÁPIDA PARA EL EQUIPO (Y REGLAS PARA EL AGENTE DE IA):
    de clases, endpoints, tablas ni campos que no estén especificados aquí.
 2. El agente debe respetar estrictamente `AGENTS.md`, `CLAUDE.md` y `docs/`.
 3. Reemplaza todos los textos entre corchetes `[...]` antes de crear la Issue.
+4. El código va como en el diagrama de casos de uso: `<MÓDULO>-CUNN`
+   (`HR-CU01` bien, `HR-UC01` mal). Es el mismo en el título y en la rama.
+5. Agrega una etiqueta de área (`back`, `front`, `db`) y una de prioridad
+   (`imprescindible`, `importante`, `deseable`) según docs/reglas/estandar-issues.md.
 ================================================================================
 -->
 
 ## 1. Información General (PUDS)
 
-* **Código:** `[MOD-UCXX]` <!-- Ej: CM-UC05 (Módulo: Comunidades y Miembros) -->
+* **Código:** `[MÓDULO]-CUNN` <!-- Ej: CM-CU05 (Módulo: Comunidades y Miembros) -->
 * **Incremento:** `Incremento [X]` <!-- Ej: Incremento 1 -->
 * **Actor Principal:** `[Nombre del Rol]` <!-- Ej: Responsable de Comunidad -->
 * **Descripción:** `[Qué permite hacer este caso de uso, para quién y con qué objetivo de negocio]` <!-- Ej: Permite al responsable de una comunidad de siembra dar de alta a un voluntario participante dentro de su comunidad, inicializando su ruta de evolución en el nivel Aprendiz. -->
@@ -60,9 +64,9 @@ GlobalExceptionHandler.java existente en com.huertos.exception (ProblemDetail / 
 * **4a. Campos obligatorios vacíos o formato inválido (HTTP 400 Bad Request):**
   - **Condición:** Si `[campo1]`, `[campo2]` están vacíos o no cumplen `[restricción, ej: @NotBlank, @Past, @Email]`.
   - **Comportamiento:** El Sistema rechaza la petición (mediante Bean Validation en el `record` Request y manejo en `GlobalExceptionHandler`) e informa en pantalla el campo exacto con error sin borrar los demás datos digitados.
-* **4b. Conflicto de negocio / Registro duplicado (HTTP 409 Conflict / 400 Bad Request):**
+* **4b. Conflicto de negocio / Registro duplicado (HTTP 409 Conflict):**
   - **Condición:** Si `[condición de duplicidad o violación de regla de negocio]`.
-  - **Comportamiento:** El Sistema lanza excepción de negocio y muestra el mensaje exacto: *"`[Mensaje de error para el usuario]`"*.
+  - **Comportamiento:** El Sistema lanza `ConflictoException` (`com.huertos.exception`, convertida a HTTP 409 por `GlobalExceptionHandler`; si aún no existe, este caso de uso la crea) y muestra el mensaje exacto: *"`[Mensaje de error para el usuario]`"*.
 * **4c. Recurso relacionado no encontrado (HTTP 404 Not Found):**
   - **Condición:** Si el `[recursoId]` enviado no existe en la base de datos.
   - **Comportamiento:** El Sistema lanza `RecursoNoEncontradoException`.
@@ -111,5 +115,5 @@ respetando la estructura del repositorio (docs/backend/estructura.md, docs/front
 <!-- Todo PR debe pasar los workflows .github/workflows/backend.yml y frontend.yml -->
 - [ ] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/[Nombre]ServiceImplTest.java`):** Con JUnit 5 y Mockito (`@ExtendWith(MockitoExtension.class)`), verificando el flujo principal (con `Clock.fixed(...)`) y las excepciones de los flujos alternativos.
 - [ ] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/[Nombre]ControllerTest.java`):** Con `@WebMvcTest`, verificando respuestas `201 Created` / `200 OK` y errores `400 Bad Request` / `404 Not Found`.
-- [ ] **Prueba de Integración (Opcional / Si toca consultas complejas en BD):** Con `@SpringBootTest` e `@Import(TestcontainersConfiguration.class)` contra PostgreSQL real.
+- [ ] **Prueba de Integración (Opcional / Si toca consultas complejas en BD):** Con `@SpringBootTest` e `@Import(TestcontainersConfiguration.class)` contra MariaDB real.
 - [ ] **Prueba de Componente Frontend (`frontend/src/features/[nombre-modulo]/[Componente].test.tsx`):** Con Vitest, Testing Library y MSW (registrando los mocks en `frontend/src/test/mocks/handlers.ts`), verificando renderizado, envío de formulario y mensajes de error.

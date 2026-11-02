@@ -127,7 +127,7 @@ Para un error nuevo, crea la excepción y agrega su `@ExceptionHandler` en `Glob
 
 > El código es solo ilustrativo, para mostrar dónde va cada pieza. Los campos reales salen del diagrama de clases.
 
-Para implementar *CU-01: Registro de comunidad* se crean:
+Para implementar *CM-CU01: Registro de comunidad* se crean:
 
 ```
 backend/src/main/

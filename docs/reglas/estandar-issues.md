@@ -10,11 +10,11 @@ Cada tipo tiene su plantilla en *New issue*.
 
 | Tipo | Plantilla | Formato del título | Ejemplo |
 |---|---|---|---|
-| Caso de uso | Caso de uso | `CU-XX: <nombre del caso de uso>` | `CU-01: Registro de comunidad` |
+| Caso de uso | Caso de uso | `<MÓDULO>-CUNN: <nombre del caso de uso>` | `CM-CU01: Registro de comunidad` |
 | Defecto | Defecto | `BUG: <qué falla, dónde>` | `BUG: El ranking muestra comunidades duplicadas` |
 | Tarea técnica | Tarea técnica | `TAREA: <qué se hace>` | `TAREA: Configurar SonarCloud en el CI` |
 
-- **Casos de uso:** corresponden 1:1 con los casos de uso del documento de análisis del incremento. El código `CU-XX` es el mismo del documento y no se reutiliza.
+- **Casos de uso:** corresponden 1:1 con los casos de uso del documento de análisis del incremento. El código `<MÓDULO>-CUNN` es el mismo del diagrama de casos de uso (`HR-CU01`, nunca `HR-UC01`) y no se reutiliza.
 - **Defectos:** los reporta normalmente QA al probar un incremento, enlazados al caso de prueba de Qase.
 - **Tareas técnicas:** trabajo que no es un caso de uso: configuración, infraestructura, documentación, diagramas.
 
@@ -88,7 +88,7 @@ Un caso de uso está terminado cuando:
 
 ## 7. Cómo escribir un buen issue
 
-- **Título:** concreto y con el formato del tipo. "CU-03: Registro de huerto real" en lugar de "huerto".
+- **Título:** concreto y con el formato del tipo. "HR-CU01: Registro de huerto real" en lugar de "huerto".
 - **Criterios de aceptación:** verificables, cada uno como casilla. "Al guardar sin provincia se muestra el mensaje *La provincia es obligatoria*" en lugar de "valida bien".
 - **Defectos reproducibles:** pasos numerados, resultado esperado, resultado obtenido y evidencia (captura, respuesta del API o log).
 - **Una cosa por issue:** si aparecen dos problemas, son dos issues.
@@ -98,7 +98,7 @@ Un caso de uso está terminado cuando:
 
 | Elemento | Cómo referencia al issue |
 |---|---|
-| Rama | `feature/CU-01-registro-comunidad` o `fix/45-ranking-duplicado` |
+| Rama | `feature/CM-CU01-registro-comunidad` o `fix/45-ranking-duplicado` |
 | Commit | Pie `Refs #12` o `Cierra #12` |
 | Pull Request | `Cierra #12` en la descripción |
 
