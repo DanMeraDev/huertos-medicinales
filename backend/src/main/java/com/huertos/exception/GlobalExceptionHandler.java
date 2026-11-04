@@ -47,4 +47,11 @@ public class GlobalExceptionHandler {
                                 HttpStatus.CONFLICT,
                                 ex.getMessage());
         }
+
+        @ExceptionHandler(ReglaNegocioException.class)
+        ProblemDetail manejarReglaNegocio(ReglaNegocioException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.BAD_REQUEST,
+                                ex.getMessage());
+        }
 }
