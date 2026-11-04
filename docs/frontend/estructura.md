@@ -143,13 +143,84 @@ http.post('*/api/comunidades', async ({ request }) => {
 - **Textos de la interfaz en español**, igual que los nombres del negocio en el código.
 - **Pruebas con Testing Library:** se busca por lo que ve el usuario (`getByRole`, `getByLabelText`, `findByText`), no por clases CSS ni por `id`.
 
-## 5. Librerías que se agregan más adelante
+## 5. Rutas
+
+Las rutas usan [React Router](https://reactrouter.com/) (paquete `react-router`). `main.tsx` envuelve la aplicación con `BrowserRouter`, y `App.tsx` declara **todas** las rutas en un solo `<Routes>`:
+
+```tsx
+<Routes>
+  <Route path="/" element={<InicioPage />} />
+  <Route path="*" element={<NoEncontradaPage />} />
+</Routes>
+```
+
+### Agregar una ruta
+
+Cada caso de uso agrega la ruta de su página en su propio Pull Request, **antes** de la ruta `*`, que siempre va al final. No se agregan rutas de páginas que todavía no existen.
+
+```tsx
+<Route path="/plantas" element={<CatalogoPlantasPage />} />
+```
+
+- **Ruta:** en minúsculas, con guion y en plural cuando es un recurso, igual que la carpeta de la feature: `/plantas`, `/huerto-real`.
+- **Elemento:** siempre una página de `pages/`, nunca un componente de una feature.
+
+### Rutas con parámetros
+
+Un parámetro se declara con `:` en la ruta, y la página lo lee con `useParams`:
+
+```tsx
+<Route path="/plantas/:id" element={<FichaPlantaPage />} />
+```
+
+```tsx
+export function FichaPlantaPage() {
+  const { id } = useParams()
+  return <FichaPlanta id={Number(id)} />
+}
+```
+
+Los parámetros llegan como texto: se convierten (`Number(id)`) antes de pasarlos a la feature.
+
+### Navegación
+
+- **Enlaces:** con `<Link to="/plantas">`, no con `<a href>`, para no recargar toda la aplicación.
+- **Después de una acción** (guardar, cancelar): con `useNavigate`, en la página.
+- **Las features no navegan:** reciben callbacks y la página decide a dónde ir. Así una feature no depende de las rutas y se prueba sin router.
+
+```tsx
+export function RegistrarPlantaPage() {
+  const navegar = useNavigate()
+  return (
+    <FormularioPlanta
+      alGuardar={(id) => navegar(`/plantas/${id}`)}
+      alCancelar={() => navegar('/plantas')}
+    />
+  )
+}
+```
+
+### Pruebas
+
+- Las pruebas de una feature no necesitan router: se pasa un callback simulado (`vi.fn()`) y se comprueba que se llamó con el valor esperado.
+- Para probar rutas se renderiza `App` dentro de `MemoryRouter`, con la ruta inicial en `initialEntries`. No se usa `BrowserRouter` en las pruebas. Ejemplo en `App.test.tsx`:
+
+```tsx
+render(
+  <MemoryRouter initialEntries={['/ruta-inexistente']}>
+    <App />
+  </MemoryRouter>,
+)
+```
+
+En Docker, `nginx.conf` ya responde `index.html` para cualquier ruta (`try_files $uri /index.html`), así que recargar `/plantas/15` funciona. En desarrollo, Vite hace lo mismo.
+
+## 6. Librerías que se agregan más adelante
 
 Para mantener el esqueleto simple, estas librerías del stack se instalan en el incremento en que se usan, cada una en su propio Pull Request:
 
 | Librería | Para qué | Dónde se usa |
 |---|---|---|
-| React Router | Rutas entre páginas | `App.tsx` y `pages/` |
 | React Three Fiber y drei | Huerto virtual en 3D | `features/huerto-virtual/` |
 | Leaflet / React Leaflet | Mapa de ubicación del huerto | `features/huerto-real/` |
 | Plugin PWA de Vite | Instalación como aplicación | `vite.config.ts` |
