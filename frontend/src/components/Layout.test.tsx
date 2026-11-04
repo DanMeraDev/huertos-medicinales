@@ -1,15 +1,24 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import { Layout } from './Layout'
 
 describe('Layout', () => {
   it('muestra el nombre del sistema en el encabezado', () => {
-    render(<Layout>Contenido</Layout>)
+    render(
+      <MemoryRouter>
+        <Layout>Contenido</Layout>
+      </MemoryRouter>
+    )
 
     expect(screen.getByRole('banner')).toHaveTextContent('Huertos Medicinales Comunitarios')
   })
 
   it('muestra los modulos del incremento 1 en el menu de navegacion', () => {
-    render(<Layout>Contenido</Layout>)
+    render(
+      <MemoryRouter>
+        <Layout>Contenido</Layout>
+      </MemoryRouter>
+    )
 
     const navegacion = screen.getByRole('navigation', { name: /navegación principal/i })
     expect(navegacion).toBeInTheDocument()
@@ -23,9 +32,11 @@ describe('Layout', () => {
 
   it('renderiza el contenido hijo', () => {
     render(
-      <Layout>
-        <p>Contenido de prueba</p>
-      </Layout>
+      <MemoryRouter>
+        <Layout>
+          <p>Contenido de prueba</p>
+        </Layout>
+      </MemoryRouter>
     )
 
     expect(screen.getByText('Contenido de prueba')).toBeInTheDocument()

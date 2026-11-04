@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
 import './Layout.css'
 
 export interface LayoutProps {
@@ -6,11 +7,11 @@ export interface LayoutProps {
 }
 
 const MODULOS = [
-  { nombre: 'Acceso', ruta: '#acceso' },
-  { nombre: 'Comunidades y Miembros', ruta: '#comunidades' },
-  { nombre: 'Huerto Real', ruta: '#huerto-real' },
-  { nombre: 'Catálogo de Plantas', ruta: '#plantas' },
-  { nombre: 'Bodega', ruta: '#bodega' },
+  { nombre: 'Acceso', ruta: '/' },
+  { nombre: 'Comunidades y Miembros', ruta: '/comunidades' },
+  { nombre: 'Huerto Real', ruta: '/huerto-real' },
+  { nombre: 'Catálogo de Plantas', ruta: '/plantas' },
+  { nombre: 'Bodega', ruta: '/bodega' },
 ]
 
 export function Layout({ children }: LayoutProps) {
@@ -26,9 +27,9 @@ export function Layout({ children }: LayoutProps) {
             <ul className="layout-menu">
               {MODULOS.map((modulo) => (
                 <li key={modulo.nombre}>
-                  <a href={modulo.ruta} className="layout-enlace">
+                  <Link to={modulo.ruta} className="layout-enlace">
                     {modulo.nombre}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
