@@ -1,0 +1,31 @@
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espacio-4);
+  background-color: color-mix(in srgb, var(--color-texto) 50%, transparent);
+}
+
+.modal {
+  width: 100%;
+  max-width: var(--ancho-lectura);
+  padding: var(--espacio-6);
+  background-color: var(--color-superficie);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-lg);
+}
+
+.modal-titulo {
+  margin: 0 0 var(--espacio-4);
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-seminegrita);
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-6);
+}
