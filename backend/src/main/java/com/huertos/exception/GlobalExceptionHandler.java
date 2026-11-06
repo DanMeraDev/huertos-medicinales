@@ -3,11 +3,13 @@ package com.huertos.exception;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.huertos.service.PlantaMedicinalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * Convierte las excepciones en respuestas con formato ProblemDetail (RFC 9457),
@@ -53,5 +55,12 @@ public class GlobalExceptionHandler {
                 return ProblemDetail.forStatusAndDetail(
                                 HttpStatus.BAD_REQUEST,
                                 ex.getMessage());
+        }
+
+        @ExceptionHandler(MaxUploadSizeExceededException.class)
+        ProblemDetail manejarArchivoDemasiadoGrande(MaxUploadSizeExceededException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.BAD_REQUEST,
+                                PlantaMedicinalService.MENSAJE_FOTO_INVALIDA);
         }
 }

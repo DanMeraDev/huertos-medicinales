@@ -116,6 +116,30 @@ class PlantaMedicinalServiceImplTest {
     }
 
     @Test
+    void rechazaUnArchivoHtmlAunqueDigaSerPng() {
+        assertFotoRechazada(new MockMultipartFile("foto", "foto.html", "image/png", new byte[] {1, 2, 3}));
+    }
+
+    @Test
+    void rechazaUnArchivoSinExtension() {
+        assertFotoRechazada(new MockMultipartFile("foto", "foto", "image/jpeg", new byte[] {1, 2, 3}));
+    }
+
+    @Test
+    void guardaElNombreCientificoSinEspaciosAlInicioNiAlFinal() {
+        MultipartFile foto = fotoJpg();
+        when(almacenamientoFotoService.guardar(foto)).thenReturn(FOTO_URL);
+        when(plantaMedicinalRepository.save(any(PlantaMedicinal.class))).thenAnswer(invocacion -> invocacion.getArgument(0));
+
+        PlantaResponse respuesta = servicio.registrar(solicitud("  Matricaria chamomilla  "), foto);
+
+        ArgumentCaptor<PlantaMedicinal> guardada = ArgumentCaptor.forClass(PlantaMedicinal.class);
+        verify(plantaMedicinalRepository).save(guardada.capture());
+        assertThat(guardada.getValue().getNombreCientifico()).isEqualTo("Matricaria chamomilla");
+        assertThat(respuesta.nombreCientifico()).isEqualTo("Matricaria chamomilla");
+    }
+
+    @Test
     void rechazaUnaFotoDeMasDeDosMegas() {
         assertFotoRechazada(new MockMultipartFile("foto", "manzanilla.jpg", "image/jpeg", new byte[DOS_MB + 1]));
     }
