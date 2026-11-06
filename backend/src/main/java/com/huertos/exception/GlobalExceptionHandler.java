@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -46,6 +47,13 @@ public class GlobalExceptionHandler {
                 return ProblemDetail.forStatusAndDetail(
                                 HttpStatus.CONFLICT,
                                 ex.getMessage());
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        ProblemDetail manejarAccesoDenegado() {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.FORBIDDEN,
+                                "No tienes permisos para acceder a este módulo.");
         }
 
         @ExceptionHandler(ReglaNegocioException.class)
