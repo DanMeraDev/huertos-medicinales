@@ -53,4 +53,21 @@ class UsuarioRepositoryIntegrationTest {
         assertThat(usuarioRepository.existsByEmail("otra@correo.com")).isFalse();
         assertThat(usuarioRepository.existsByIdentificacion("0000000000")).isFalse();
     }
+
+    @Test
+    void cuentaSoloLosUsuariosActivosDeUnRol() {
+        Usuario inactivo = usuarioRepository.findByEmail("rosa@correo.com").orElseThrow();
+        assertThat(usuarioRepository.countByRolAndActivoTrue(Rol.MIEMBRO)).isEqualTo(1);
+
+        inactivo.setActivo(false);
+        usuarioRepository.saveAndFlush(inactivo);
+
+        assertThat(usuarioRepository.countByRolAndActivoTrue(Rol.MIEMBRO)).isZero();
+    }
+
+    @Test
+    void detectaSiExisteUnUsuarioConUnRol() {
+        assertThat(usuarioRepository.existsByRol(Rol.MIEMBRO)).isTrue();
+        assertThat(usuarioRepository.existsByRol(Rol.ADMIN_MSP)).isFalse();
+    }
 }
