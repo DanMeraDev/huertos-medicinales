@@ -1,0 +1,49 @@
+@startuml cu-saber-ancestral
+' Diagrama de casos de uso: Saber ancestral y calendario lunar
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Responsable de\ncomunidad" as Resp
+actor "Administrador\nMSP" as Admin
+actor "Equipo de\nverificación MSP" as Equipo
+actor "Módulo de\nGamificación" as Gam <<sistema>>
+
+rectangle "Saber ancestral y calendario lunar" {
+  usecase "CU-01 Consultar\ncalendario lunar" as UC1
+  usecase "CU-02 Iniciar ruta de\nsaberes ancestrales" as UC2
+  usecase "CU-03 Consultar paso\nactual de la ruta" as UC3
+  usecase "CU-04 Registrar actividad\ncon evidencias (Actividades grandes)" as UC4
+  usecase "CU-05 Corregir y\nreenviar evidencias" as UC5
+  usecase "CU-06 Verificar evidencias\nde la actividad" as UC6
+  usecase "CU-07 Controlar plazo\ndel paso" as UC7
+  usecase "CU-08 Habilitar\nsiguiente paso" as UC8
+  usecase "CU-09 Consultar avance\ny puntaje" as UC9
+  usecase "CU-10 Consultar biblioteca\nde saberes ancestrales" as UC10
+  usecase "CU-11 Configurar ruta de saberes\ny calendario lunar" as UC11
+  usecase "CU-12 Supervisar\ncomunidades" as UC12
+}
+
+Resp --> UC1
+Resp --> UC2
+Resp --> UC3
+Resp --> UC4
+Resp --> UC5
+Resp --> UC9
+Resp --> UC10
+
+Admin --> UC1
+Admin --> UC9
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+
+Equipo --> UC6
+
+UC6 --> Gam : suma puntos
+UC7 --> Gam : resta puntos
+
+UC2 ..> UC1 : <<include>>
+UC8 ..> UC6 : <<extend>>\n[evidencia aceptada]
+UC8 ..> UC7 : <<extend>>\n[plazo vencido]
+@enduml
