@@ -1,0 +1,52 @@
+@startuml CU_CatalogoPlantas
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Visitantes/Voluntarios" as Visitantes
+actor "Responsable de\nComunidad" as Responsable
+actor "Técnico MSP" as Tecnico
+
+Visitantes <|-- Responsable
+Visitantes <|-- Tecnico
+
+rectangle "Módulo Catálogo de Plantas" {
+  usecase "CP-CU10: Consultar el listado\nde las plantas" as CU10
+  usecase "CP-CU02: Buscar planta por nombre\n(común, científico o kichwa)" as CU02
+  usecase "CP-CU12: Filtrar plantas por\nsus características" as CU12
+  usecase "CP-CU11: Consultar ficha técnica\nde la planta" as CU11
+
+  usecase "CP-CU13: Solicitar registro\nde nueva planta" as CU13
+  usecase "CP-CU07: Adjuntar fotografía\nde la planta" as CU07
+  usecase "CP-CU14: Consultar estado de\nmis solicitudes" as CU14
+
+  usecase "CP-CU15: Revisar solicitud de\nregistro de planta" as CU15
+  usecase "CP-CU16: Aprobar solicitud de\nregistro de planta" as CU16
+  usecase "CP-CU17: Rechazar solicitud\nindicando el motivo" as CU17
+  usecase "CP-CU04: Registrar planta\nen el catálogo" as CU04
+  usecase "CP-CU05: Actualizar ficha\nde la planta" as CU05
+  usecase "CP-CU06: Dar de baja\nplanta" as CU06
+}
+
+' Consulta pública
+Visitantes --> CU10
+CU10 <.. CU02 : <<extend>>
+CU10 <.. CU12 : <<extend>>
+CU10 <.. CU11 : <<extend>>
+
+' Solicitud del responsable
+Responsable --> CU13
+CU13 ..> CU07 : <<include>>
+Responsable --> CU14
+
+' Revisión y administración del técnico
+Tecnico --> CU15
+CU15 <.. CU16 : <<extend>>
+CU15 <.. CU17 : <<extend>>
+CU16 ..> CU04 : <<include>>
+Tecnico --> CU04
+CU04 ..> CU07 : <<include>>
+Tecnico --> CU05
+CU05 <.. CU07 : <<extend>>
+Tecnico --> CU06
+
+@enduml
