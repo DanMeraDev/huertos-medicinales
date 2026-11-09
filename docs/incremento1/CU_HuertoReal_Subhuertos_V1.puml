@@ -1,0 +1,62 @@
+@startuml Diagrama_Casos_De_Uso_Huerto_Real_Sabina
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+' ==============================================================================
+' DESCRIPCIÓN FORMAL DE CASOS DE USO (MÓDULO HUERTO REAL)
+' ==============================================================================
+' HR-CU03: Completar Registro Principal y Datos Territoriales
+' - Actor: Responsable de Huerto (hereda: Técnico del MSP)
+' - Descripción: Permite al Responsable registrar los datos primarios del huerto:
+'   nombre del huerto, ubicación territorial (provincia, parroquia, dirección),
+'   georreferenciación (latitud/longitud vía GPS/Leaflet), superficie total (16m² a 400m²),
+'   tipo de suelo, fuente de agua de riego y tipo de abono natural.
+'
+' HR-CU04: Configurar Subhuerto y Zona de Cultivo
+' - Actor: Responsable de Huerto (hereda: Técnico del MSP)
+' - Descripción: Caso de uso dedicado para fraccionar o agregar modalidades de siembra
+'   (hasta 3 subtipos: surcos, macetas, terrazas) y maquetar su grilla 2D, validando que
+'   la suma de las áreas de subhuertos no supere la superficie total física del huerto.
+'
+' HR-CU05: Registrar y Editar Cerramiento Perimetral
+' - Actor: Responsable de Huerto (hereda: Técnico del MSP)
+' - Descripción: Caso de uso dedicado para la infraestructura de protección perimetral:
+'   tipo de cerca de seguridad, materiales/especies vegetales, altura, perímetro cubierto,
+'   número de puertas de acceso y actualización de su estado (ej. BUENO a REQUIERE_REPARACION).
+'
+' HR-CU06: Registrar Infraestructura y Equipamiento del Huerto
+' - Actor: Responsable de Huerto (hereda: Técnico del MSP)
+' - Descripción: Permite inventariar y actualizar el estado de las áreas complementarias
+'   (zona de compostaje, bodega de herramientas, puntos de toma de agua) y el inventario
+'   de herramientas básicas asignadas al huerto comunitario para su operación.
+' ==============================================================================
+
+' === ACTORES Y HERENCIA ===
+actor "Responsable de\nHuerto" as RespHuerto
+actor "Técnico del\nMSP" as TecnicoMSP
+
+' El Técnico del MSP hereda del Responsable de Huerto para soporte y auditoría en sitio
+RespHuerto <|-- TecnicoMSP
+
+rectangle "Sistema de Huertos Medicinales Comunitarios - Módulo Huerto Real" {
+
+    usecase "HR-CU03: Completar registro principal\ny datos territoriales" as HR_CU03
+    usecase "HR-CU04: Configurar subhuerto\ny zona de cultivo" as HR_CU04
+    usecase "HR-CU05: Registrar y editar\ncerramiento perimetral" as HR_CU05
+    usecase "HR-CU06: Registrar infraestructura\ny equipamiento" as HR_CU06
+
+}
+
+' === RELACIONES CON ACTORES ===
+RespHuerto --> HR_CU03
+RespHuerto --> HR_CU04
+RespHuerto --> HR_CU05
+RespHuerto --> HR_CU06
+
+' === RELACIONES DE EXTENSIÓN ===
+HR_CU03 <.. HR_CU04 : <<extend>>
+HR_CU03 <.. HR_CU05 : <<extend>>
+HR_CU03 <.. HR_CU06 : <<extend>>
+
+@enduml
