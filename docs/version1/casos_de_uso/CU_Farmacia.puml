@@ -1,0 +1,41 @@
+@startuml CU_Farmacia
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Responsable de\nComunidad" as Responsable
+actor "Técnico MSP" as Tecnico
+actor "Sistema\n(reloj)" as Reloj
+
+rectangle "Módulo Farmacia de la Comunidad (Anderson)" {
+  usecase "FA-CU01: Ingresar paquetes\na la farmacia" as CU01
+  usecase "FA-CU02: Generar etiqueta\ndel paquete" as CU02
+  usecase "FA-CU03: Consultar inventario\nde la farmacia" as CU03
+  usecase "FA-CU04: Registrar entrega\nde paquetes" as CU04
+  usecase "FA-CU05: Dar de baja paquetes\n(vencidos o dañados)" as CU05
+  usecase "FA-CU06: Avisar paquetes por vencer,\nvencidos o con stock bajo" as CU06
+  usecase "FA-CU07: Consultar historial\nde producción y entregas" as CU07
+}
+
+rectangle "Módulo Huerto Real" {
+  usecase "Registrar empaquetado\n(actividad postcosecha)" as Empaquetado
+}
+
+' Ingreso automático al registrar el empaquetado (igual que la opción A de Bodega)
+Responsable --> Empaquetado
+Empaquetado ..> CU01 : <<include>>
+CU01 ..> CU02 : <<include>>
+
+' Responsable
+Responsable --> CU03
+Responsable --> CU04
+Responsable --> CU05
+Responsable --> CU07
+
+' Técnico MSP: solo consulta
+Tecnico --> CU03
+Tecnico --> CU07
+
+' Avisos automáticos
+Reloj --> CU06
+
+@enduml
