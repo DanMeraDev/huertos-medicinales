@@ -1,0 +1,257 @@
+@startuml Diagrama_MER_Huertos_Medicinales_V1
+!theme plain
+hide circle
+skinparam linetype ortho
+skinparam roundcorner 6
+skinparam class {
+    BackgroundColor #F8FBFE
+    BorderColor #2980B9
+    HeaderBackgroundColor #D4E6F1
+}
+
+entity "usuarios" as usuarios {
+  * **id** : BIGINT <<PK>>
+  --
+  * identificacion : VARCHAR(13) <<UK>>
+  * nombre : VARCHAR(120)
+  * correo : VARCHAR(180) <<UK>>
+  telefono : VARCHAR(20)
+  * password_hash : VARCHAR(255)
+  * requiere_cambio_clave : BOOLEAN
+  * genero : ENUM
+  * rol : ENUM('TECNICO_SIS','TECNICO_MSP','RESPONSABLE_COMUNIDAD')
+  * activo : BOOLEAN
+  * creado_en : DATETIME(6)
+}
+
+entity "solicitudes_comunidad" as solicitudes {
+  * **id** : BIGINT <<PK>>
+  --
+  * nombre_comunidad : VARCHAR(150)
+  * tipo_organizacion : ENUM
+  * provincia / parroquia / direccion : VARCHAR
+  * latitud / longitud : DECIMAL(10,7)
+  * altitud_msnm : INT
+  * diseno_principal : ENUM
+  * subtipos_solicitados : VARCHAR(150)
+  * cedula_solicitante : VARCHAR(13)
+  * nombre_solicitante : VARCHAR(120)
+  * correo_solicitante : VARCHAR(180)
+  * celular_solicitante : VARCHAR(20)
+  * estado : ENUM('PENDIENTE','APROBADA','RECHAZADA')
+  motivo_rechazo : VARCHAR(500)
+  revisado_por_id : BIGINT <<FK>>
+}
+
+entity "comunidades" as comunidades {
+  * **id** : BIGINT <<PK>>
+  --
+  * nombre : VARCHAR(150) <<UK>>
+  * tipo_organizacion : ENUM
+  * provincia / parroquia / direccion : VARCHAR
+  * telefono_contacto : VARCHAR(20)
+  * correo_contacto : VARCHAR(180)
+  * responsable_id : BIGINT <<FK>>
+  * puntos_comunidad : INT
+  * activa : BOOLEAN
+}
+
+entity "miembros" as miembros {
+  * **id** : BIGINT <<PK>>
+  --
+  * cedula : VARCHAR(13) <<UK>>
+  * nombres : VARCHAR(100)
+  * apellidos : VARCHAR(100)
+  * fecha_nacimiento : DATE
+  * genero : ENUM
+  * nivel : ENUM('APRENDIZ','OFICIAL','MAESTRO')
+  * puntos_totales : INT
+  * activo : BOOLEAN
+}
+
+entity "comunidad_miembros" as com_miembros {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK>>
+  * miembro_id : BIGINT <<FK>>
+  * activo_en_comunidad : BOOLEAN
+  * fecha_ingreso : DATE
+}
+
+entity "huertos" as huertos {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK, UK>>
+  * nombre_huerto : VARCHAR(150)
+  * latitud / longitud : DECIMAL(10,7)
+  * altitud_msnm : INT
+  * area_total_m2 : DECIMAL(8,2)
+  * tipo_huerto : ENUM('BASICO','INTEGRAL')
+  * diseno_principal : ENUM
+  tipo_suelo : ENUM
+  fuente_agua : ENUM
+  tipo_abono : ENUM
+  tipo_cerca : ENUM
+  * puntos_huerto : INT
+}
+
+entity "subhuertos" as subhuertos {
+  * **id** : BIGINT <<PK>>
+  --
+  * huerto_id : BIGINT <<FK>>
+  * nombre_zona : VARCHAR(100)
+  * subtipo : ENUM
+  * area_m2 : DECIMAL(8,2)
+}
+
+entity "plantas" as plantas {
+  * **id** : BIGINT <<PK>>
+  --
+  * nombre_comun : VARCHAR(120)
+  nombre_kichwa : VARCHAR(120)
+  * nombre_cientifico : VARCHAR(150) <<UK>>
+  * familia_botanica : VARCHAR(100)
+  * cualidad_termica : ENUM('CALIENTE','FRIA')
+  * ciclo_cultivo : ENUM('CORTO','LARGO')
+  * categoria_uso : ENUM
+  * altitud_min_msnm / altitud_max_msnm : INT
+  * usos_medicinales : TEXT
+  * preparacion_dosificacion : TEXT
+  contraindicaciones : TEXT
+  * fotografia_url : VARCHAR(500)
+}
+
+entity "bodega_material_vegetal" as bodega {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK>>
+  * planta_id : BIGINT <<FK>>
+  * tipo_material : ENUM('SEMILLAS','ESTACAS','ESQUEJES','PLANTULAS')
+  * cantidad_disponible : INT
+  * unidad_medida : ENUM
+}
+
+entity "bajas_material_vegetal" as bajas {
+  * **id** : BIGINT <<PK>>
+  --
+  * bodega_material_id : BIGINT <<FK>>
+  * cantidad_baja : INT
+  * causa_fracaso : ENUM
+  observacion : VARCHAR(300)
+}
+
+entity "siembras" as siembras {
+  * **id** : BIGINT <<PK>>
+  --
+  * subhuerto_id : BIGINT <<FK>>
+  * planta_id : BIGINT <<FK>>
+  * bodega_material_id : BIGINT <<FK>>
+  * tipo_siembra : ENUM
+  * cantidad_sembrada : INT
+  * fase_lunar_siembra : ENUM
+  * tuvo_alerta_altitud : BOOLEAN
+  * color_senaletica : ENUM
+}
+
+entity "catalogo_actividades_comunidad" as cat_act {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK>>
+  * nombre : VARCHAR(120)
+  * categoria : ENUM
+  * puntos_por_hora : INT
+}
+
+entity "talentos_comunidad" as talentos {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK>>
+  * actividad_comunidad_id : BIGINT <<FK>>
+  * nombre_insignia : VARCHAR(120)
+  * meta_repeticiones : INT
+}
+
+entity "registro_actividades_miembro" as reg_act {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK>>
+  * miembro_id : BIGINT <<FK>>
+  * actividad_comunidad_id : BIGINT <<FK>>
+  * horas_trabajadas : INT
+  * puntos_otorgados : INT
+}
+
+entity "calendario_lunar" as cal_lunar {
+  * **id** : BIGINT <<PK>>
+  --
+  * fase_lunar : ENUM
+  * nombre_kichwa : VARCHAR(80)
+  * practicas_recomendadas : TEXT
+  * consejo_kinti : VARCHAR(300)
+}
+
+entity "saberes_ancestrales" as saberes {
+  * **id** : BIGINT <<PK>>
+  --
+  * orden_paso : INT <<UK>>
+  * titulo / titulo_kichwa : VARCHAR
+  * fase_lunar_ideal : ENUM
+  * puntos_base_comunidad : INT
+  * nombre_insignia_oficial : VARCHAR(120)
+}
+
+entity "actividades_ancestrales_msp" as act_msp {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK>>
+  * huerto_id : BIGINT <<FK>>
+  * saber_ancestral_id : BIGINT <<FK>>
+  * evidencia_foto_url : VARCHAR(500)
+  * numero_intento : INT
+  * estado_verificacion : ENUM
+  verificado_por_id : BIGINT <<FK>>
+}
+
+entity "actividad_msp_participantes" as part_msp {
+  * **id** : BIGINT <<PK>>
+  --
+  * actividad_msp_id : BIGINT <<FK>>
+  * miembro_id : BIGINT <<FK>>
+  * horas_trabajadas : INT
+  * puntos_acreditados : INT
+}
+
+entity "miembro_insignias" as insignias {
+  * **id** : BIGINT <<PK>>
+  --
+  * miembro_id : BIGINT <<FK>>
+  * comunidad_id : BIGINT <<FK>>
+  * tipo_origen : ENUM('OFICIAL_SABER_MSP','TALENTO_COMUNIDAD')
+  * nombre_insignia : VARCHAR(120)
+  saber_ancestral_id : BIGINT <<FK>>
+  talento_comunidad_id : BIGINT <<FK>>
+}
+
+' Relaciones
+usuarios ||--o{ solicitudes : "revisa"
+usuarios ||--o{ comunidades : "es responsable"
+comunidades ||--|| huertos : "posee"
+huertos ||--o{ subhuertos : "fracciona (máx 3)"
+comunidades ||--o{ com_miembros : "integra"
+miembros ||--o{ com_miembros : "participa"
+comunidades ||--o{ bodega : "almacena"
+plantas ||--o{ bodega : "inventaría"
+bodega ||--o{ bajas : "registra bajas"
+subhuertos ||--o{ siembras : "aloja"
+plantas ||--o{ siembras : "se siembra"
+bodega ||--o{ siembras : "descuenta"
+comunidades ||--o{ cat_act : "define"
+cat_act ||--o{ talentos : "requiere meta"
+miembros ||--o{ reg_act : "ejecuta"
+cat_act ||--o{ reg_act : "clasifica"
+comunidades ||--o{ act_msp : "reporta evidencia"
+saberes ||--o{ act_msp : "guía paso"
+act_msp ||--o{ part_msp : "acredita horas"
+miembros ||--o{ part_msp : "trabaja en minka"
+miembros ||--o{ insignias : "gana"
+@enduml
