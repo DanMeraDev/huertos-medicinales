@@ -120,6 +120,34 @@ class EsquemaPlantasBodegaIntegrationTest {
     }
 
     @Test
+    void creaElHuertoAlAprobarSinAreaYLaCompletaElResponsableDespues() {
+        Long comunidadId = insertarComunidad();
+        jdbcTemplate.update("""
+                INSERT INTO huertos (comunidad_id, nombre_huerto, latitud, longitud, altitud_msnm, diseno_principal)
+                VALUES (?, 'Hampi Chakra', -0.0950000, -78.4220000, 2800, 'EN_TIERRA')
+                """, comunidadId);
+
+        BigDecimal areaAlAprobar = jdbcTemplate.queryForObject(
+                "SELECT area_total_m2 FROM huertos WHERE comunidad_id = ?", BigDecimal.class, comunidadId);
+        assertThat(areaAlAprobar).isNull();
+
+        jdbcTemplate.update("UPDATE huertos SET area_total_m2 = 120.50 WHERE comunidad_id = ?", comunidadId);
+        BigDecimal areaCompletada = jdbcTemplate.queryForObject(
+                "SELECT area_total_m2 FROM huertos WHERE comunidad_id = ?", BigDecimal.class, comunidadId);
+        assertThat(areaCompletada).isEqualByComparingTo("120.50");
+    }
+
+    @Test
+    void impideUnAreaDeHuertoNoPositiva() {
+        Long comunidadId = insertarComunidad();
+        Long huertoId = insertarHuerto(comunidadId);
+
+        assertThatThrownBy(() -> jdbcTemplate.update(
+                "UPDATE huertos SET area_total_m2 = 0 WHERE id = ?", huertoId))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
     void registraUnaSiembraDesdeUnLoteYSuPerdidaConCausa() {
         Long comunidadId = insertarComunidad();
         Long loteId = insertarLote(comunidadId, insertarPlanta("Achicoria", "Cichorium intybus"));
