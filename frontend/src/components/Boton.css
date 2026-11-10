@@ -1,0 +1,34 @@
+.boton {
+  padding: var(--espacio-2) var(--espacio-4);
+  border: none;
+  border-radius: var(--radio-md);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto-inverso);
+  cursor: pointer;
+}
+
+.boton-primario {
+  background-color: var(--color-primario);
+}
+
+.boton-primario:hover:not(:disabled) {
+  background-color: var(--color-primario-interaccion);
+}
+
+.boton-secundario {
+  background-color: var(--color-secundario);
+}
+
+.boton-secundario:hover:not(:disabled) {
+  background-color: var(--color-secundario-interaccion);
+}
+
+.boton-peligro {
+  background-color: var(--color-error);
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

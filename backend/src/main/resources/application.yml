@@ -29,3 +29,7 @@ management:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+app:
+  jwt:
+    expiracion-minutos: ${JWT_EXPIRACION_MINUTOS:480}

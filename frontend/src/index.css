@@ -101,7 +101,7 @@ body {
    ========================================= */
 
 .inicio {
-  max-width: 40rem;
+  max-width: var(--ancho-lectura);
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: var(--espacio-12) var(--espacio-4);
 }

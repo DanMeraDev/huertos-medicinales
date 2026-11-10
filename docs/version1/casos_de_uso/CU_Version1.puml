@@ -1,0 +1,230 @@
+@startuml Diagrama_Unificado_Huertos_Medicinales_V1_Definitivo
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", "Helvetica", sans-serif
+skinparam defaultFontSize 12
+skinparam ArrowColor #1B4F72
+skinparam ArrowThickness 1.2
+
+' ==========================================================
+' ESTILOS Y COLORES (AZUL POR DEFECTO = LOGUEADO / PRIVADO)
+' ==========================================================
+skinparam actor {
+    BackgroundColor #D4E6F1
+    BorderColor #1B4F72
+    FontColor #0B172A
+    FontStyle bold
+}
+
+skinparam usecase {
+    BackgroundColor #EBF5FB
+    BorderColor #2980B9
+    FontColor #154360
+    FontSize 11
+}
+
+' ESTILO VERDE PARA MODO LIBRE / PÚBLICO (SIN LOGIN)
+skinparam usecase<<Publico>> {
+    BackgroundColor #D5F5E3
+    BorderColor #1E8449
+    FontColor #0B5345
+    FontStyle bold
+}
+
+skinparam rectangle {
+    BackgroundColor #F8FBFE
+    BorderColor #5DADE2
+    FontColor #1B4F72
+    FontStyle bold
+}
+
+' ==========================================================
+' ACTORES Y JERARQUÍA
+' ==========================================================
+actor "Visitante / Voluntario\n(Modo Libre - Sin Cuenta)" as Visitante #D5F5E3;line:1E8449;text:0B5345
+actor "Responsable de\nComunidad" as Responsable
+actor "Técnico MSP" as TecnicoMSP
+actor "Técnico SIS\n(Admin Sistema)" as TecnicoSIS #FADBD8;line:922B21;text:641E16
+actor "Motor de Gamificación\ny Sistema <<Sistema>>" as Sistema
+
+' Herencia: Los roles logueados también pueden ver todo lo público
+Visitante <|-- Responsable
+Visitante <|-- TecnicoMSP
+
+' ==========================================================
+' LÍMITE DEL SISTEMA (VERSIÓN 1.0 - MVP)
+' ==========================================================
+rectangle "Sistema de Huertos Medicinales en Ecuador - Versión 1.0" {
+
+    ' 1. MÓDULO USUARIOS Y ACCESOS (US)
+    package "Módulo de Usuarios y Solicitudes (US)" {
+        usecase "US-CU01: Iniciar sesión" as US_CU01
+        usecase "US-CU02: Cambiar contraseña" as US_CU02
+        usecase "US-CU03: Crear cuenta de usuario" as US_CU03
+        usecase "US-CU04: Solicitar crear comunidad\n(Formulario público)" as US_CU04 <<Publico>>
+        usecase "US-CU05: Revisar solicitud de\ncreación de comunidad" as US_CU05
+        usecase "US-CU06: Registrar comunidad" as US_CU06
+        usecase "US-CU07: Enviar respuesta por correo\n(Credenciales o rechazo)" as US_CU07
+
+        US_CU02 .> US_CU01 : <<extend>>\n(primer ingreso)
+        US_CU05 ..> US_CU07 : <<include>>
+        US_CU06 .> US_CU05 : <<extend>>\n(si es aprobada)
+        US_CU03 .> US_CU05 : <<extend>>\n(crea cuenta Responsable)
+    }
+
+    ' 2. MÓDULO COMUNIDADES Y MIEMBROS (CM)
+    package "Módulo Comunidades y Miembros (CM)" {
+        usecase "CM-CU01: Actualizar información\nde comunidad y contacto" as CM_CU01
+        usecase "CM-CU02: Consultar directorio e\ninformación de comunidades" as CM_CU02 <<Publico>>
+        usecase "CM-CU03: Definir talentos / insignias\nde la comunidad (ej. 50 abonos)" as CM_CU03
+        usecase "CM-CU04: Registrar miembro / voluntario\n(Nivel inicial: Aprendiz)" as CM_CU04
+        usecase "CM-CU05: Gestionar estado de miembro\n(Alta / Baja)" as CM_CU05
+        usecase "CM-CU06: Actualizar datos personales\nde miembro" as CM_CU06
+        usecase "CM-CU07: Consultar ficha interna\nde miembro" as CM_CU07
+        usecase "CM-CU08: Consultar perfil público de miembro\npor cédula (nivel, rango, insignias)" as CM_CU08 <<Publico>>
+    }
+
+    ' 3. MÓDULO CATÁLOGO DE PLANTAS (CP)
+    package "Módulo Catálogo de Plantas (CP)" {
+        usecase "CP-CU01: Consultar catálogo\nde plantas" as CP_CU01 <<Publico>>
+        usecase "CP-CU02: Buscar planta por nombre\n(común, científico o kichwa)" as CP_CU02 <<Publico>>
+        usecase "CP-CU03: Filtrar plantas por\naltitud y características" as CP_CU03 <<Publico>>
+        usecase "CP-CU04: Consultar ficha técnica\nde la planta" as CP_CU04 <<Publico>>
+        usecase "CP-CU05: Registrar planta\nen el catálogo" as CP_CU05
+        usecase "CP-CU06: Actualizar ficha\nde la planta" as CP_CU06
+        usecase "CP-CU07: Dar de baja planta" as CP_CU07
+        usecase "CP-CU08: Adjuntar fotografía\nde la planta" as CP_CU08
+
+        CP_CU01 <.. CP_CU02 : <<extend>>
+        CP_CU01 <.. CP_CU03 : <<extend>>
+        CP_CU01 <.. CP_CU04 : <<extend>>
+        CP_CU05 ..> CP_CU08 : <<include>>
+        CP_CU06 <.. CP_CU08 : <<extend>>
+    }
+
+    ' 4. MÓDULO BODEGA (BO)
+    package "Módulo Bodega de la Comunidad (BO)" {
+        usecase "BO-CU01: Registrar ingreso\nde material vegetal" as BO_CU01
+        usecase "BO-CU02: Consultar inventario\nde material vegetal" as BO_CU02
+        usecase "BO-CU03: Descontar material\nvegetal por siembra" as BO_CU03
+        usecase "BO-CU09: Dar de baja material vegetal\n(con causa de fracaso)" as BO_CU09
+    }
+
+    ' 5. MÓDULO HUERTO REAL Y ACTIVIDADES INTERNAS (HR)
+    package "Módulo Huerto Real y Actividades Internas (HR)" {
+        usecase "HR-CU01: Registrar siembra en subhuerto\n(con alerta de altitud)" as HR_CU01
+        usecase "HR-CU03: Completar datos operativos\ndel huerto (suelo, agua, abono)" as HR_CU03
+        usecase "HR-CU04: Configurar subhuertos\n(hasta 3 subtipos)" as HR_CU04
+        usecase "HR-CU07: Definir catálogo de actividades\ncotidianas de comunidad (sin aval MSP)" as HR_CU07
+        usecase "HR-CU08: Registrar actividad cotidiana\na miembro (puntos solo a miembro)" as HR_CU08
+
+        HR_CU03 <.. HR_CU04 : <<extend>>
+        HR_CU01 ..> BO_CU03 : <<include>>
+        CM_CU03 .> HR_CU07 : <<include>>\n(asocia meta de repeticiones)
+    }
+
+    ' 6. MÓDULO SABERES ANCESTRALES Y CALENDARIO LUNAR (SA)
+    package "Módulo Saberes Ancestrales y Calendario Lunar (SA)" {
+        usecase "SA-CU01: Consultar\ncalendario lunar" as SA_CU01 <<Publico>>
+        usecase "SA-CU04: Registrar actividad grande con\nevidencias y participantes (requiere MSP)" as SA_CU04
+        usecase "SA-CU05: Corregir y\nreenviar evidencias" as SA_CU05
+        usecase "SA-CU06: Verificar evidencias\nde actividad ancestral" as SA_CU06
+        usecase "SA-CU10: Consultar biblioteca\nde saberes ancestrales" as SA_CU10 <<Publico>>
+
+        SA_CU04 <.. SA_CU05 : <<extend>>\n(si es observada)
+    }
+
+    ' 7. MÓDULO GAMIFICACIÓN (GM)
+    package "Módulo de Gamificación (GM)" {
+        ' Flujo 1: Puntos por actividad validada por MSP (Comunidad + Huerto + Miembro)
+        usecase "GM-CU01: Otorgar puntos a Comunidad, Huerto\ny Miembros (por actividad MSP validada)" as GM_CU01
+        usecase "GM-CU03: Desbloquear insignia oficial\npor saber ancestral" as GM_CU03
+
+        ' Flujo 2: Puntos por actividad interna (Solo Miembro + Talentos de Comunidad)
+        usecase "GM-CU06: Otorgar puntos solo a Miembro y\nvalidar talento comunitario (ej. 50 veces)" as GM_CU06
+
+        ' Flujo común: Ascenso de nivel del miembro
+        usecase "GM-CU02: Ascender automáticamente nivel\nde miembro (Aprendiz -> Oficial -> Maestro)" as GM_CU02
+
+        ' Rankings Públicos (Comunidades, Voluntarios)
+        usecase "GM-CU04: Consultar ranking\nde comunidades" as GM_CU04 <<Publico>>
+        usecase "GM-CU05: Consultar ranking y medallero\nde voluntarios / miembros" as GM_CU05 <<Publico>>
+
+        ' Conexiones del Motor de Gamificación
+        GM_CU01 ..> GM_CU03 : <<extend>>\n(cumple hito ancestral)
+        GM_CU01 ..> GM_CU02 : <<extend>>\n(alcanza umbral pts)
+        GM_CU06 ..> GM_CU02 : <<extend>>\n(alcanza umbral pts)
+    }
+
+    ' CONEXIONES CLAVE ENTRE ACTIVIDADES Y GAMIFICACIÓN
+    SA_CU06 ..> GM_CU01 : <<extend>>\n[Evidencia Aprobada por MSP]
+    HR_CU08 ..> GM_CU06 : <<include>>\n[Acreditación Directa]
+}
+
+' ==========================================================
+' ASOCIACIONES DE ACTORES
+' ==========================================================
+
+' 1. VISITANTE / VOLUNTARIO (MODO LIBRE - CASOS VERDES)
+Visitante --> US_CU04
+Visitante --> CM_CU02
+Visitante --> CM_CU08
+Visitante --> CP_CU01
+Visitante --> SA_CU01
+Visitante --> SA_CU10
+Visitante --> GM_CU04
+Visitante --> GM_CU05
+
+' 2. RESPONSABLE DE COMUNIDAD (MODO LOGUEADO - CASOS AZULES)
+Responsable --> US_CU01
+Responsable --> US_CU02
+
+Responsable --> CM_CU01
+Responsable --> CM_CU03
+Responsable --> CM_CU04
+Responsable --> CM_CU05
+Responsable --> CM_CU06
+Responsable --> CM_CU07
+
+Responsable --> BO_CU01
+Responsable --> BO_CU02
+Responsable --> BO_CU09
+
+Responsable --> HR_CU01
+Responsable --> HR_CU03
+Responsable --> HR_CU04
+Responsable --> HR_CU07
+Responsable --> HR_CU08
+
+Responsable --> SA_CU04
+Responsable --> SA_CU05
+
+' 3. TÉCNICO MSP (MODO LOGUEADO - CASOS AZULES)
+TecnicoMSP --> US_CU01
+TecnicoMSP --> US_CU02
+TecnicoMSP --> US_CU05
+
+TecnicoMSP --> CM_CU07
+
+TecnicoMSP --> CP_CU05
+TecnicoMSP --> CP_CU06
+TecnicoMSP --> CP_CU07
+
+TecnicoMSP --> BO_CU02
+
+TecnicoMSP --> SA_CU06
+
+' 4. TÉCNICO SIS (MODO LOGUEADO - CASOS AZULES)
+TecnicoSIS --> US_CU01
+TecnicoSIS --> US_CU03
+
+' 5. MOTOR DEL SISTEMA (AUTOMÁTICO)
+Sistema --> US_CU07
+Sistema --> BO_CU03
+Sistema --> GM_CU01
+Sistema --> GM_CU06
+Sistema --> GM_CU02
+Sistema --> GM_CU03
+
+@enduml

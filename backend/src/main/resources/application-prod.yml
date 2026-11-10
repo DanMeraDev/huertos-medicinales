@@ -10,6 +10,8 @@ spring:
 app:
   cors:
     allowed-origins: ${CORS_ORIGINS}
+  jwt:
+    secreto: ${JWT_SECRET}
 
 springdoc:
   api-docs:

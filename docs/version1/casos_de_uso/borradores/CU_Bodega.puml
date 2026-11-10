@@ -1,0 +1,54 @@
+@startuml CU_Bodega
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Responsable de\nComunidad" as Responsable
+actor "Sistema" as Sistema
+actor "Técnico MSP" as Tecnico
+
+rectangle "Módulo Bodega de la Comunidad (Anderson)" {
+  package "Material vegetal\n(semillas, estacas, esquejes, plántulas)" {
+    usecase "BO-CU01: Registrar ingreso\nde material vegetal" as CU01
+    usecase "BO-CU02: Consultar inventario\nde material vegetal" as CU02
+    usecase "BO-CU03: Descontar material\nvegetal por siembra" as CU03
+    usecase "BO-CU09: Dar de baja\nmaterial vegetal" as CU09
+  }
+
+  package "Herramientas e implementos" {
+    usecase "BO-CU04: Registrar herramienta\no implemento (con categoría)" as CU04
+    usecase "BO-CU05: Consultar herramientas\ne implementos" as CU05
+    usecase "BO-CU06: Dar de baja herramienta\no implemento" as CU06
+  }
+
+  package "Abonos orgánicos y compost" {
+    usecase "BO-CU07: Registrar abono\no compost" as CU07
+    usecase "BO-CU08: Consultar abonos\ny compost" as CU08
+    usecase "BO-CU10: Dar de baja abono\no compost" as CU10
+  }
+}
+
+rectangle "Módulo Huerto Real (Sabina y Andrés)" {
+  usecase "Registrar siembra" as Siembra
+}
+
+' Responsable: registra y consulta
+Responsable --> CU01
+Responsable --> CU02
+Responsable --> CU04
+Responsable --> CU05
+Sistema --> CU03 : <<include>>
+Responsable --> CU06
+Responsable --> CU07
+Responsable --> CU08
+Responsable --> CU09
+Responsable --> CU10
+
+' Técnico MSP: solo consulta
+Tecnico --> CU02
+Tecnico --> CU05
+Tecnico --> CU08
+
+' Descuento automático al sembrar (opción A)
+Siembra ..> CU03 : <<include>>
+
+@enduml

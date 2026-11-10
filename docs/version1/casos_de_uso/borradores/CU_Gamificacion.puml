@@ -1,0 +1,46 @@
+@startuml Modulo_Gamificacion_General
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+' === ACTORES ===
+actor "Invitado / Público\n(Sin login)" as Publico
+actor "Responsable del Huerto" as RespHuerto
+actor "Técnico del MSP" as TecnicoMSP
+actor "Motor de Gamificación\n<<Sistema>>" as SysEngine
+
+rectangle "Sistema de Huertos Medicinales - Módulo de Gamificación" {
+
+    package "Procesamiento y Reconocimiento" {
+        usecase "GM-CU01: Otorgar puntos por validación\nde actividad comunitaria" as GM_CU01
+        usecase "GM-CU02: Ascender automáticamente\nnivel de voluntario" as GM_CU02
+        usecase "GM-CU03: Desbloquear insignias por saberes\nancestrales y constancia" as GM_CU03
+    }
+
+    package "Visualización y Competencia Sana" {
+        usecase "GM-CU04: Consultar ranking normalizado\nde huertos comunitarios" as GM_CU04
+        usecase "GM-CU05: Consultar progreso y medallero\ndel huerto y voluntarios" as GM_CU05
+    }
+
+    ' Relaciones de extensión automática
+    GM_CU01 ..> GM_CU02 : <<extend>>\n(si alcanza umbral de pts/fases)
+    GM_CU01 ..> GM_CU03 : <<extend>>\n(si cumple hito ancestral)
+}
+
+' === ASOCIACIONES ACTOR -> CASO DE USO ===
+
+' Flujo de validación y acreditación
+TecnicoMSP --> GM_CU01 : Valida evidencia (fotos/videos)
+SysEngine --> GM_CU01 : Calcula y acredita puntos (1h = 1pto)
+SysEngine --> GM_CU02 : Actualiza nivel del voluntario
+SysEngine --> GM_CU03 : Adjudica medalla a la vitrina
+
+' Flujo de consulta y visualización
+Publico --> GM_CU04
+RespHuerto --> GM_CU04
+TecnicoMSP --> GM_CU04
+
+Publico --> GM_CU05 : Vista pública motivacional
+RespHuerto --> GM_CU05 : Seguimiento interno del equipo
+
+@enduml

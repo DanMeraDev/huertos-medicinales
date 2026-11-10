@@ -1,0 +1,104 @@
+@startuml DiagramaCasosDeUso_General
+skinparam actorStyle stickman
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+skinparam defaultFontName "Segoe UI", "Helvetica", sans-serif
+skinparam defaultFontSize 12
+skinparam ArrowColor #1B4F72
+skinparam ArrowThickness 1.2
+
+skinparam actor {
+    BackgroundColor #D4E6F1
+    BorderColor #1B4F72
+    FontColor #0B172A
+    FontStyle bold
+}
+
+skinparam usecase {
+    BackgroundColor #EBF5FB
+    BorderColor #2980B9
+    FontColor #154360
+    FontSize 12
+}
+
+skinparam rectangle {
+    BackgroundColor #F8FBFE
+    BorderColor #5DADE2
+    FontColor #1B4F72
+    FontStyle bold
+}
+
+' ==========================================================
+' ACTORES
+' ==========================================================
+actor "Técnico MSP" as act_msp
+actor "Responsable Comunidad" as act_resp
+actor "Visitante / Voluntario" as act_vis
+actor "Administrador Técnico" as act_tec #FADBD8;line:922B21;text:641E16
+
+' ==========================================================
+' LÍMITE DEL SISTEMA
+' ==========================================================
+rectangle "Sistema de Gestión Comunitaria" {
+
+    usecase "Iniciar Sesión" as CU_Login
+    usecase "Cambiar Contraseña" as CU_Pass
+    usecase "Gestionar Cuentas" as CU_GestionCuentas
+    usecase "Crear Cuenta" as CU_CrearCuenta
+
+    usecase "Consultar Información de Responsables" as CU_ConsultarResp
+    usecase "Solicitar Cambio Responsable" as CU_SolCambioResp
+    usecase "Revisar Solicitud Cambio Responsables" as CU_RevCambioResp
+    usecase "Cambiar Responsable" as CU_CambiarResp
+
+    usecase "Solicitar Crear Comunidad" as CU_SolCrearCom
+    usecase "Revisar Solicitud Creación Comunidad" as CU_RevCrearCom
+    usecase "Registrar Comunidad" as CU_RegComunidad
+
+    usecase "Enviar Respuesta" as CU_EnviarResp
+
+    usecase "Consultar Comunidades" as CU_ConsComunidades
+    usecase "Consultar Catálogo de Plantas" as CU_ConsPlantas
+    usecase "Consultar Ranking de Comunidades" as CU_RankCom
+    usecase "Consultar Ranking de Voluntarios" as CU_RankVol
+    usecase "Ver Saber Ancestral" as CU_SaberAncestral
+
+    ' Relación de Primer Ingreso (Autenticación)
+    CU_Pass .> CU_Login : <<extend>>\n(primer ingreso)
+
+    ' Relaciones PUDS: Revisar Cambio de Responsable
+    CU_RevCambioResp .> CU_EnviarResp : <<include>>
+    CU_CambiarResp .> CU_RevCambioResp : <<extend>>\n(si es aceptada)
+    CU_CrearCuenta .> CU_CambiarResp : <<extend>>\n(si no tiene cuenta)
+
+    ' Relaciones PUDS: Revisar Creación de Comunidad
+    CU_RevCrearCom .> CU_EnviarResp : <<include>>
+    CU_CrearCuenta .> CU_RevCrearCom : <<extend>>\n(si es aceptada)
+    CU_RegComunidad .> CU_RevCrearCom : <<extend>>\n(si es aceptada)
+}
+
+' ==========================================================
+' ASOCIACIONES ACTOR -> CASO DE USO
+' ==========================================================
+act_msp -- CU_Login
+act_msp -- CU_Pass
+act_msp -- CU_ConsultarResp
+act_msp -- CU_RevCambioResp
+act_msp -- CU_RevCrearCom
+
+act_resp -- CU_Login
+act_resp -- CU_Pass
+act_resp -- CU_SolCrearCom
+act_resp -- CU_SolCambioResp
+
+act_tec -- CU_Login
+act_tec -- CU_GestionCuentas
+
+act_vis -- CU_ConsComunidades
+act_vis -- CU_ConsPlantas
+act_vis -- CU_RankCom
+act_vis -- CU_RankVol
+act_vis -- CU_SaberAncestral
+
+@enduml

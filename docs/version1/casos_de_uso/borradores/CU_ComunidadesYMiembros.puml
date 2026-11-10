@@ -1,0 +1,75 @@
+@startuml DiagramaCasosDeUso_ComunidadesYVoluntarios
+skinparam actorStyle stickman
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+skinparam defaultFontName "Segoe UI", "Helvetica", sans-serif
+skinparam defaultFontSize 12
+skinparam ArrowColor #1B4F72
+skinparam ArrowThickness 1.2
+
+skinparam actor {
+    BackgroundColor #D4E6F1
+    BorderColor #1B4F72
+    FontColor #0B172A
+    FontStyle bold
+}
+
+skinparam usecase {
+    BackgroundColor #EBF5FB
+    BorderColor #2980B9
+    FontColor #154360
+    FontSize 12
+}
+
+skinparam rectangle {
+    BackgroundColor #F8FBFE
+    BorderColor #5DADE2
+    FontColor #1B4F72
+    FontStyle bold
+}
+
+' ==========================================================
+' ACTORES
+' ==========================================================
+actor "Responsable Comunidad" as act_resp
+actor "Técnico MSP" as act_msp
+
+' ==========================================================
+' LÍMITE DEL SISTEMA: COMUNIDADES Y VOLUNTARIOS
+' ==========================================================
+rectangle "Módulo: Comunidades y Voluntarios" {
+
+    ' Operaciones sobre la Comunidad
+    usecase "Actualizar Información de Comunidad" as CU_ActInfoCom
+    usecase "Cambiar Información de Contacto " as CU_CambiarContacto
+    usecase "Consultar Ranking de Comunidades" as CU_RankCom
+    usecase "Definir Talentos Certificables" as CU_DefTalentos
+    usecase "Consultar Información de Comunidades" as CU_ConsInfoCom
+
+    ' Gestión de Voluntarios (Casos de uso atómicos de valor usuario)
+    usecase "Registrar Voluntario" as CU_RegVoluntario
+    usecase "Gestionar Estado de Voluntario\n(Dar de Alta / Baja)" as CU_EstadoVoluntario
+    usecase "Actualizar Datos Personales de Voluntario" as CU_ActDatosVoluntario
+    usecase "Consultar Ficha de Voluntario" as CU_ConsFichaVoluntario
+}
+
+' ==========================================================
+' ASOCIACIONES ACTOR -> CASO DE USO
+' ==========================================================
+
+' Responsable Comunidad
+act_resp -- CU_ActInfoCom
+act_resp -- CU_CambiarContacto
+act_resp -- CU_RankCom
+act_resp -- CU_DefTalentos
+act_resp -- CU_RegVoluntario
+act_resp -- CU_EstadoVoluntario
+act_resp -- CU_ActDatosVoluntario
+act_resp -- CU_ConsFichaVoluntario
+
+' Técnico MSP
+act_msp -- CU_ConsInfoCom
+act_msp -- CU_ConsFichaVoluntario
+
+@enduml
