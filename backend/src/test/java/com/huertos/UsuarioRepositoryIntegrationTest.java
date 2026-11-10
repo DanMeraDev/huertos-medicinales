@@ -55,4 +55,10 @@ class UsuarioRepositoryIntegrationTest {
         assertThat(usuarioRepository.existsByEmail("otra@correo.com")).isFalse();
         assertThat(usuarioRepository.existsByIdentificacion("0000000000")).isFalse();
     }
+
+    @Test
+    void detectaSiExisteAlgunUsuarioConUnRol() {
+        assertThat(usuarioRepository.existsByRol(Rol.RESPONSABLE_COMUNIDAD)).isTrue();
+        assertThat(usuarioRepository.existsByRol(Rol.TECNICO_SIS)).isFalse();
+    }
 }
