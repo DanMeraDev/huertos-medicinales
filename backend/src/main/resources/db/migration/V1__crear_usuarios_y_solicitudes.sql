@@ -1,0 +1,41 @@
+CREATE TABLE usuarios (
+    id                    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre_completo       VARCHAR(120) NOT NULL,
+    identificacion        VARCHAR(13)  NOT NULL,
+    genero                VARCHAR(20)  NOT NULL,
+    email                 VARCHAR(180) NOT NULL,
+    telefono              VARCHAR(20)  NULL,
+    contrasena            VARCHAR(255) NOT NULL,
+    requiere_cambio_clave BOOLEAN      NOT NULL DEFAULT TRUE,
+    rol                   VARCHAR(30)  NOT NULL,
+    activo                BOOLEAN      NOT NULL DEFAULT TRUE,
+    creado_en             DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_usuarios_identificacion UNIQUE (identificacion),
+    CONSTRAINT uk_usuarios_email UNIQUE (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE solicitudes_comunidad (
+    id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre_comunidad     VARCHAR(150)   NOT NULL,
+    tipo_organizacion    VARCHAR(30)    NOT NULL,
+    provincia            VARCHAR(100)   NOT NULL,
+    parroquia            VARCHAR(100)   NOT NULL,
+    direccion            VARCHAR(255)   NOT NULL,
+    latitud              DECIMAL(10, 7) NOT NULL,
+    longitud             DECIMAL(10, 7) NOT NULL,
+    altitud_msnm         INT            NOT NULL DEFAULT 2500,
+    diseno_principal     VARCHAR(30)    NOT NULL,
+    subtipos_solicitados VARCHAR(150)   NOT NULL,
+    foto_lugar           VARCHAR(500)   NULL,
+    cedula_solicitante   VARCHAR(13)    NOT NULL,
+    nombre_solicitante   VARCHAR(120)   NOT NULL,
+    correo_solicitante   VARCHAR(180)   NOT NULL,
+    celular_solicitante  VARCHAR(20)    NOT NULL,
+    genero_solicitante   VARCHAR(20)    NOT NULL DEFAULT 'OTRO',
+    estado               VARCHAR(20)    NOT NULL DEFAULT 'PENDIENTE',
+    motivo_rechazo       VARCHAR(500)   NULL,
+    revisado_por_id      BIGINT         NULL,
+    fecha_revision       DATETIME       NULL,
+    creado_en            DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_solicitudes_comunidad_revisor FOREIGN KEY (revisado_por_id) REFERENCES usuarios (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
