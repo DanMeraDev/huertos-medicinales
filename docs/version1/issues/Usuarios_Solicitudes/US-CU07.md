@@ -36,7 +36,7 @@ labels: ["caso-de-uso", "back", "imprescindible"]
    - **Caso de Rechazo:**
      - `Destinatario`: `correoSolicitante`.
      - `Asunto`: *"Notificación sobre tu solicitud de huerto medicinal - Ministerio de Salud Pública"*.
-     - `Cuerpo del correo`: Saludo respetuoso, referencia a la propuesta comunitaria recibida, detalle explícito del `motivoRechazo` redactado por el Técnico MSP, y recomendaciones constructivas para realizar una nueva postulación en el futuro.
+     - `Cuerpo del correo`: Saludo respetuoso, referencia a la propuesta comunitaria recibida, detalle explícito del `motivoRechazo` redactado por el Técnico MSP.
 3. El **Sistema** construye el mensaje MIME con codificación `UTF-8` y formato HTML estilizado con la identidad gráfica del proyecto.
 4. El **Sistema** entrega el mensaje al servidor de correo configurado (`JavaMailSender`).
 5. El **Sistema** registra en el log de auditoría el identificador del mensaje despachado, destinatario y tipo de notificación enviada.

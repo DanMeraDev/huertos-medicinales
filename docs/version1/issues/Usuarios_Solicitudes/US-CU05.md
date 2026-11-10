@@ -76,7 +76,12 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - **Paso 6.2:** El Sistema abre un diálogo (`Modal`) solicitando ingresar el motivo del rechazo mediante un área de texto obligatoria (`CampoTexto` multilínea / textarea).
   - **Paso 6.3:** Si el Técnico intenta enviar el motivo en blanco, el frontend bloquea el envío y alerta que el motivo es obligatorio (mínimo 20 caracteres).
   - **Paso 6.4:** El Técnico ingresa la justificación y pulsa **`"Confirmar Rechazo"`**.
-  - **Paso 6.5:** El backend procesa `POST /api/solicitudes-comunidad/{id}/rechazar` con el payload `{"motivoRechazo": "..."}`.
+  - **Paso 6.5:** El backend procesa `POST /api/solicitudes-comunidad/{id}/rechazar` con el payload:
+```json
+{
+  "motivoRechazo": "La ubicación indicada no cuenta con acceso seguro a fuente de agua para el riego comunitario según los lineamientos técnicos del MSP."
+}
+```
   - **Paso 6.6:** El Sistema actualiza el registro con `estado = 'RECHAZADA'`, guarda `motivo_rechazo`, despacha el correo informativo (`US-CU07`) y retorna HTTP `200 OK`.
 * **8a. Solicitud ya resuelta previamente (HTTP 409 Conflict):**
   - **Condición:** Si otro técnico ya aprobó o rechazó la misma solicitud mientras estaba abierta en pantalla (`estado != 'PENDIENTE'`).

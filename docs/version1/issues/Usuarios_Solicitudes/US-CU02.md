@@ -96,7 +96,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
     - `nuevaPassword`: `String`, obligatorio, mínimo 8 caracteres (`@NotBlank`, `@Size(min = 8)`).
     - `confirmarPassword`: `String`, obligatorio (`@NotBlank`).
   - **Respuesta Exitosa (HTTP 200 OK - `CambioClaveResponse`):**
-    - `mensaje`: `String` (ej. `"Contraseña actualizada exitosamente"`).
+    - `mensaje`: `String` (valor exacto: `"Contraseña actualizada exitosamente"`).
     - `requiereCambioClave`: `boolean` (valor `false`).
   - **Respuestas de Error:**
     - `400 Bad Request`: Formato inválido, longitud menor a 8 caracteres, o claves no coincidentes.
