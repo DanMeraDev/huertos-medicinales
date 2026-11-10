@@ -1,3 +1,5 @@
+-- El huerto se crea al aprobar la solicitud (US-CU06): nombre_huerto toma el nombre de la comunidad.
+-- El área no viene en la solicitud: el Responsable la completa en HR-CU03.
 CREATE TABLE huertos (
     id               BIGINT AUTO_INCREMENT PRIMARY KEY,
     comunidad_id     BIGINT         NOT NULL,
@@ -6,7 +8,7 @@ CREATE TABLE huertos (
     longitud         DECIMAL(10, 7) NOT NULL,
     altitud_msnm     INT            NOT NULL DEFAULT 2500,
     orientacion      VARCHAR(30)    NULL,
-    area_total_m2    DECIMAL(8, 2)  NOT NULL,
+    area_total_m2    DECIMAL(8, 2)  NULL,
     tipo_huerto      VARCHAR(20)    NOT NULL DEFAULT 'BASICO',
     diseno_principal VARCHAR(30)    NOT NULL,
     tipo_suelo       VARCHAR(30)    NULL,
@@ -22,6 +24,7 @@ CREATE TABLE huertos (
     CONSTRAINT ck_huertos_area CHECK (area_total_m2 > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Los subhuertos se crean en HR-CU04, no al aprobar la solicitud.
 -- Hasta 3 subhuertos por huerto: la regla se valida en el servicio (HR-CU04).
 CREATE TABLE subhuertos (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
