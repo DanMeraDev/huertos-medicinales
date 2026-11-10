@@ -33,3 +33,6 @@ springdoc:
 app:
   jwt:
     expiracion-minutos: ${JWT_EXPIRACION_MINUTOS:480}
+  admin:
+    email: ${ADMIN_EMAIL:}
+    contrasena: ${ADMIN_PASSWORD:}
