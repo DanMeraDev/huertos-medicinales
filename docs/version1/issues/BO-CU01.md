@@ -57,6 +57,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (formulario en una sola columna vertical para viewports desde 360px).
+  - Elementos táctiles optimizados (mínimo 44px de altura táctil en botones y campos, sin desbordamiento horizontal `overflow-x`).
+  - Escalado responsivo progresivo a tablets y pantallas de escritorio.
 - [x] **Rol que ve la pantalla:** `RESPONSABLE_COMUNIDAD`.
 - [x] **Visibilidad:** `Privada (Requiere autenticación JWT)`.
 - [x] **Feature (`frontend/src/features/bodega/`):**
@@ -90,4 +94,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/BodegaServiceImplTest.java`):** Verifica inserción correcta y rechazo cuando la planta no existe.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/BodegaControllerTest.java`):** Con `@WebMvcTest`, verifica `201 Created` con rol `RESPONSABLE_COMUNIDAD` y `403 Forbidden` sin autenticación.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/bodega/FormularioIngresoMaterial.test.tsx`):** Probando envío del formulario, validación de cantidad positiva y notificación.
+- [x] **Criterio de Aceptación Mobile First:** El formulario debe ser plenamente operable desde pantalla móvil en una sola columna vertical, con campos táctiles cómodos y sin desbordamiento horizontal.
 

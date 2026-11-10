@@ -58,6 +58,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (visualización de inventario mediante lista o tarjetas adaptables en pantalla pequeña desde 360px, o tabla con scroll horizontal encapsulado).
+  - Controles táctiles optimizados (filtros y botones con altura mínima de 44px).
+  - Escalado responsivo progresivo a tabla completa en tablets y pantallas de escritorio.
 - [x] **Rol que ve la pantalla:** `RESPONSABLE_COMUNIDAD` y `TECNICO_MSP`.
 - [x] **Visibilidad:** `Privada (Requiere autenticación JWT)`.
 - [x] **Feature (`frontend/src/features/bodega/`):**
@@ -90,4 +94,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/BodegaServiceImplTest.java`):** Comprueba retorno de lista filtrada por comunidad y validación de seguridad de comunidad.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/BodegaControllerTest.java`):** Verifica respuesta `200 OK` para `RESPONSABLE_COMUNIDAD` y `TECNICO_MSP`, y `401 Unauthorized` si no hay sesión.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/bodega/TablaInventarioBodega.test.tsx`):** Verifica renderizado de la tabla con items provistos por MSW y filtro dinámico por texto.
+- [x] **Criterio de Aceptación Mobile First:** El inventario debe visualizarse con claridad en vista móvil sin romper el layout ni generar scroll horizontal global en la ventana.
 

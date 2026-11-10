@@ -56,6 +56,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (modal responsivo tipo bottom-sheet o pantalla completa en móvil para facilitar el ingreso de datos con teclado virtual).
+  - Controles táctiles accesibles (altura mínima de 44px en selectores y botones de confirmación).
+  - Escalado responsivo centrado en escritorio.
 - [x] **Rol que ve la pantalla:** `RESPONSABLE_COMUNIDAD`.
 - [x] **Visibilidad:** `Privada (Requiere autenticación JWT)`.
 - [x] **Feature (`frontend/src/features/bodega/`):**
@@ -89,4 +93,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/BodegaServiceImplTest.java`):** Comprueba decremento exacto del stock y persistencia de la baja con causa de fracaso.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/BodegaControllerTest.java`):** Verifica respuesta `201 Created` al enviar payload válido y `400 Bad Request` ante datos erróneos.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/bodega/ModalBajaMaterial.test.tsx`):** Verifica apertura del modal, validaciones visuales de formulario y callback de éxito.
+- [x] **Criterio de Aceptación Mobile First:** El modal o diálogo debe ser totalmente operable en pantalla móvil sin solaparse con el teclado virtual ni cortar los botones de acción.
 
