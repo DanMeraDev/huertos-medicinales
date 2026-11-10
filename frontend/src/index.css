@@ -1,12 +1,104 @@
-:root {
-  font-family: system-ui, sans-serif;
-  color: #1d2a1f;
-  background: #f6f8f3;
+/* =========================================
+   1. RESET Y CONFIGURACIÓN BASE
+   ========================================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  /* Transición suave al cambiar entre modo claro y oscuro */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* =========================================
+   2. MODO CLARO (Light Theme por defecto)
+   ========================================= */
+:root {
+  /* 60% - Fondos y Superficies */
+  --bg-main: #F4F6F4;       /* Blanco Nube */
+  --bg-surface: #FFFFFF;    /* Blanco Puro para Tarjetas */
+  --bg-muted: #EAECEA;      
+
+  /* 30% - Textos y Estructura */
+  --text-primary: #2D302A;   
+  --text-secondary: #6A6E64; 
+  --text-inverse: #FFFFFF;   
+
+  /* Marca Principal (Verdes) */
+  --color-primary: #7BB342;       /* Verde Hoja (Visual/Iconos) */
+  --color-primary-action: #4C7A26; /* Verde Oliva (Botones) */
+  --color-primary-hover: #3D631E;  
+  --color-primary-light: #F0F7E6;  
+
+  /* Acento (Naranja Gamificación) */
+  --color-accent: #FF8A00; 
+  --color-accent-dark: #D96C00; 
+  --color-accent-light: #FFF4E6; 
+
+  /* Etiquetas de Plantas */
+  --tag-hot-bg: #FFF0E5;
+  --tag-hot-text: #C24F00;
+  --tag-cold-bg: #E8F4F8;
+  --tag-cold-text: #1A6E82;
+
+  /* Bordes y Sombras */
+  --border-color: #E6EAE6; 
+  --shadow-card: 0 6px 20px rgba(76, 122, 38, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-button: 0 4px 12px rgba(76, 122, 38, 0.25);
+  
+  /* Medidas estándar */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px; 
+}
+
+/* =========================================
+   3. MODO OSCURO (Dark Theme / Noche Lunar)
+   ========================================= */
+[data-theme="dark"] {
+  /* Fondos */
+  --bg-main: #121411;       
+  --bg-surface: #1E221D;    
+  --bg-muted: #2A2E27;      
+
+  /* Textos */
+  --text-primary: #ECEEE9;   
+  --text-secondary: #9DA396; 
+  --text-inverse: #121411;   
+
+  /* Marca */
+  --color-primary: #8DC653;  
+  --color-primary-action: #5E9630; 
+  --color-primary-hover: #74B33D;  
+  --color-primary-light: #1F2E17;  
+
+  /* Acento */
+  --color-accent: #FF9F2E; 
+  --color-accent-dark: #FFB86C; 
+  --color-accent-light: #33200C; 
+
+  /* Etiquetas */
+  --tag-hot-bg: #331D0B;
+  --tag-hot-text: #FFB380;
+  --tag-cold-bg: #122229;
+  --tag-cold-text: #7BD3EA;
+
+  /* Bordes y Sombras (En oscuro las sombras son más fuertes) */
+  --border-color: #31362F; 
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.4);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================================
+   4. CLASES UTILITARIAS BÁSICAS
+   ========================================= */
 
 .inicio {
   max-width: 40rem;
