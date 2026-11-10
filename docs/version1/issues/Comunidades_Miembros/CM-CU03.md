@@ -17,7 +17,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 1. `El usuario ha iniciado sesión con el rol RESPONSABLE_COMUNIDAD y cuenta con un token JWT válido (Authorization: Bearer <token>).`
 2. `El usuario lidera una comunidad activa vinculada a su responsable_id en la tabla comunidades.`
 3. `La comunidad cuenta con al menos una actividad registrada y activa en catalogo_actividades_comunidad (HR-CU07).`
-4. `La tabla talentos_comunidad en MariaDB tiene configurado el valor por defecto 'insignia-semilla' en la columna icono_codigo según las migraciones reales del backend.`
+4. `Las tablas talentos_comunidad y catalogo_actividades_comunidad vienen en una migración Flyway posterior (confirmar con Daniel cuál: V5–V7; NO crear la migración por cuenta propia).`
 5. `El endpoint POST /api/comunidades/mi-comunidad/talentos se encuentra protegido exigiendo rol RESPONSABLE_COMUNIDAD en SecurityConfig.java.`
 
 ### Postcondiciones
@@ -154,7 +154,9 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Emplea la tabla `talentos_comunidad` del esquema MariaDB en las migraciones reales del backend (`db/migration/` V1 a V4 con tipos `VARCHAR` y `DATETIME` estándar):
+  - Las tablas requeridas para este caso de uso (`talentos_comunidad` y `catalogo_actividades_comunidad`) NO forman parte de las migraciones V1 a V4; vienen en una migración Flyway posterior (confirmar con Daniel cuál: V5–V7).
+  - *(ADVERTENCIA PARA EL AGENTE DE IA: NO crear ningún archivo de migración SQL por cuenta propia; asumir que la estructura ya existe en la base de datos al momento de programar)*.
+  - Estructura prevista de `talentos_comunidad`:
     - `id` BIGINT AUTO_INCREMENT PRIMARY KEY
     - `comunidad_id` BIGINT NOT NULL (FK -> `comunidades(id)`)
     - `actividad_comunidad_id` BIGINT NOT NULL (FK -> `catalogo_actividades_comunidad(id)`)
@@ -164,7 +166,6 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
     - `icono_codigo` VARCHAR(60) NOT NULL DEFAULT 'insignia-semilla'
     - `activo` BOOLEAN NOT NULL DEFAULT TRUE
     - `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-  - *(NO generar nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.TalentoComunidad.java`):**
   - Mapeo de la entidad con campos `nombreInsignia`, `descripcion`, `metaRepeticiones`, `iconoCodigo`, `activo`, relaciones `@ManyToOne` con `Comunidad` y `ActividadComunidad`.
 - [x] **Repository (`com.huertos.repository.TalentoComunidadRepository.java`):**

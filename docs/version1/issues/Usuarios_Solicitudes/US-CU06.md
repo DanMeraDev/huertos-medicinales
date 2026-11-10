@@ -21,7 +21,7 @@ labels: ["caso-de-uso", "back", "db", "imprescindible"]
 
 ### Postcondiciones
 1. `Se inserta un registro en la tabla comunidades asignando responsable_id, puntos_comunidad = 0, activa = true y fecha actual con Clock.`
-2. `Se inserta un registro vinculado en la tabla huertos con nombre_huerto derivado de la comunidad, coordenadas, altitud, diseno_principal, area_total_m2 = null (vacía, pendiente de definición en HR-CU03), tipo_huerto = 'BASICO', puntos_huerto = 0 y activo = true.`
+2. `Se inserta un registro vinculado en la tabla huertos con nombre_huerto idéntico al nombre de la comunidad tal cual (comunidad.getNombre()), coordenadas, altitud, diseno_principal, area_total_m2 = null (vacía, pendiente de definición en HR-CU03), tipo_huerto = 'BASICO', puntos_huerto = 0 y activo = true.`
 3. `El sistema NO crea subhuertos en este flujo; la creación y delimitación de subhuertos se posterga para el caso de uso independiente HR-CU04.`
 4. `Se retorna la entidad persistida ComunidadResponse al servicio orquestador de US-CU05.`
 
@@ -38,7 +38,7 @@ labels: ["caso-de-uso", "back", "db", "imprescindible"]
    - Identificador del responsable: `usuarioResponsable.getId()`.
 3. El **Sistema** persiste la nueva entidad `Comunidad` en la base de datos con `puntos_comunidad = 0` y `activa = true`.
 4. El **Sistema** instancia y persiste la entidad base `Huerto` asociada a la comunidad:
-   - `nombre_huerto`: `"Huerto " + comunidad.getNombre()`.
+   - `nombre_huerto`: `comunidad.getNombre()` (el nombre de la comunidad tal cual, sin anteponer prefijos).
    - `latitud` y `longitud`: coordenadas validadas de la solicitud.
    - `altitud_msnm`: altitud registrada en la solicitud.
    - `diseno_principal`: valor del enum `DisenoPrincipal` seleccionado en la solicitud (`EN_TIERRA`, `VERTICAL`, `COLGANTE`, `EN_PISO`).
@@ -89,7 +89,7 @@ labels: ["caso-de-uso", "back", "db", "imprescindible"]
 - [x] **Migración Flyway:**
   - Utiliza las tablas `comunidades` y `huertos` definidas en las migraciones reales del backend (`db/migration/` V1 a V4 con tipos `VARCHAR` y `DATETIME` estándar):
     - `comunidades`: `id`, `nombre`, `tipo_organizacion` (VARCHAR(30)), `provincia`, `parroquia`, `direccion`, `telefono_contacto`, `correo_contacto`, `responsable_id`, `puntos_comunidad`, `activa`, `creado_en`.
-    - `huertos`: `id`, `comunidad_id`, `nombre_huerto`, `latitud`, `longitud`, `altitud_msnm`, `orientacion`, `area_total_m2` (DECIMAL(8,2) NULL, queda vacía hasta HR-CU03), `tipo_huerto` (VARCHAR(30)), `diseno_principal` (VARCHAR(30)), `puntos_huerto`, `activo`, `creado_en`.
+    - `huertos`: `id`, `comunidad_id`, `nombre_huerto`, `latitud`, `longitud`, `altitud_msnm`, `orientacion`, `area_total_m2` (DECIMAL(8,2) NULL, queda vacía hasta HR-CU03), `tipo_huerto` (VARCHAR(20) NOT NULL DEFAULT 'BASICO'), `diseno_principal` (VARCHAR(30)), `puntos_huerto`, `activo`, `creado_en`.
   - *(NO generar nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.Comunidad.java`, `com.huertos.model.Huerto.java`):**
   - Mapeo de entidades con `@Entity` y relación `@OneToOne` entre `Comunidad` y `Huerto`.
@@ -103,10 +103,11 @@ labels: ["caso-de-uso", "back", "db", "imprescindible"]
 
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/ComunidadServiceImplTest.java`):**
   - Verificación de inserción atómica de `Comunidad` y `Huerto` base ante una solicitud válida aprobada con Mockito.
+  - Comprobación de que `huerto.getNombreHuerto()` sea idéntico a `comunidad.getNombre()` tal cual.
   - Comprobación de que `huerto.getAreaTotalM2()` sea `null` (área vacía pendiente de configuración en HR-CU03).
   - Comprobación de que NO se invoque ni creen registros en `subhuertos`.
   - Comprobación de que `puntosComunidad` y `puntosHuerto` inicien en `0`.
   - Comprobación de excepción `ConflictoException` si el nombre de la comunidad colisiona con un registro existente.
   - Validación del rollback automático cuando la persistencia del huerto falla.
 - [x] **Prueba de Integración con Base de Datos (`backend/src/test/java/com/huertos/service/ComunidadIntegrationTest.java`):**
-  - Con `@SpringBootTest` y MariaDB (Testcontainers), validando que las llaves foráneas `fk_comunidad_responsable` y `fk_huerto_comunidad` se inserten íntegramente sin requerir registros de subhuertos.
+  - Con `@SpringBootTest` y MariaDB (Testcontainers), validando que las llaves foráneas `fk_comunidades_responsable` y `fk_huertos_comunidad` se inserten íntegramente sin requerir registros de subhuertos.

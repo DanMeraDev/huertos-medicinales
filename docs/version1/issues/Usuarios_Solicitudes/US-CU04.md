@@ -215,9 +215,9 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
     - `genero_solicitante` VARCHAR(20) NOT NULL DEFAULT 'OTRO' (mapeado en JPA a enum `Genero`)
     - `correo_solicitante` VARCHAR(180) NOT NULL
     - `celular_solicitante` VARCHAR(20) NOT NULL
-    - `consentimiento_datos` BOOLEAN NOT NULL DEFAULT TRUE
+    - `consentimiento_datos` BOOLEAN NOT NULL
     - `consentimiento_en` DATETIME NOT NULL
-    - `estado` VARCHAR(30) NOT NULL DEFAULT 'PENDIENTE' (mapeado en JPA a enum `EstadoSolicitud`)
+    - `estado` VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE' (mapeado en JPA a enum `EstadoSolicitud`)
     - `motivo_rechazo` VARCHAR(500) NULL
     - `revisado_por_id` BIGINT NULL (FK -> `usuarios(id)`)
     - `fecha_revision` DATETIME NULL
