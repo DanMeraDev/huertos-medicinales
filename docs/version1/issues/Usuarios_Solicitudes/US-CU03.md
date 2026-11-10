@@ -15,7 +15,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### Precondiciones
 1. `El usuario ha iniciado sesión con el rol TECNICO_SIS y dispone de un token JWT válido (Authorization: Bearer <token>).`
-2. `La base de datos cuenta con la tabla usuarios consolidada según V1__init_schema.sql y adaptada en V2__esquema_completo_v1.sql.`
+2. `La base de datos cuenta con la tabla usuarios consolidada según las migraciones reales del backend.`
 3. `El endpoint POST /api/usuarios se encuentra protegido en SecurityConfig.java exigiendo rol TECNICO_SIS.`
 
 ### Postcondiciones
@@ -27,22 +27,27 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ## 2. Escenario Básico (Flujo Principal Actor - Sistema)
 
-1. El **Técnico SIS** navega al módulo de usuarios accediendo a la ruta `"/usuarios/nuevo"` desde el menú lateral en `Layout.tsx`.
-2. El **Sistema** renderiza la vista de creación de usuario acompañada por el componente `<KintiGuia variante="dia"/>` con el mensaje:
-   *"El trabajo en comunidad florece cuando sumamos voluntades con confianza y compañerismo. Registra a los guardianes de nuestros saberes"*.
-3. El **Sistema** presenta el formulario estructurado con los componentes reutilizables solicitando:
-   - `Nombre Completo` (`nombreCompleto`: `CampoTexto`, texto obligatorio, solo letras y espacios, máx. 120 caracteres).
-   - `Cédula de Identidad` (`identificacion`: `CampoTexto`, numérico de 10 dígitos obligatorio, validado con algoritmo de cédula ecuatoriana).
-   - `Fecha de Nacimiento` (`fechaNacimiento`: `CampoTexto`, tipo `date`, obligatorio, edad mínima requerida: 18 años).
-   - `Género` (`genero`: `Selector`, opciones: `MASCULINO`, `FEMENINO`, obligatorio).
-   - `Correo Electrónico` (`correo`: `CampoTexto`, tipo `email`, obligatorio, validación de formato RFC).
-   - `Teléfono Celular` (`telefono`: `CampoTexto`, tipo `tel`, obligatorio, 10 dígitos iniciando en `09`).
-   - `Rol del Sistema` (`rol`: `Selector`, opciones: `TECNICO_SIS`, `TECNICO_MSP`, `RESPONSABLE_COMUNIDAD`, obligatorio).
-   - `Contraseña Temporal` (`password`: `CampoTexto`, tipo `password`, obligatorio, mínimo 12 caracteres, al menos 1 mayúscula, 1 minúscula y 1 número).
-   - Botón de envío **`"Crear Usuario"`** (`Boton`, variante `primary`).
-4. El **Técnico SIS** diligencia los campos y pulsa **`"Crear Usuario"`**.
-5. El **Sistema** (frontend) valida en tiempo real que la contraseña cumpla los criterios de seguridad, que el solicitante tenga al menos 18 años calculados respecto a la fecha actual y que la cédula sea válida.
-6. El **Sistema** deshabilita el botón, muestra indicador de carga y envía la petición `POST /api/usuarios` con el payload:
+1. El **Técnico SIS** navega al módulo de usuarios accediendo a la ruta `"/usuarios/nuevo"` desde la barra de navegación en `Layout.tsx`.
+2. El **Sistema** renderiza la vista de creación de usuario diseñada bajo el paradigma **Mobile First para Progressive Web App (PWA)**, optimizada para interactuar cómodamente desde dispositivos móviles de campo o estaciones de trabajo usando las variables de diseño de `frontend/src/index.css`:
+   - **Contenedor Responsivo:** La vista se monta dentro de un contenedor principal (`CrearUsuarioPage.tsx`) que en dispositivos móviles utiliza `width: 100%` con padding de `var(--espacio-4)`. En tabletas y escritorio (`@media (min-width: 640px)`), se centra con `max-width: var(--ancho-lectura)` o `var(--ancho-maximo)` manteniendo un margen equilibrado (`padding: var(--espacio-8) var(--espacio-4)`).
+   - **Tarjeta y Cabecera Andina:** Formulario montado en una tarjeta con fondo `var(--color-superficie)`, borde `var(--borde-ancho) solid var(--color-borde)`, radio `var(--radio-lg)` y sombra `var(--sombra-md)`. Incluye el componente `<KintiGuia variante="dia"/>` adaptado a pantallas táctiles:
+     - Frase motivacional: *"El trabajo en comunidad florece cuando sumamos voluntades con confianza y compañerismo. Registra a los guardianes de nuestros saberes"*, con tipografía `var(--texto-base)`, color `var(--color-primario)` y peso `var(--peso-medio)`.
+   - **Estructura de Formulario Adaptativo:**
+     - En dispositivos móviles (< 640px), los campos se presentan en una sola columna vertical (`display: grid; grid-template-columns: 1fr; gap: var(--espacio-4)`), facilitando el desplazamiento vertical y la interacción táctil.
+     - En pantallas de escritorio (`@media (min-width: 640px)`), se organiza en grilla de dos columnas (`grid-template-columns: repeat(2, 1fr); gap: var(--espacio-4)`), con los campos extensos ocupando las dos columnas (`grid-column: 1 / -1`).
+   - **Campos del Formulario con Controles Accesibles (altura mínima 44px):**
+     - `Nombre Completo` (`nombreCompleto`: `CampoTexto`, texto obligatorio, solo letras y espacios, máx. 120 caracteres, ancho completo `grid-column: 1 / -1`).
+     - `Cédula de Identidad` (`identificacion`: `CampoTexto`, numérico de 10 dígitos obligatorio, validado con algoritmo de cédula ecuatoriana).
+     - `Fecha de Nacimiento` (`fechaNacimiento`: `CampoTexto`, tipo `date`, obligatorio, edad mínima requerida: 18 años).
+     - `Género` (`genero`: `Selector`, opciones: `FEMENINO`, `MASCULINO`, `OTRO`, obligatorio).
+     - `Correo Electrónico` (`correo`: `CampoTexto`, tipo `email`, obligatorio, validación RFC).
+     - `Teléfono Celular` (`telefono`: `CampoTexto`, tipo `tel`, obligatorio, 10 dígitos iniciando en `09`).
+     - `Rol del Sistema` (`rol`: `Selector`, opciones: `TECNICO_SIS`, `TECNICO_MSP`, `RESPONSABLE_COMUNIDAD`, obligatorio).
+     - `Contraseña Temporal` (`password`: `CampoTexto`, tipo `password`, obligatorio, mínimo 12 caracteres, al menos 1 mayúscula, 1 minúscula y 1 número, ancho completo `grid-column: 1 / -1`).
+     - Botón de envío **`"Crear Usuario"`** (`Boton`, variante `primary`): En móvil abarca el ancho total (`width: 100%`) con padding `var(--espacio-3)`; en pantallas de escritorio se alinea hacia la derecha ocupando `grid-column: 1 / -1` con `width: auto; min-width: 12rem`.
+3. El **Técnico SIS** diligencia los campos y pulsa o toca **`"Crear Usuario"`**.
+4. El **Sistema** (frontend) valida en tiempo real que la contraseña cumpla los criterios de seguridad, que el solicitante tenga al menos 18 años calculados respecto a la fecha actual y que la cédula sea válida.
+5. El **Sistema** deshabilita el botón, muestra indicador de carga y envía la petición `POST /api/usuarios` con el payload:
 ```json
 {
   "nombreCompleto": "Rosa Elena Chimbolema",
@@ -55,8 +60,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   "password": "PasswordSegura2026*"
 }
 ```
-7. El **Sistema** (backend) valida la autorización JWT (`TECNICO_SIS`), verifica unicidad de `identificacion` y `correo`, valida con `Clock` del sistema que la edad sea `>= 18 años`, cifra la contraseña con `PasswordEncoder.encode(...)`, asigna `activo = true`, `requiereCambioClave = true` y almacena el registro en la tabla `usuarios`.
-8. El **Sistema** retorna el código HTTP `201 Created` con el DTO `UsuarioDetalleResponse`:
+6. El **Sistema** (backend) valida la autorización JWT (`TECNICO_SIS`), verifica unicidad de `identificacion` y `correo`, valida con `Clock` del sistema que la edad sea `>= 18 años`, cifra la contraseña con `PasswordEncoder.encode(...)`, asigna `activo = true`, `requiereCambioClave = true` y almacena el registro en la tabla `usuarios`.
+7. El **Sistema** retorna el código HTTP `201 Created` con el DTO `UsuarioDetalleResponse`:
 ```json
 {
   "id": 5,
@@ -72,7 +77,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   "creadoEn": "2026-11-10T10:30:00"
 }
 ```
-9. El **Sistema** limpia el formulario, muestra una alerta de confirmación con el componente `Notificacion` y actualiza la lista de usuarios.
+8. El **Sistema** limpia el formulario, muestra una alerta de confirmación con el componente `Notificacion` y actualiza la lista de usuarios.
 
 ---
 
@@ -100,7 +105,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
 - [x] **Feature (`frontend/src/features/usuarios/`):**
-  - `CrearUsuarioForm.tsx`: Componente con formulario reactivo, validaciones en línea para cédula ecuatoriana, requisitos de contraseña dinámica, selector de género y rol, presencia visual de `<KintiGuia variante="dia"/>` y notificaciones de éxito/error.
+  - `CrearUsuarioForm.tsx`: Componente con arquitectura Mobile First para PWA. Contiene formulario responsivo (1 columna en móvil, 2 en desktop), validaciones en tiempo real para cédula ecuatoriana y mayoría de edad (+18), requisitos de contraseña dinámica, selectores accesibles para género (`FEMENINO`, `MASCULINO`, `OTRO`) y rol (`TECNICO_SIS`, `TECNICO_MSP`, `RESPONSABLE_COMUNIDAD`), presencia visual de `<KintiGuia variante="dia"/>` y notificaciones con `Notificacion` empleando variables de `index.css`.
   - `usuariosApi.ts`: Exporta `crearUsuario(datos: CrearUsuarioRequest): Promise<UsuarioDetalleResponse>` consumiendo `POST /api/usuarios` mediante el cliente `client.ts`.
 - [x] **Página / Ruteo (`frontend/src/pages/`):**
   - `CrearUsuarioPage.tsx`: Vista envuelta en `Layout.tsx` registrada en `App.tsx` bajo la ruta protegida `/usuarios/nuevo`.
@@ -113,7 +118,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
     - `nombreCompleto`: `String`, obligatorio (`@NotBlank`, `@Size(max = 120)`).
     - `identificacion`: `String`, obligatorio, 10 dígitos numéricos (`@NotBlank`, `@Pattern(regexp = "^[0-9]{10}$")`).
     - `fechaNacimiento`: `LocalDate`, obligatorio (`@NotNull`, `@Past`).
-    - `genero`: `Genero`, obligatorio (`@NotNull`, valores: `MASCULINO`, `FEMENINO`).
+    - `genero`: `Genero`, obligatorio (`@NotNull`, valores: `FEMENINO`, `MASCULINO`, `OTRO`).
     - `correo`: `String`, obligatorio, formato email (`@NotBlank`, `@Email`, `@Size(max = 180)`).
     - `telefono`: `String`, obligatorio (`@NotBlank`, `@Pattern(regexp = "^09[0-9]{8}$")`).
     - `password`: `String`, obligatorio (`@NotBlank`, `@Size(min = 12)`, patrón seguro con mayúscula, minúscula y número).
@@ -148,44 +153,42 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Utiliza la tabla `usuarios` definida en `V1__init_schema.sql` y ampliada en `V2__esquema_completo_v1.sql`:
+  - Utiliza la tabla `usuarios` del esquema MariaDB en las migraciones reales del backend (`db/migration/` V1 a V4 con columnas tipo `VARCHAR` y `DATETIME` estándar):
     - `id` BIGINT AUTO_INCREMENT PRIMARY KEY
     - `nombre_completo` VARCHAR(120) NOT NULL
     - `identificacion` VARCHAR(13) NOT NULL UNIQUE
     - `fecha_nacimiento` DATE NOT NULL
-    - `genero` VARCHAR(20) NOT NULL
+    - `genero` VARCHAR(20) NOT NULL (mapeado en JPA como `EnumType.STRING` con valores: `'FEMENINO'`, `'MASCULINO'`, `'OTRO'`)
     - `correo` VARCHAR(180) NOT NULL UNIQUE
     - `telefono` VARCHAR(20) NULL
     - `password_hash` VARCHAR(255) NOT NULL
-    - `rol` ENUM('TECNICO_SIS', 'TECNICO_MSP', 'RESPONSABLE_COMUNIDAD') NOT NULL
-    - `requiere_cambio_clave` BOOLEAN NOT NULL DEFAULT TRUE
+    - `rol` VARCHAR(30) NOT NULL (mapeado en JPA como `EnumType.STRING` con valores: `'TECNICO_SIS'`, `'TECNICO_MSP'`, `'RESPONSABLE_COMUNIDAD'`)
     - `activo` BOOLEAN NOT NULL DEFAULT TRUE
-    - `creado_en` DATETIME(6) NOT NULL
+    - `requiere_cambio_clave` BOOLEAN NOT NULL DEFAULT TRUE
+    - `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   - *(NO crear nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.Usuario.java`, `com.huertos.model.Rol.java`, `com.huertos.model.Genero.java`):**
-  - Mapeo de la entidad `Usuario` con anotaciones `@Entity`, `@Table(name = "usuarios")`, y enums asociados.
+  - Mapeo de la entidad `Usuario` con enums `Rol` y `Genero` anotados con `@Enumerated(EnumType.STRING)`.
 - [x] **Repository (`com.huertos.repository.UsuarioRepository.java`):**
-  - Métodos `boolean existsByIdentificacion(String identificacion);`
-  - Métodos `boolean existsByCorreo(String correo);`
-  - Métodos `Optional<Usuario> findByIdentificacion(String identificacion);`
+  - `Optional<Usuario> findByIdentificacion(String identificacion);`
+  - `Optional<Usuario> findByCorreo(String correo);`
+  - `boolean existsByIdentificacion(String identificacion);`
+  - `boolean existsByCorreo(String correo);`
 
 ---
 
 ## 5. Criterios de Aceptación y Pruebas Requeridas (CI/CD)
 
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/UsuarioServiceImplTest.java`):**
-  - Creación exitosa: verifica persistencia con BCrypt, `requiereCambioClave = true`, `activo = true` y validación de mayoría de edad con `Clock.fixed(...)`.
-  - Excepción por cédula duplicada: lanza `ConflictoException`.
-  - Excepción por correo duplicado: lanza `ConflictoException`.
-  - Excepción por menor de 18 años: lanza `ReglaNegocioException`.
-  - Excepción por contraseña insegura: lanza `ReglaNegocioException`.
+  - Registro exitoso: comprueba guardado de usuario, cifrado de contraseña con BCrypt, asignación de `activo = true` y `requiereCambioClave = true` con `Clock.fixed(...)`.
+  - Validación de menor de edad: lanza `ReglaNegocioException` si la persona tiene menos de 18 años.
+  - Validación de unicidad: lanza `ConflictoException` si la identificación o el correo ya están registrados.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/UsuarioControllerTest.java`):**
   - Con `@WebMvcTest(UsuarioController.class)` y `@WithMockUser(roles = "TECNICO_SIS")`:
-    - Respuesta HTTP `201 Created` ante payload válido.
-    - Respuesta HTTP `400 Bad Request` cuando faltan campos o el formato de correo/teléfono es inválido.
-    - Respuesta HTTP `409 Conflict` ante duplicidad de datos únicos.
-  - Con `@WithMockUser(roles = "RESPONSABLE_COMUNIDAD")` o sin autenticación: retorna HTTP `403 Forbidden` / `401 Unauthorized`.
+    - `POST /api/usuarios` con datos válidos retorna HTTP `201 Created`.
+    - Petición con datos incompletos o género inválido retorna HTTP `400 Bad Request`.
+  - Petición con rol `TECNICO_MSP` o `RESPONSABLE_COMUNIDAD` retorna HTTP `403 Forbidden`.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/usuarios/CrearUsuarioForm.test.tsx`):**
-  - Renderizado de todos los controles de entrada y visualización de `<KintiGuia/>`.
-  - Validación dinámica en cliente de contraseña débil y bloqueo del botón de envío.
-  - Simulación de respuesta exitosa con MSW (`handlers.ts`), verificación del llamado a la API, notificación de éxito y limpieza de campos.
+  - Renderizado responsivo de campos (1 columna en vista móvil), selectores de género (incluyendo `OTRO`) y rol, y presencia visual de `<KintiGuia/>`.
+  - Validación en cliente bloqueando el envío si la cédula es inválida o el usuario es menor de 18 años.
+  - Envío exitoso con MSW (`handlers.ts`), limpieza de campos y visualización de mensaje de éxito en `Notificacion`.

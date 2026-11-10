@@ -28,13 +28,18 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 2. Escenario Básico (Flujo Principal Actor - Sistema)
 
 1. El **Actor** ingresa a la ruta pública `"/login"` desde el encabezado o menú de navegación en `Layout.tsx`.
-2. El **Sistema** renderiza la vista de inicio de sesión con identidad andina y diseño minimalista:
-   - Acompañamiento visual superior con `<KintiGuia variante="celebracion"/>` mostrando el saludo: *"¡Alli shamushka! Qué alegría verte de nuevo por nuestros huertos medicinales"*.
-   - Formulario de autenticación estructurado con los componentes reutilizables:
-     - `Correo Electrónico` (`correo`: componente `CampoTexto`, tipo `email`, obligatorio).
-     - `Contraseña` (`password`: componente `CampoTexto`, tipo `password`, obligatorio).
-     - Botón de envío **`"Iniciar Sesión"`** (componente `Boton`, variante `primary`).
-3. El **Actor** completa su correo, su contraseña y hace clic en **`"Iniciar Sesión"`**.
+2. El **Sistema** renderiza la vista de inicio de sesión diseñada bajo el paradigma **Mobile First para Progressive Web App (PWA)**, garantizando adaptabilidad fluida desde dispositivos móviles pequeños (320px) hasta pantallas de escritorio amplias mediante las variables de diseño de `frontend/src/index.css`:
+   - **Estructura y Contenedor Responsivo:** La vista se monta dentro de un contenedor principal (`LoginPage.tsx`) que en dispositivos móviles utiliza `width: 100%` con padding lateral de `var(--espacio-4)`. En pantallas de tablet y escritorio (`@media (min-width: 640px)`), se centra vertical y horizontalmente limitando el ancho máximo a `var(--ancho-lectura)` (40rem) con márgenes automáticos (`margin: 0 auto; padding: var(--espacio-12) var(--espacio-4)`).
+   - **Tarjeta de Autenticación:** Se presenta en una tarjeta con fondo `var(--color-superficie)`, borde de `var(--borde-ancho) solid var(--color-borde)`, radio de curvatura `var(--radio-lg)` y elevación suave `var(--sombra-md)`, ofreciendo aislamiento visual y contraste sobre el fondo general `var(--color-fondo)`.
+   - **Cabecera y Acompañamiento Andino:** Integración superior responsiva con el componente `<KintiGuia variante="celebracion"/>`, optimizado para no saturar la pantalla móvil:
+     - Avatar e ilustración escalables que reducen sus dimensiones en pantallas estrechas sin perder nitidez.
+     - Saludo motivacional: *"¡Alli shamushka! Qué alegría verte de nuevo por nuestros huertos medicinales"*, tipografiado con `font-size: var(--texto-lg)` en móvil y `var(--texto-xl)` en pantallas mayores, color `var(--color-primario)` y peso `var(--peso-seminegrita)`.
+   - **Formulario Responsivo:** Dispuesto en un flujo vertical limpio (`display: flex; flex-direction: column; gap: var(--espacio-4)`):
+     - `Correo Electrónico` (`correo`: componente `CampoTexto`, tipo `email`, obligatorio). Control con altura mínima táctil accesible de 44px, tipografía `var(--texto-base)`, relleno `var(--espacio-2) var(--espacio-3)`, borde `var(--borde-ancho) solid var(--color-borde)` y radio `var(--radio-md)`. Al foco activa `border-color: var(--color-primario)` y outline accesible.
+     - `Contraseña` (`password`: componente `CampoTexto`, tipo `password`, obligatorio). Cumple con las mismas proporciones táctiles y estilos del campo de correo.
+     - Botón de envío **`"Iniciar Sesión"`** (componente `Boton`, variante `primary`): En resoluciones móviles se proyecta al ancho completo (`width: 100%`) con padding de `var(--espacio-3) var(--espacio-4)` para facilitar la pulsación con una sola mano, mientras que en pantallas de escritorio mantiene coherencia visual adaptada al formulario. Emplea fondo `var(--color-primario)`, texto `var(--color-texto-inverso)` y transición suave hacia `var(--color-primario-interaccion)`.
+     - Área de alertas y feedback mediante el componente `Notificacion`, ubicado de forma flotante o en cabecera del formulario sin provocar saltos bruscos de maquetación (layout shift).
+3. El **Actor** completa su correo, su contraseña y hace clic o toca en **`"Iniciar Sesión"`**.
 4. El **Sistema** deshabilita el botón mostrando estado de carga y emite la petición `POST /api/publico/auth/login` con el payload:
 ```json
 {
@@ -79,10 +84,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
 - [x] **Feature (`frontend/src/features/auth/`):**
-  - `LoginForm.tsx`: Componente que incluye `<KintiGuia variante="celebracion"/>` en la cabecera, dos componentes `CampoTexto` controlados para correo y contraseña, un `Boton` con estado `disabled` durante el envío, y feedback visual mediante `Notificacion`.
+  - `LoginForm.tsx`: Componente con enfoque Mobile First para PWA. Incluye `<KintiGuia variante="celebracion"/>` en la cabecera, dos componentes `CampoTexto` controlados para correo y contraseña con áreas táctiles adaptadas, un `Boton` de ancho completo en móvil (`width: 100%`) con estado `disabled` durante el envío, y feedback visual mediante `Notificacion` utilizando variables de `index.css`.
   - `authApi.ts`: Implementa `iniciarSesion(credenciales: LoginRequest): Promise<LoginResponse>` consumiendo `POST /api/publico/auth/login` mediante la instancia base `client` de `frontend/src/api/client.ts`.
 - [x] **Página / Ruteo (`frontend/src/pages/`):**
-  - `LoginPage.tsx`: Vista centrada con maquetación limpia que envuelve a `LoginForm.tsx`.
+  - `LoginPage.tsx`: Vista centrada responsiva (`max-width: var(--ancho-lectura)`) con maquetación limpia que envuelve a `LoginForm.tsx`.
   - Registro de la ruta pública `/login` en `App.tsx` accesible sin token previo.
 
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
@@ -115,19 +120,22 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Emplea la tabla `usuarios` consolidada en `V1__init_schema.sql` y ampliada en `V2__esquema_completo_v1.sql`:
+  - Emplea la tabla `usuarios` del esquema MariaDB consolidada en las migraciones reales del backend (`db/migration/` V1 a V4 con tipos `VARCHAR` y `DATETIME` estándar):
     - `id` BIGINT AUTO_INCREMENT PRIMARY KEY
     - `nombre_completo` VARCHAR(120) NOT NULL
+    - `identificacion` VARCHAR(13) NOT NULL UNIQUE
+    - `fecha_nacimiento` DATE NOT NULL
+    - `genero` VARCHAR(20) NOT NULL
     - `correo` VARCHAR(180) NOT NULL UNIQUE
     - `telefono` VARCHAR(20) NULL
     - `password_hash` VARCHAR(255) NOT NULL
     - `requiere_cambio_clave` BOOLEAN NOT NULL DEFAULT TRUE
-    - `rol` ENUM('TECNICO_SIS', 'TECNICO_MSP', 'RESPONSABLE_COMUNIDAD') NOT NULL
+    - `rol` VARCHAR(30) NOT NULL (mapeado en JPA como `EnumType.STRING` con valores: `'TECNICO_SIS'`, `'TECNICO_MSP'`, `'RESPONSABLE_COMUNIDAD'`)
     - `activo` BOOLEAN NOT NULL DEFAULT TRUE
-    - `creado_en` DATETIME(6) NOT NULL
+    - `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   - *(NO crear nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.Usuario.java` y `com.huertos.model.Rol.java`):**
-  - Mapeo de la clase `Usuario` con los atributos `requiereCambioClave`, `passwordHash` y el enum `Rol`.
+  - Mapeo de la clase `Usuario` con los atributos `requiereCambioClave`, `passwordHash` y el enum `Rol` (`@Enumerated(EnumType.STRING)`).
 - [x] **Repository (`com.huertos.repository.UsuarioRepository.java`):**
   - Método de consulta `Optional<Usuario> findByCorreo(String correo);`.
 
@@ -143,6 +151,6 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Con `@WebMvcTest(AuthController.class)`, validando respuesta HTTP `200 OK` en petición pública sin token previo.
   - Validación de respuesta HTTP `400 Bad Request` ante campos vacíos o estructura de correo inválida.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/auth/LoginForm.test.tsx`):**
-  - Con Vitest y React Testing Library, verificando el renderizado de los componentes `CampoTexto`, el botón y la presencia visual de `<KintiGuia/>`.
+  - Con Vitest y React Testing Library, verificando el renderizado responsivo de los componentes `CampoTexto`, el botón a ancho completo y la presencia visual de `<KintiGuia/>`.
   - Simulación de respuesta exitosa con MSW (`handlers.ts`), asegurando la persistencia del token en `localStorage` y la redirección.
   - Simulación de error HTTP 401 mostrando el mensaje descriptivo en el componente `Notificacion`.

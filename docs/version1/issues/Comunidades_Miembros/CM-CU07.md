@@ -21,14 +21,14 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### Postcondiciones
 1. `El sistema no modifica el estado de la base de datos (operación de solo lectura).`
-2. `El frontend despliega el diálogo emergente (Modal) con la ficha integral del voluntario, avatar ilustrado y el mensaje motivacional correspondiente de Kinti.`
+2. `El frontend despliega el diálogo emergente responsivo (Modal) con la ficha integral del voluntario, avatar ilustrado y el mensaje motivacional correspondiente de Kinti.`
 
 ---
 
 ## 2. Escenario Básico (Flujo Principal Actor - Sistema)
 
 1. El **Responsable de Comunidad** visualiza la tabla de voluntarios en la vista general `"/comunidad/miembros"`.
-2. En la fila del voluntario deseado, el **Responsable de Comunidad** pulsa el botón **`"Ver ficha completa"`** (componente `Boton`, variante `secondary` o de enlace).
+2. En la fila del voluntario deseado, el **Responsable de Comunidad** pulsa el botón **`"Ver ficha completa"`** (componente `Boton`, variante `secondary` o de enlace, con altura táctil accesible de 44px).
 3. El **Sistema** emite la solicitud `GET /api/comunidades/mi-comunidad/miembros/{miembroId}`.
 4. El **Sistema** (backend) extrae el `responsableId`, verifica la pertenencia del miembro a la comunidad del usuario, consulta los datos personales en `miembros`, los datos de vinculación en `comunidad_miembros`, calcula la edad con `Clock` y responde con código HTTP `200 OK` y el DTO `FichaInternaMiembroResponse`:
 ```json
@@ -52,22 +52,29 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   "motivoBaja": null
 }
 ```
-5. El **Sistema** (frontend) despliega una ventana emergente (`Modal`):
-   - **Identidad y Avatar:** Avatar gráfico andino predeterminado acompañado por el nombre completo y badge de nivel (`Insignia`).
-   - **Mensaje Contextual de Kinti:** El componente `<KintiGuia/>` evalúa el `nivel` y muestra la frase correspondiente:
-     - **APRENDIZ:** `<KintiGuia variante="dia"/>` *"¡Recién inicia su siembra en el camino de las plantas medicinales! Acompañemos sus primeros pasos con paciencia y sabiduría ancestral"*.
-     - **OFICIAL:** `<KintiGuia variante="celebracion"/>` *"¡Ha demostrado constancia en las labores del huerto! Su compromiso florece y ya guía a los más jóvenes con su ejemplo y dedicación"*.
-     - **MAESTRO:** `<KintiGuia variante="celebracion"/>` *"¡Un verdadero guardián de los saberes ancestrales! Su conocimiento y entrega son medicina viva para toda la comunidad"*.
-   - **Ficha de Datos Detallada (Modo Solo Lectura):**
-     - Cédula de Identidad: `1710034065`
-     - Género: `FEMENINO`
-     - Teléfono celular: `0998877665`
-     - Fecha de Nacimiento: `25/03/2010` (Edad: `16 años`)
-     - Fecha de ingreso a la comunidad: `10/11/2026`
-     - Estado en la comunidad: `Activo`
-     - Puntos acumulados: `45 puntos`
-   - **Acción:** Botón **`"Cerrar"`** (`Boton`, variante `secondary`) sin permitir ninguna acción de edición desde esta vista.
-6. El **Responsable de Comunidad** revisa la información y pulsa **`"Cerrar"`**.
+5. El **Sistema** (frontend) despliega una ventana emergente (`Modal`), diseñada bajo el paradigma **Mobile First para Progressive Web App (PWA)** y adaptada a las variables de diseño de `frontend/src/index.css`:
+   - **Comportamiento Móvil:** Ocupa `width: calc(100% - var(--espacio-4))`, con `max-height: 90vh`, fondo `var(--color-superficie)`, bordes redondeados `var(--radio-lg)`, padding `var(--espacio-4)` y scroll vertical interno suave (`overflow-y: auto`). En pantallas de escritorio (`@media (min-width: 640px)`) escala a `max-width: var(--ancho-lectura)` con padding `var(--espacio-6)`.
+   - **Identidad y Avatar Andino:**
+     - En dispositivos móviles se alinean verticalmente en el centro; en pantallas de escritorio se distribuyen horizontalmente:
+       - Avatar gráfico andino estilizado con borde circular y fondo `var(--color-superficie-alt)`.
+       - Nombre completo en `font-size: var(--texto-xl)`, peso `var(--peso-seminegrita)` y color `var(--color-primario)`.
+       - Rango de nivel con el componente `Insignia` destacando el rango (`APRENDIZ`, `OFICIAL` o `MAESTRO`).
+   - **Mensaje Contextual Dinámico de Kinti:**
+     - Bloque motivacional con fondo `var(--color-superficie-alt)`, radio `var(--radio-md)`, padding `var(--espacio-3)` y margen vertical `var(--espacio-4)`:
+       - **APRENDIZ:** `<KintiGuia variante="dia"/>` *"¡Recién inicia su siembra en el camino de las plantas medicinales! Acompañemos sus primeros pasos con paciencia y sabiduría ancestral"*.
+       - **OFICIAL:** `<KintiGuia variante="celebracion"/>` *"¡Ha demostrado constancia en las labores del huerto! Su compromiso florece y ya guía a los más jóvenes con su ejemplo y dedicación"*.
+       - **MAESTRO:** `<KintiGuia variante="celebracion"/>` *"¡Un verdadero guardián de los saberes ancestrales! Su conocimiento y entrega son medicina viva para toda la comunidad"*.
+   - **Ficha de Datos en Modo Solo Lectura:**
+     - En dispositivos móviles se estructura en una lista vertical de definición (`display: flex; flex-direction: column; gap: var(--espacio-3)`); en escritorio se organiza en grilla de dos columnas (`grid-template-columns: repeat(2, 1fr)`):
+       - Cédula de Identidad: `1710034065`
+       - Género: `FEMENINO`
+       - Teléfono celular: `0998877665`
+       - Fecha de Nacimiento: `25/03/2010` (Edad: `16 años`)
+       - Fecha de ingreso a la comunidad: `10/11/2026`
+       - Estado en la comunidad: `Activo`
+       - Puntos acumulados: `45 puntos`
+   - **Acción Táctil:** Botón **`"Cerrar"`** (`Boton`, variante `secondary`): En dispositivos móviles ocupa el ancho completo (`width: 100%`) con padding táctil amplio `var(--espacio-3)` facilitando el cierre con el pulgar; en escritorio se alinea a la derecha.
+6. El **Responsable de Comunidad** revisa la información y pulsa o toca **`"Cerrar"`**.
 7. El **Sistema** cierra el modal devolviendo el foco a la tabla principal.
 
 ---
@@ -90,7 +97,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
 - [x] **Feature (`frontend/src/features/miembros/`):**
-  - `FichaMiembroModal.tsx`: Modal estilizado con avatar genérico andino, visualizador de campos en solo lectura, badge de nivel (`Insignia`), y renderizado reactivo del mensaje de `<KintiGuia/>` condicionado al enum `nivel`.
+  - `FichaMiembroModal.tsx`: Modal responsivo adaptado para PWA con avatar genérico andino, visualizador de campos en solo lectura estructurado con variables de `index.css`, badge de nivel (`Insignia`), y renderizado reactivo del mensaje de `<KintiGuia/>` condicionado al enum `nivel`.
   - `miembrosApi.ts`: Función `obtenerFichaMiembro(miembroId: number): Promise<FichaInternaMiembroResponse>` consumiendo `GET /api/comunidades/mi-comunidad/miembros/{miembroId}` mediante `client.ts`.
 - [x] **Página / Ruteo (`frontend/src/pages/`):**
   - Integrado dentro de `MiembrosComunidadPage.tsx` (`/comunidad/miembros`).
@@ -131,10 +138,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Consume las tablas `miembros`, `comunidades` y `comunidad_miembros` de `V2__esquema_completo_v1.sql`.
+  - Consume las tablas `miembros`, `comunidades` y `comunidad_miembros` del esquema MariaDB en las migraciones reales del backend (`db/migration/` V1 a V4 con tipos `VARCHAR` y `DATETIME` estándar).
   - *(NO generar nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.Miembro.java`, `com.huertos.model.ComunidadMiembro.java`):**
-  - Lectura de entidades y sus relaciones.
+  - Lectura de entidades y sus relaciones con JPA.
 - [x] **Repository (`com.huertos.repository.ComunidadMiembroRepository.java`):**
   - `Optional<ComunidadMiembro> findByComunidadIdAndMiembroId(Long comunidadId, Long miembroId);`
 
@@ -150,6 +157,6 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
     - `GET /api/comunidades/mi-comunidad/miembros/{miembroId}` retorna HTTP `200 OK`.
     - Petición con ID ajeno retorna HTTP `404 Not Found`.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/miembros/FichaMiembroModal.test.tsx`):**
-  - Renderizado del avatar genérico y verificación de que ningún campo sea editable.
+  - Renderizado responsivo del avatar genérico y verificación de que ningún campo sea editable.
   - Validación de que el mensaje de `<KintiGuia/>` cambie dinámicamente según el nivel (`APRENDIZ`, `OFICIAL`, `MAESTRO`).
   - Cierre del modal al pulsar el botón correspondiente.

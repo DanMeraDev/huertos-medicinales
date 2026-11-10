@@ -31,25 +31,33 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 2. Escenario Básico (Flujo Principal Actor - Sistema)
 
 1. El **Responsable de Comunidad** ingresa a la vista general de miembros en `"/comunidad/miembros"` desde `Layout.tsx`.
-2. El **Sistema** renderiza la cabecera con `<KintiGuia variante="dia"/>` con el mensaje:
-   *"La unión hace la fuerza: estos son los miembros y guardianes que hacen que nuestro huerto florezca día a día"*.
-3. El **Sistema** despliega la tabla de voluntarios de la comunidad con sus columnas informativas (Cédula, Nombre Completo, Género, Teléfono, Nivel, Estado de Membresía) y la columna de acciones.
-4. En la fila del voluntario que presenta `activo_en_comunidad == true`, el **Responsable de Comunidad** pulsa el botón **`"Dar de baja"`** (componente `Boton`, variante `danger` / outline).
-5. El **Sistema** despliega un diálogo de confirmación (`Modal`):
-   - **Título:** *"Confirmar baja de voluntario en la comunidad"*
-   - **Mensaje:** *"¿Estás seguro de suspender la participación de este voluntario en esta comunidad? Podrás reactivar su estado en cualquier momento."*
-   - **Campo Opcional:** `Motivo de la baja` (`CampoTexto`, máx. 255 caracteres).
-   - **Acciones:** Botón **`"Cancelar"`** y Botón **`"Confirmar Baja"`** (`Boton`).
-6. El **Responsable de Comunidad** ingresa el motivo (ej. *"Cambio temporal de domicilio"*) y pulsa **`"Confirmar Baja"`**.
-7. El **Sistema** deshabilita el modal mostrando indicador de carga y emite la petición `PATCH /api/comunidades/mi-comunidad/miembros/{miembroId}/estado` con el payload:
+2. El **Sistema** renderiza la vista diseñada bajo el enfoque **Mobile First para Progressive Web App (PWA)**, estructurada con las variables de diseño de `frontend/src/index.css`:
+   - **Contenedor Responsivo:** La página utiliza `width: 100%` con padding lateral de `var(--espacio-4)` en dispositivos móviles, extendiéndose hasta `var(--ancho-maximo)` en computadoras de escritorio con espaciado de `padding: var(--espacio-8) var(--espacio-6)`.
+   - **Cabecera Motivacional:** Banner con fondo `var(--color-superficie)`, borde de `var(--borde-ancho) solid var(--color-borde)`, radio `var(--radio-lg)`, padding `var(--espacio-4)` y sombra `var(--sombra-sm)`, integrando el componente `<KintiGuia variante="dia"/>`:
+     - Mensaje: *"La unión hace la fuerza: estos son los miembros y guardianes que hacen que nuestro huerto florezca día a día"*, con tipografía `var(--texto-base)`, color `var(--color-primario)` y peso `var(--peso-medio)`.
+   - **Tabla Responsiva de Voluntarios:**
+     - La tabla (`Tabla`) se aloja en un contenedor con desplazamiento horizontal suave (`overflow-x: auto; -webkit-overflow-scrolling: touch;`), permitiendo lectura fluida en móviles sin desbordar el viewport:
+       - Columnas: `Cédula`, `Nombre Completo`, `Género`, `Teléfono`, `Nivel`, `Estado` (badge con `Insignia`) y `Acciones`.
+       - En la columna de acciones, los botones ofrecen áreas táctiles mínimas de 44px de altura con padding `var(--espacio-2) var(--espacio-3)` para interacción cómoda con el pulgar.
+3. En la fila del voluntario que presenta `activo_en_comunidad == true`, el **Responsable de Comunidad** pulsa el botón **`"Dar de baja"`** (componente `Boton`, variante `danger` / outline).
+4. El **Sistema** despliega un diálogo de confirmación (`Modal`), diseñado responsivamente para PWA:
+   - **Comportamiento Móvil:** Ocupa `width: calc(100% - var(--espacio-4))`, con `max-height: 90vh`, fondo `var(--color-superficie)`, radio `var(--radio-lg)` y padding `var(--espacio-4)`.
+   - **Título:** *"Confirmar baja de voluntario en la comunidad"* en tipografía `var(--texto-xl)`, color `var(--color-error)` y peso `var(--peso-seminegrita)`.
+   - **Mensaje:** *"¿Estás seguro de suspender la participación de este voluntario en esta comunidad? Podrás reactivar su estado en cualquier momento."*, en `var(--texto-sm)` y color `var(--color-texto)`.
+   - **Campo Opcional:** `Motivo de la baja` (`CampoTexto`, multilínea con controles accesibles, padding `var(--espacio-2) var(--espacio-3)`, radio `var(--radio-md)`, máx. 255 caracteres).
+   - **Acciones Táctiles Responsivas:** En pantallas móviles, los botones se apilan verticalmente a ancho completo (`display: flex; flex-direction: column-reverse; gap: var(--espacio-2); width: 100%`); en escritorio se orientan en fila (`flex-direction: row; justify-content: flex-end; gap: var(--espacio-3)`):
+     - Botón **`"Cancelar"`** (variante `secondary`).
+     - Botón **`"Confirmar Baja"`** (`Boton`, variante `danger`, fondo `var(--color-error)`, texto blanco).
+5. El **Responsable de Comunidad** ingresa el motivo (ej. *"Cambio temporal de domicilio"*) y pulsa o toca **`"Confirmar Baja"`**.
+6. El **Sistema** deshabilita el modal mostrando indicador de carga y emite la petición `PATCH /api/comunidades/mi-comunidad/miembros/{miembroId}/estado` con el payload:
 ```json
 {
   "activo": false,
   "motivoBaja": "Cambio temporal de domicilio"
 }
 ```
-8. El **Sistema** (backend) extrae el `responsableId`, recupera la `comunidadId`, localiza la relación en `comunidad_miembros`, asigna `activo_en_comunidad = false`, registra `fecha_baja` con `Clock.systemUTC()` y persiste `motivo_baja`.
-9. El **Sistema** retorna el código HTTP `200 OK` con el DTO `MiembroEstadoResponse`:
+7. El **Sistema** (backend) extrae el `responsableId`, recupera la `comunidadId`, localiza la relación en `comunidad_miembros`, asigna `activo_en_comunidad = false`, registra `fecha_baja` con `Clock.systemUTC()` y persiste `motivo_baja`.
+8. El **Sistema** retorna el código HTTP `200 OK` con el DTO `MiembroEstadoResponse`:
 ```json
 {
   "miembroId": 15,
@@ -61,7 +69,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   "mensaje": "Estado de participación actualizado exitosamente"
 }
 ```
-10. El **Sistema** (frontend) cierra el modal, muestra una notificación con el componente `Notificacion` y actualiza la fila de la tabla mostrando el badge inactivo y alternando el botón hacia **`"Dar de alta"`**.
+9. El **Sistema** (frontend) cierra el modal, muestra una notificación con el componente `Notificacion` y actualiza la fila de la tabla mostrando el badge inactivo y alternando el botón hacia **`"Dar de alta"`**.
 
 ---
 
@@ -70,7 +78,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 * **4a. Flujo alternativo: Dar de alta a un miembro inactivo:**
   - **Paso 4.1:** Si el miembro tiene `activo_en_comunidad == false`, en la tabla se visualiza el botón **`"Dar de alta"`** (`Boton`, variante `primary`).
   - **Paso 4.2:** El responsable pulsa **`"Dar de alta"`**.
-  - **Paso 4.3:** El Sistema abre el `Modal` de confirmación: *"¿Deseas reactivar la membresía de este voluntario en la comunidad?"*.
+  - **Paso 4.3:** El Sistema abre el `Modal` de confirmación responsivo: *"¿Deseas reactivar la membresía de este voluntario en la comunidad?"*.
   - **Paso 4.4:** Al confirmar, se emite `PATCH /api/comunidades/mi-comunidad/miembros/{miembroId}/estado` con `{"activo": true, "motivoBaja": null}`.
   - **Paso 4.5:** El backend actualiza `activo_en_comunidad = true`, limpia `fecha_baja` y `motivo_baja`, y retorna HTTP `200 OK`.
 * **8a. Miembro no pertenece a la comunidad del responsable (HTTP 404 Not Found):**
@@ -89,8 +97,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
 - [x] **Feature (`frontend/src/features/miembros/`):**
-  - `TablaMiembrosComunidad.tsx`: Grilla unificada que contiene las acciones de estado ("Dar de baja" / "Dar de alta"), botón de edición (`CM-CU06`) y botón de ficha completa (`CM-CU07`).
-  - `ConfirmarBajaModal.tsx`: Diálogo emergente para capturar opcionalmente el motivo y confirmar la suspensión.
+  - `TablaMiembrosComunidad.tsx`: Grilla responsiva adaptada para PWA con contenedor de scroll táctil para móvil. Contiene las acciones de estado ("Dar de baja" / "Dar de alta"), botón de edición (`CM-CU06`) y botón de ficha completa (`CM-CU07`).
+  - `ConfirmarBajaModal.tsx`: Diálogo emergente responsivo para capturar opcionalmente el motivo y confirmar la suspensión.
   - `miembrosApi.ts`: Función `cambiarEstadoMiembro(miembroId: number, datos: CambiarEstadoMiembroRequest): Promise<MiembroEstadoResponse>` consumiendo `PATCH /api/comunidades/mi-comunidad/miembros/{miembroId}/estado` con `client.ts`.
 - [x] **Página / Ruteo (`frontend/src/pages/`):**
   - `MiembrosComunidadPage.tsx`: Vista registrada en `App.tsx` bajo la ruta `/comunidad/miembros`.
@@ -127,8 +135,14 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Emplea la tabla `comunidad_miembros` de `V2__esquema_completo_v1.sql`:
-    - `comunidad_id`, `miembro_id`, `activo_en_comunidad`, `fecha_ingreso`, `fecha_baja`, `motivo_baja`.
+  - Emplea la tabla `comunidad_miembros` del esquema MariaDB en las migraciones reales del backend (`db/migration/` V1 a V4 con tipos `VARCHAR` y `DATETIME` estándar):
+    - `id` BIGINT AUTO_INCREMENT PRIMARY KEY
+    - `comunidad_id` BIGINT NOT NULL (FK -> `comunidades(id)`)
+    - `miembro_id` BIGINT NOT NULL (FK -> `miembros(id)`)
+    - `activo_en_comunidad` BOOLEAN NOT NULL DEFAULT TRUE
+    - `fecha_ingreso` DATE NOT NULL
+    - `fecha_baja` DATE NULL
+    - `motivo_baja` VARCHAR(255) NULL
   - *(NO generar nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.ComunidadMiembro.java`):**
   - Mapeo de columnas `activoEnComunidad`, `fechaBaja`, `motivoBaja`.
@@ -149,6 +163,6 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
     - `PATCH /api/comunidades/mi-comunidad/miembros/{miembroId}/estado` retorna HTTP `200 OK`.
     - Petición a miembro ajeno retorna HTTP `404 Not Found`.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/miembros/TablaMiembrosComunidad.test.tsx`):**
-  - Renderizado del botón dinámico ("Dar de baja" / "Dar de alta") según el estado del miembro.
-  - Apertura del modal de confirmación y captura opcional de motivo.
+  - Renderizado responsivo del botón dinámico ("Dar de baja" / "Dar de alta") según el estado del miembro.
+  - Apertura del modal responsivo de confirmación y captura opcional de motivo.
   - Simulación de respuesta con MSW y actualización del badge visual.

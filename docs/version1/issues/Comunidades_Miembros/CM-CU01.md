@@ -47,14 +47,20 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   "creadoEn": "2026-11-10T11:00:00"
 }
 ```
-4. El **Sistema** renderiza una interfaz sobria, profesional y vívida (con colores tierra y maíz de identidad andina, sin presencia del personaje Kinti), organizada en:
-   - **Datos Informativos (Solo lectura):** Tipo de organización, provincia, parroquia, dirección geográfica, nombre del responsable asignado y puntos acumulados de la comunidad.
-   - **Campos Editables:**
-     - `Nombre de la Comunidad` (`nombre`: componente `CampoTexto`, obligatorio, solo letras y espacios, máx. 150 caracteres).
-     - `Teléfono Celular de Contacto` (`telefonoContacto`: componente `CampoTexto`, tipo `tel`, obligatorio, exactamente 10 dígitos iniciando en `09`).
-     - `Correo Electrónico de Contacto` (`correoContacto`: componente `CampoTexto`, tipo `email`, obligatorio, máx. 180 caracteres).
-   - Botón de acción **`"Guardar Cambios"`** (componente `Boton`, variante `primary`).
-5. El **Responsable de Comunidad** modifica los campos deseados (ej. actualiza el teléfono y el correo) y pulsa **`"Guardar Cambios"`**.
+4. El **Sistema** renderiza la interfaz diseñada bajo el enfoque **Mobile First para Progressive Web App (PWA)**, optimizada para facilitar la gestión del responsable desde su smartphone en el huerto o desde una computadora de escritorio, aplicando las variables de diseño de `frontend/src/index.css`:
+   - **Contenedor Responsivo:** La vista se monta dentro de un contenedor principal (`MiComunidadPage.tsx`) que en dispositivos móviles utiliza `width: 100%` con padding de `var(--espacio-4)`. En pantallas de escritorio (`@media (min-width: 640px)`), se centra horizontalmente con `max-width: var(--ancho-lectura)` o `var(--ancho-maximo)` y márgenes automáticos (`padding: var(--espacio-8) var(--espacio-4)`).
+   - **Tarjeta de Gestión Comunitaria:** Estructurada en una tarjeta con fondo `var(--color-superficie)`, borde de `var(--borde-ancho) solid var(--color-borde)`, curvatura `var(--radio-lg)` y sombra suave `var(--sombra-sm)`.
+   - **Bloque Informativo de Solo Lectura:**
+     - Enmarcado en un panel destacado con fondo `var(--color-superficie-alt)`, radio `var(--radio-md)`, padding `var(--espacio-4)` y margen inferior `var(--espacio-5)`.
+     - Presenta los datos institucionales no modificables con tipografía `var(--texto-sm)` y color `var(--color-texto-secundario)`: Tipo de organización, Provincia, Parroquia, Dirección física, Nombre del responsable asignado y Puntos acumulados de la comunidad.
+   - **Bloque de Campos Editables (Formulario Responsivo):**
+     - Dispuesto en una columna vertical continua (`display: flex; flex-direction: column; gap: var(--espacio-4)`):
+       - `Nombre de la Comunidad` (`nombre`: componente `CampoTexto`, obligatorio, solo letras y espacios, máx. 150 caracteres). Altura mínima táctil de 44px, etiqueta en `var(--texto-sm)` con `var(--peso-medio)`, control con padding `var(--espacio-2) var(--espacio-3)` y radio `var(--radio-md)`.
+       - `Teléfono Celular de Contacto` (`telefonoContacto`: componente `CampoTexto`, tipo `tel`, obligatorio, exactamente 10 dígitos iniciando en `09`).
+       - `Correo Electrónico de Contacto` (`correoContacto`: componente `CampoTexto`, tipo `email`, obligatorio, máx. 180 caracteres).
+   - **Área de Acción Táctil:**
+     - Botón de acción **`"Guardar Cambios"`** (componente `Boton`, variante `primary`): En resoluciones móviles se expande al ancho completo (`width: 100%`) con padding `var(--espacio-3) var(--espacio-4)` para facilitar el toque con una sola mano; en escritorios se alinea a la derecha con ancho automático (`width: auto; min-width: 12rem`).
+5. El **Responsable de Comunidad** modifica los campos deseados (ej. actualiza el teléfono y el correo) y pulsa o toca **`"Guardar Cambios"`**.
 6. El **Sistema** valida en el cliente que el nombre no contenga caracteres numéricos ni símbolos, que el teléfono cumpla con el formato `09XXXXXXXX` y que el correo tenga estructura válida.
 7. El **Sistema** deshabilita el botón mostrando estado de carga y emite la solicitud `PUT /api/comunidades/mi-comunidad` con el payload:
 ```json
@@ -91,7 +97,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
 - [x] **Feature (`frontend/src/features/comunidades/`):**
-  - `MiComunidadForm.tsx`: Componente con diseño limpio y vívido en tarjeta estilizada con bordes andinos (sin la mascota Kinti). Presenta bloques informativos no editables y campos controlados con `CampoTexto` para nombre, teléfono y correo, botón `Boton` con estado `disabled` en envío, y retroalimentación mediante `Notificacion`.
+  - `MiComunidadForm.tsx`: Componente con diseño Mobile First para PWA. Presenta bloques informativos no editables y campos controlados con `CampoTexto` para nombre, teléfono y correo, botón `Boton` a ancho completo en móvil con estado `disabled` en envío, y retroalimentación mediante `Notificacion` con variables de `index.css`.
   - `comunidadesApi.ts`: Exporta las funciones:
     - `obtenerMiComunidad(): Promise<ComunidadDetalleResponse>` consumiendo `GET /api/comunidades/mi-comunidad`.
     - `actualizarMiComunidad(datos: ActualizarComunidadRequest): Promise<ComunidadDetalleResponse>` consumiendo `PUT /api/comunidades/mi-comunidad`.
@@ -139,9 +145,19 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Emplea la tabla `comunidades` definida en `V2__esquema_completo_v1.sql`:
-    - Columnas actualizadas: `nombre`, `telefono_contacto`, `correo_contacto`.
-    - Columna relacional: `responsable_id` (FK hacia `usuarios(id)`).
+  - Emplea la tabla `comunidades` del esquema MariaDB en las migraciones reales del backend (`db/migration/` V1 a V4 con tipos `VARCHAR` y `DATETIME` estándar):
+    - `id` BIGINT AUTO_INCREMENT PRIMARY KEY
+    - `nombre` VARCHAR(150) NOT NULL UNIQUE
+    - `tipo_organizacion` VARCHAR(30) NOT NULL
+    - `provincia` VARCHAR(100) NOT NULL
+    - `parroquia` VARCHAR(100) NOT NULL
+    - `direccion` VARCHAR(255) NOT NULL
+    - `telefono_contacto` VARCHAR(20) NOT NULL
+    - `correo_contacto` VARCHAR(180) NOT NULL
+    - `responsable_id` BIGINT NOT NULL (FK -> `usuarios(id)`)
+    - `puntos_comunidad` INT NOT NULL DEFAULT 0
+    - `activa` BOOLEAN NOT NULL DEFAULT TRUE
+    - `creado_en` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   - *(NO generar nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.Comunidad.java`):**
   - Mapeo de la entidad `Comunidad` con campos `nombre`, `telefonoContacto`, `correoContacto`, y relación `@OneToOne` o `@ManyToOne` con `Usuario` (`responsable`).
@@ -162,9 +178,9 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Con `@WebMvcTest(ComunidadController.class)` y `@WithMockUser(roles = "RESPONSABLE_COMUNIDAD")`:
     - `GET /api/comunidades/mi-comunidad` retorna HTTP `200 OK`.
     - `PUT /api/comunidades/mi-comunidad` con payload válido retorna HTTP `200 OK`.
-    - `PUT /api/comunidades/mi-comunidad` con teléfono o correo inválido retorna HTTP `400 Bad Request`.
-  - Con rol distinto a `RESPONSABLE_COMUNIDAD` (ej. `TECNICO_MSP` o anónimo): retorna HTTP `403 Forbidden` o `401 Unauthorized`.
+    - Petición con teléfono inválido retorna HTTP `400 Bad Request`.
+  - Con usuario no autenticado retorna HTTP `401 Unauthorized`.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/comunidades/MiComunidadForm.test.tsx`):**
-  - Carga y renderizado inicial de los datos de la comunidad en modo lectura y campos editables.
-  - Validación de que los campos no editables (provincia, tipo de organización, puntos) estén protegidos contra modificación.
-  - Envío del formulario con MSW (`handlers.ts`), visualización de la alerta de éxito en `Notificacion` y comprobación de ausencia del componente Kinti.
+  - Renderizado responsivo de campos informativos en solo lectura y campos editables de contacto.
+  - Validación de bloqueo de envío ante formato erróneo de teléfono o correo.
+  - Envío exitoso con MSW (`handlers.ts`), actualización de datos y despliegue de `Notificacion`.

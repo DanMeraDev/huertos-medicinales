@@ -47,25 +47,29 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   }
 ]
 ```
-4. El **Sistema** renderiza la vista pública estructurada en tres secciones:
-   - **Cabecera Motivacional:** Componente `<KintiGuia variante="dia"/>` mostrando el mensaje:
-     *"¡Todas estas comunidades son nuestros guardianes de la tierra! Quienes cultivan plantas medicinales protegen la vida, la salud comunitaria y la sabiduría de nuestros mayores"*.
-   - **Llamado a la Acción (CTA de Expansión):** Tarjeta destacada con `<KintiGuia variante="celebracion"/>`:
-     - Mensaje: *"¿Deseas fundar un huerto en tu barrio o sumarte a este movimiento sagrado?"*
-     - Botón **`"Solicitar crear mi comunidad"`** (`Boton`, variante `primary`) que redirige a la ruta `/solicitar-comunidad` (`US-CU04`).
-   - **Tabla del Directorio Comunitario:** Tabla (`Tabla`) que presenta las siguientes columnas:
-     1. `Nombre de la Comunidad` (`nombre`)
-     2. `Responsable` (`nombreResponsable`)
-     3. `Teléfono` (`telefonoContacto`)
-     4. `Correo Electrónico` (`correoContacto`)
-     5. `Miembros Activos` (badge con `totalMiembros` acompañado del componente `Insignia`)
-     6. `Ubicación` (botón **`"Ver en el mapa"`**, `Boton`, variante `secondary`)
-5. El **Visitante** pulsa el botón **`"Ver en el mapa"`** de una comunidad específica.
-6. El **Sistema** despliega una ventana emergente (`Modal`):
-   - **Título:** *"Ubicación Territorial - ${comunidad.nombre}"* (despliega dinámicamente el nombre de la comunidad seleccionada)
-   - **Ficha de Datos:** Visualiza `Provincia`, `Parroquia`, `Dirección exacta` y `Altitud (msnm)`.
-   - **Visor Geográfico:** Mapa interactivo centrado en las coordenadas `latitud` y `longitud` con marcador temático andino (vía OpenStreetMap / Leaflet).
-   - **Botón:** **`"Cerrar"`** para volver al listado.
+4. El **Sistema** renderiza la vista pública diseñada bajo el enfoque **Mobile First para Progressive Web App (PWA)**, permitiendo a cualquier voluntario o ciudadano navegar de forma ágil desde su teléfono móvil o computadora mediante las variables de diseño de `frontend/src/index.css`:
+   - **Contenedor Responsivo:** La vista se monta dentro de un contenedor principal (`DirectorioComunidadesPage.tsx`) que utiliza `width: 100%` con padding lateral de `var(--espacio-4)` en pantallas móviles, extendiéndose hasta `var(--ancho-maximo)` en pantallas de escritorio con espaciado de `padding: var(--espacio-8) var(--espacio-6)`.
+   - **Cabecera Motivacional:** Banner fluido con fondo `var(--color-superficie)`, borde de `var(--borde-ancho) solid var(--color-borde)`, radio `var(--radio-lg)`, padding `var(--espacio-4)` y sombra `var(--sombra-sm)`, integrando el componente `<KintiGuia variante="dia"/>`:
+     - Mensaje: *"¡Todas estas comunidades son nuestros guardianes de la tierra! Quienes cultivan plantas medicinales protegen la vida, la salud comunitaria y la sabiduría de nuestros mayores"*, tipografiado en `var(--texto-base)`, color `var(--color-primario)` y peso `var(--peso-medio)`.
+   - **Llamado a la Acción (CTA de Expansión Territorial):**
+     - Tarjeta destacada con fondo `var(--color-superficie-alt)`, radio `var(--radio-lg)`, padding `var(--espacio-4)` y margen vertical `var(--espacio-4)`:
+       - Integración con `<KintiGuia variante="celebracion"/>` y el mensaje: *"¿Deseas fundar un huerto en tu barrio o sumarte a este movimiento sagrado?"*.
+       - Botón **`"Solicitar crear mi comunidad"`** (`Boton`, variante `primary`): En smartphones se proyecta a ancho completo (`width: 100%`) con padding táctil amplio `var(--espacio-3)`; en escritorio se ajusta a `width: auto` redirigiendo a `/solicitar-comunidad` (`US-CU04`).
+   - **Tabla del Directorio Comunitario (Responsiva con Scroll Táctil):**
+     - Envuelve el componente `Tabla` en un contenedor con desplazamiento horizontal suave (`overflow-x: auto; -webkit-overflow-scrolling: touch;`), garantizando lectura fluida en pantallas pequeñas sin desbordes:
+       1. `Nombre de la Comunidad` (`nombre`)
+       2. `Responsable` (`nombreResponsable`)
+       3. `Teléfono` (`telefonoContacto`)
+       4. `Correo Electrónico` (`correoContacto`)
+       5. `Miembros Activos` (badge con `totalMiembros` acompañado del componente `Insignia`)
+       6. `Ubicación` (botón **`"Ver en el mapa"`**, `Boton`, variante `secondary`, con altura táctil accesible de 44px).
+5. El **Visitante** pulsa o toca el botón **`"Ver en el mapa"`** de una comunidad específica.
+6. El **Sistema** despliega una ventana emergente (`Modal`), diseñada responsivamente para dispositivos móviles:
+   - **Comportamiento Móvil:** Ocupa `width: calc(100% - var(--espacio-4))`, con `max-height: 90vh`, fondo `var(--color-superficie)`, bordes redondeados `var(--radio-lg)`, padding `var(--espacio-4)` y scroll interno vertical si la resolución es reducida.
+   - **Título:** *"Ubicación Territorial - ${comunidad.nombre}"* en tipografía `var(--texto-xl)`, color `var(--color-primario)` y peso `var(--peso-seminegrita)`.
+   - **Ficha Territorial:** Bloque en `var(--color-superficie-alt)` con padding `var(--espacio-3)` y radio `var(--radio-md)` que resume: `Provincia`, `Parroquia`, `Dirección exacta` y `Altitud (msnm)`.
+   - **Visor Geográfico Táctil:** Contenedor de mapa interactivo con altura optimizada para móvil (260px a 320px) centrado en las coordenadas `latitud` y `longitud` con marcador temático andino (OpenStreetMap / Leaflet), habilitado para gestos táctiles de pellizco y arrastre.
+   - **Botón de Cierre:** Botón **`"Cerrar"`** (`Boton`, variante `secondary`), con ancho completo en móvil (`width: 100%`) y padding `var(--espacio-3)`.
 
 ---
 
@@ -87,8 +91,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
 - [x] **Feature (`frontend/src/features/comunidades-publico/`):**
-  - `DirectorioComunidadesTabla.tsx`: Renderiza la grilla de comunidades con columnas de contacto, conteo de miembros y botón de acción.
-  - `MapaComunidadModal.tsx`: Diálogo emergente con contenedor de mapa OpenStreetMap (vía Leaflet/tiles libres) que recibe `latitud`, `longitud`, `nombre`, `provincia`, `parroquia` y `direccion`.
+  - `DirectorioComunidadesTabla.tsx`: Renderiza la grilla de comunidades con columnas de contacto, conteo de miembros y botón de acción, implementando contenedor responsivo con scroll táctil para móvil.
+  - `MapaComunidadModal.tsx`: Diálogo emergente responsivo con contenedor de mapa OpenStreetMap (vía Leaflet/tiles libres) que recibe `latitud`, `longitud`, `nombre`, `provincia`, `parroquia` y `direccion`.
   - `comunidadesPublicoApi.ts`: Función `obtenerDirectorioComunidades(): Promise<DirectorioComunidadResponse[]>` que consume `GET /api/publico/comunidades` mediante `client.ts`.
 - [x] **Página / Ruteo (`frontend/src/pages/`):**
   - `DirectorioComunidadesPage.tsx`: Vista pública registrada en `App.tsx` bajo la ruta `/comunidades`.
@@ -122,7 +126,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Consume las tablas existentes en `V2__esquema_completo_v1.sql`: `comunidades`, `usuarios`, `huertos` y `comunidad_miembros`.
+  - Consume las tablas del esquema MariaDB en las migraciones reales del backend (`db/migration/` V1 a V4 con `VARCHAR` y `DATETIME` estándar): `comunidades`, `usuarios`, `huertos` y `comunidad_miembros`.
   - *(NO generar nuevo archivo de migración SQL)*.
 - [x] **Entidad JPA (`com.huertos.model.Comunidad.java`, `com.huertos.model.Huerto.java`):**
   - Mapeo de relaciones `@OneToOne` entre `Comunidad` y `Huerto`, y relación `@ManyToOne` con `Usuario` (`responsable`).
@@ -148,6 +152,6 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/ComunidadPublicoControllerTest.java`):**
   - Con `@WebMvcTest(ComunidadPublicoController.class)`, validando respuesta HTTP `200 OK` en endpoint público sin necesidad de cabecera `Authorization`.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/comunidades-publico/DirectorioComunidadesTabla.test.tsx`):**
-  - Renderizado de la tabla con las 6 columnas y validación de presencia de `<KintiGuia/>` en cabecera y en tarjeta de CTA.
+  - Renderizado responsivo de la tabla con las 6 columnas y validación de presencia de `<KintiGuia/>` en cabecera y en tarjeta de CTA.
   - Verificación del enlace hacia `/solicitar-comunidad` en el botón de postulación.
-  - Comprobación de apertura del modal de mapa al hacer clic en `"Ver en el mapa"`.
+  - Comprobación de apertura del modal responsivo de mapa al hacer clic en `"Ver en el mapa"`.
