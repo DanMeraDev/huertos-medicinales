@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,14 +27,16 @@ public class Usuario {
 
     private String identificacion;
 
-    private LocalDate fechaNacimiento;
-
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
     private String email;
 
+    private String telefono;
+
     private String contrasena;
+
+    private boolean requiereCambioClave;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
