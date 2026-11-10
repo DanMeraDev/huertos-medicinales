@@ -6,7 +6,6 @@ import com.huertos.model.Genero;
 import com.huertos.model.Rol;
 import com.huertos.model.Usuario;
 import com.huertos.repository.UsuarioRepository;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,11 +27,12 @@ class UsuarioRepositoryIntegrationTest {
         Usuario usuario = new Usuario();
         usuario.setNombreCompleto("Rosa Quishpe");
         usuario.setIdentificacion("1712345678");
-        usuario.setFechaNacimiento(LocalDate.of(1990, 5, 20));
         usuario.setGenero(Genero.FEMENINO);
         usuario.setEmail("rosa@correo.com");
+        usuario.setTelefono("0991234567");
         usuario.setContrasena("hash");
-        usuario.setRol(Rol.MIEMBRO);
+        usuario.setRol(Rol.RESPONSABLE_COMUNIDAD);
+        usuario.setRequiereCambioClave(true);
         usuario.setActivo(true);
         usuario.setCreadoEn(LocalDateTime.of(2026, 11, 5, 10, 0));
         usuarioRepository.saveAndFlush(usuario);
@@ -42,8 +42,10 @@ class UsuarioRepositoryIntegrationTest {
     void encuentraElUsuarioPorEmailConSusEnums() {
         Usuario encontrado = usuarioRepository.findByEmail("rosa@correo.com").orElseThrow();
 
-        assertThat(encontrado.getRol()).isEqualTo(Rol.MIEMBRO);
+        assertThat(encontrado.getRol()).isEqualTo(Rol.RESPONSABLE_COMUNIDAD);
         assertThat(encontrado.getGenero()).isEqualTo(Genero.FEMENINO);
+        assertThat(encontrado.getTelefono()).isEqualTo("0991234567");
+        assertThat(encontrado.isRequiereCambioClave()).isTrue();
     }
 
     @Test
