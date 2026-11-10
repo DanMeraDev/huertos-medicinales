@@ -52,6 +52,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (ruta de aprendizaje desplegada como línea de tiempo o tarjetas verticales deslizables en pantalla pequeña).
+  - Modal o vista de detalle adaptada a pantalla completa en móvil para facilitar la lectura del contenido pedagógico ancestral.
+  - Escalado responsivo progresivo a cuadrícula de saberes en tablet y escritorio.
 - [x] **Rol que ve la pantalla:** `Cualquiera (Visitante, Voluntario, Responsable, Técnico)`.
 - [x] **Visibilidad:** `Pública (Sin login)`.
 - [x] **Feature (`frontend/src/features/saberes-ancestrales/`):**
@@ -87,4 +91,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/SaberAncestralServiceImplTest.java`):** Verifica ordenamiento secuencial por `ordenPaso` y búsqueda por id.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/SaberAncestralPublicoControllerTest.java`):** Confirma endpoint público sin token `200 OK`.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/saberes-ancestrales/RutaSecuencialSaberes.test.tsx`):** Prueba carga y renderizado de la ruta formativa de pasos ancestrales.
+- [x] **Criterio de Aceptación Mobile First:** Navegación secuencial de saberes cómoda y legible en teléfono móvil sin desbordamientos horizontales ni cortes de texto.
 

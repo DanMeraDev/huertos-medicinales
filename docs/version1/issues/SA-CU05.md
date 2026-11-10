@@ -56,6 +56,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (panel de observaciones en bloque superior legible en pantalla móvil seguido del formulario de reenvío en columna única).
+  - Carga y reemplazo de foto optimizado para uso táctil directo desde la galería o cámara del dispositivo.
+  - Escalado responsivo progresivo a pantallas de mayor tamaño.
 - [x] **Rol que ve la pantalla:** `RESPONSABLE_COMUNIDAD`.
 - [x] **Visibilidad:** `Privada (Requiere autenticación JWT)`.
 - [x] **Feature (`frontend/src/features/actividades-ancestrales/`):**
@@ -84,4 +88,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/ActividadAncestralServiceImplTest.java`):** Verifica incremento de `numero_intento` a 2 y cambio de estado a `PENDIENTE`.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/ActividadAncestralControllerTest.java`):** Verifica respuesta `200 OK` ante reenvío válido y `409 Conflict` si la actividad no estaba observada.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/actividades-ancestrales/FormularioSubsanarEvidencias.test.tsx`):** Verifica visualización de observaciones del técnico y reenvío de formulario.
+- [x] **Criterio de Aceptación Mobile First:** Lectura clara de la observación y sustitución de evidencias en pantalla móvil sin solapamientos ni scroll horizontal.
 

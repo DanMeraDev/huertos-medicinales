@@ -60,6 +60,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (formulario en flujo vertical optimizado para registro en campo con captura/carga de fotos desde la cámara del celular).
+  - Subtabla de participantes adaptable como lista apilada de tarjetas en móvil para facilitar el ingreso de horas.
+  - Botones y selectores con altura táctil mínima de 44px, adaptándose con fluidez a pantallas grandes.
 - [x] **Rol que ve la pantalla:** `RESPONSABLE_COMUNIDAD`.
 - [x] **Visibilidad:** `Privada (Requiere autenticación JWT)`.
 - [x] **Feature (`frontend/src/features/actividades-ancestrales/`):**
@@ -95,4 +99,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/ActividadAncestralServiceImplTest.java`):** Comprueba guardado con participantes y estado inicial `PENDIENTE`.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/ActividadAncestralControllerTest.java`):** Verifica código `201 Created` ante request válido y `400 Bad Request` si la lista de participantes está vacía.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/actividades-ancestrales/FormularioActividadAncestral.test.tsx`):** Prueba render de campos, agregación de participantes en la lista y envío de la petición.
+- [x] **Criterio de Aceptación Mobile First:** El registro de actividad y adición de voluntarios debe ser ágil y cómodo en dispositivo móvil en una sola columna sin deformación de elementos visuales.
 

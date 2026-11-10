@@ -58,6 +58,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (bandeja de pendientes como tarjetas resumidas en móvil con estado visual en badge, visor de auditoría apilando fotos, bitácora y dictamen en orden vertical).
+  - Botones de acción (Aprobar, Observar, Rechazar) con tamaño táctil accesible (mínimo 44px de altura) dispuestos ergonómicamente en móvil.
+  - Escalado responsivo progresivo a panel dividido (master-detail) en pantallas de escritorio.
 - [x] **Rol que ve la pantalla:** `TECNICO_MSP`.
 - [x] **Visibilidad:** `Privada (Requiere autenticación JWT)`.
 - [x] **Feature (`frontend/src/features/msp-revision/`):**
@@ -89,4 +93,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/MspRevisionServiceImplTest.java`):** Comprueba cambio de estado a `APROBADA` y disparo del método de gamificación; prueba que exige observación ante rechazo.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/MspRevisionControllerTest.java`):** Verifica acceso exclusivo para `TECNICO_MSP` y denegación con `403 Forbidden` a otros roles.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/msp-revision/DetalleAuditoriaActividad.test.tsx`):** Prueba renderizado de imágenes, selección de veredicto y envío exitoso.
+- [x] **Criterio de Aceptación Mobile First:** El técnico debe poder auditar fotografías, bitácoras y emitir su veredicto fluidamente desde un dispositivo móvil con excelente legibilidad y sin desbordamiento.
 

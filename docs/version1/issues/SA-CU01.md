@@ -51,6 +51,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (tarjeta lunar principal destacada en la parte superior del viewport móvil, textos en kichwa/español legibles con contraste adecuado bajo luz solar).
+  - Componentes táctiles amigables y scroll vertical natural sin desbordamiento horizontal.
+  - Escalado responsivo progresivo a cuadrícula de fases en tablets y escritorio.
 - [x] **Rol que ve la pantalla:** `Cualquiera (Visitante, Voluntario, Responsable, Técnico)`.
 - [x] **Visibilidad:** `Pública (Sin login)`.
 - [x] **Feature (`frontend/src/features/calendario-lunar/`):**
@@ -85,4 +89,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/CalendarioLunarServiceImplTest.java`):** Comprueba resolución exacta de la fase según la fecha enviada.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/CalendarioLunarPublicoControllerTest.java`):** Verifica acceso público `200 OK` sin token JWT.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/calendario-lunar/VisorFaseLunar.test.tsx`):** Renderizado de fase lunar y textos en kichwa y español.
+- [x] **Criterio de Aceptación Mobile First:** Presentación visual clara de la fase lunar y consejos agrícolas en teléfono móvil con lectura cómoda y sin scroll horizontal.
 
