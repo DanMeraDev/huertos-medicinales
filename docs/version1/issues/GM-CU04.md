@@ -49,6 +49,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (podio de 3 primeros lugares organizado verticalmente o en minitarjetas apiladas para pantallas desde 360px).
+  - Tabla de posiciones adaptable con columnas esenciales en móvil (posición, comunidad, puntos) evitando scroll horizontal forzado.
+  - Escalado responsivo progresivo a tabla extendida con podio horizontal en tablets y escritorio.
 - [x] **Rol que ve la pantalla:** `Cualquiera (Visitante, Voluntario, Responsable, Técnico)`.
 - [x] **Visibilidad:** `Pública (Sin login)`.
 - [x] **Feature (`frontend/src/features/ranking/`):**
@@ -82,4 +86,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/RankingServiceImplTest.java`):** Comprueba ordenamiento descendente y asignación de posición ordinal consecutiva.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/RankingPublicoControllerTest.java`):** Verifica acceso público `200 OK` sin token JWT.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/ranking/TablaRankingComunidades.test.tsx`):** Verifica renderizado de filas ordenadas y funcionamiento de filtros.
+- [x] **Criterio de Aceptación Mobile First:** El podio y el listado de ranking deben mostrarse de forma legible y atractiva en dispositivos móviles sin desbordar el ancho de pantalla.
 

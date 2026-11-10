@@ -50,6 +50,10 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ## 4. Análisis de Robustez y Diseño Técnico (Contrato Estricto para IA)
 
 ### 4.1. Objetos Boundary (Frontend React - `frontend/src/`)
+- [x] **Enfoque de Interfaz (PWA Mobile First):**
+  - Prioridad absoluta en dispositivos móviles (tarjetas de voluntario o tabla adaptada mostrando nivel y medallas en formato compacto para pantallas pequeñas).
+  - Componentes táctiles interactivos (filtro por texto y selector de nivel con altura táctil mínima de 44px).
+  - Escalado responsivo progresivo a tabla completa en tablets y pantallas de escritorio.
 - [x] **Rol que ve la pantalla:** `Cualquiera (Visitante, Voluntario, Responsable, Técnico)`.
 - [x] **Visibilidad:** `Pública (Sin login)`.
 - [x] **Feature (`frontend/src/features/ranking/`):**
@@ -82,4 +86,5 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Prueba unitaria de Servicio (`backend/src/test/java/com/huertos/service/RankingServiceImplTest.java`):** Verifica orden por puntos y conteo correcto de insignias por voluntario.
 - [x] **Prueba de Controlador (`backend/src/test/java/com/huertos/controller/RankingPublicoControllerTest.java`):** Acceso público sin credenciales retornando `200 OK`.
 - [x] **Prueba de Componente Frontend (`frontend/src/features/ranking/TablaRankingMiembros.test.tsx`):** Renderizado de las filas de miembros y etiquetas de nivel.
+- [x] **Criterio de Aceptación Mobile First:** Listado de voluntarios y medallero totalmente legible y fluido en pantallas móviles sin scroll horizontal en la vista.
 
