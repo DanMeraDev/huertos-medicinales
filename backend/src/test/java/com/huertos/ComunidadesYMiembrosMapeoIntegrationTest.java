@@ -47,14 +47,13 @@ class ComunidadesYMiembrosMapeoIntegrationTest {
         solicitud.setAltitudMsnm(2650);
         solicitud.setDisenoPrincipal(DisenoPrincipal.EN_TIERRA);
         solicitud.setSubtiposSolicitados("SURCOS_WACHU");
-        solicitud.setFotoLugar("solicitudes/1.jpg");
         solicitud.setCedulaSolicitante("1712345678");
         solicitud.setNombreSolicitante("Rosa Quishpe");
         solicitud.setCorreoSolicitante("rosa@correo.com");
         solicitud.setCelularSolicitante("0991234567");
         solicitud.setGeneroSolicitante(Genero.FEMENINO);
         solicitud.setEstado(EstadoSolicitud.RECHAZADA);
-        solicitud.setMotivoRechazo("Falta la foto del lugar");
+        solicitud.setMotivoRechazo("Datos de ubicación incompletos");
         solicitud.setRevisadoPor(tecnico);
         solicitud.setFechaRevision(AHORA);
         solicitud.setCreadoEn(AHORA);

@@ -48,8 +48,6 @@ public class SolicitudComunidad {
 
     private String subtiposSolicitados;
 
-    private String fotoLugar;
-
     private String cedulaSolicitante;
 
     private String nombreSolicitante;

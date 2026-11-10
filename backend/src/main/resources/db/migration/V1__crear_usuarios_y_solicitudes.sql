@@ -26,7 +26,6 @@ CREATE TABLE solicitudes_comunidad (
     altitud_msnm         INT            NOT NULL DEFAULT 2500,
     diseno_principal     VARCHAR(30)    NOT NULL,
     subtipos_solicitados VARCHAR(150)   NOT NULL,
-    foto_lugar           VARCHAR(500)   NULL,
     cedula_solicitante   VARCHAR(13)    NOT NULL,
     nombre_solicitante   VARCHAR(120)   NOT NULL,
     correo_solicitante   VARCHAR(180)   NOT NULL,
