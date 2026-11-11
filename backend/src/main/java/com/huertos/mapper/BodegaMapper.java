@@ -14,3 +14,4 @@ public interface BodegaMapper {
     @Mapping(source = "planta.nombreCientifico", target = "nombreCientificoPlanta")
     MaterialVegetalResponse toMaterialVegetalResponse(BodegaMaterialVegetal entidad);
 }
+

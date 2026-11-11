@@ -58,3 +58,4 @@ public class BodegaServiceImpl implements BodegaService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe una comunidad asociada al usuario"));
     }
 }
+

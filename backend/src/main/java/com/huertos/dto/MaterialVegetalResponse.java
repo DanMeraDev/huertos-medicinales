@@ -17,3 +17,4 @@ public record MaterialVegetalResponse(
         String loteOrigen,
         LocalDate fechaIngreso
 ) {}
+

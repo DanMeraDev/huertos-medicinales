@@ -148,3 +148,4 @@ class BodegaControllerTest {
                 .andExpect(jsonPath("$.errores.cantidad").value("La cantidad debe ser mayor a cero"));
     }
 }
+

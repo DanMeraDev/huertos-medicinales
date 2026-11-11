@@ -153,3 +153,4 @@ class BodegaServiceImplTest {
                 .hasMessage("No existe una comunidad asociada al usuario");
     }
 }
+

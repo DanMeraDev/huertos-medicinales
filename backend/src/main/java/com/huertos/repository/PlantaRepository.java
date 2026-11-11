@@ -8,3 +8,4 @@ public interface PlantaRepository extends JpaRepository<Planta, Long> {
 
     Optional<Planta> findByIdAndActivaTrue(Long id);
 }
+

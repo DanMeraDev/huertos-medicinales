@@ -78,3 +78,4 @@ describe('FormularioIngresoMaterial', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('La planta seleccionada no existe en el catálogo')
   })
 })
+

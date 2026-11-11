@@ -8,3 +8,4 @@ public interface BodegaMaterialVegetalRepository extends JpaRepository<BodegaMat
 
     List<BodegaMaterialVegetal> findByComunidadIdAndActivoTrue(Long comunidadId);
 }
+
