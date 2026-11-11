@@ -54,8 +54,8 @@ class PlantasHuertosBodegaMapeoIntegrationTest {
     @Test
     void guardaLaPlantaConSusCategoriasYQuienLaDioDeBaja() {
         Usuario tecnico = entityManager.persist(usuario("tecnico@msp.gob.ec", "1700000001", Rol.TECNICO_MSP));
-        Planta planta = planta("Manzanilla", "Matricaria chamomilla");
-        planta.setNombreKichwa("Manzanilla");
+        Planta planta = planta("Planta de prueba", "Probatoria ficticia");
+        planta.setNombreKichwa("Kiwa de prueba");
         planta.setCicloCultivo(CicloCultivo.CORTO);
         planta.setOrigen(OrigenPlanta.INTRODUCIDA);
         planta.setAltitudMinMsnm(1500);
@@ -92,7 +92,7 @@ class PlantasHuertosBodegaMapeoIntegrationTest {
 
     @Test
     void guardaLaPlantaDelMspSinLosDatosQueElAnexoNoTrae() {
-        Long id = entityManager.persistAndGetId(planta("Achicoria", "Cichorium intybus"), Long.class);
+        Long id = entityManager.persistAndGetId(planta("Otra planta de prueba", "Probatoria secunda"), Long.class);
         entityManager.flush();
         entityManager.clear();
 
@@ -141,7 +141,7 @@ class PlantasHuertosBodegaMapeoIntegrationTest {
     @Test
     void guardaElLoteDeBodegaConSuBajaYUnaSiembra() {
         Comunidad comunidad = entityManager.persist(comunidad());
-        Planta planta = entityManager.persist(planta("Manzanilla", "Matricaria chamomilla"));
+        Planta planta = entityManager.persist(planta("Planta de prueba", "Probatoria ficticia"));
         Subhuerto subhuerto = entityManager.persist(subhuerto(entityManager.persist(huerto(comunidad))));
 
         BodegaMaterialVegetal lote = new BodegaMaterialVegetal();
@@ -192,7 +192,7 @@ class PlantasHuertosBodegaMapeoIntegrationTest {
         assertThat(loteLeido.getTipoMaterial()).isEqualTo(TipoMaterialVegetal.SEMILLAS);
         assertThat(loteLeido.getUnidadMedida()).isEqualTo(UnidadMedida.GRAMOS);
         assertThat(loteLeido.getCantidadDisponible()).isEqualByComparingTo("12.50");
-        assertThat(loteLeido.getPlanta().getNombreComun()).isEqualTo("Manzanilla");
+        assertThat(loteLeido.getPlanta().getNombreComun()).isEqualTo("Planta de prueba");
         assertThat(loteLeido.getComunidad().getNombre()).isEqualTo("Hampi Chakra");
     }
 
