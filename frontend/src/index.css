@@ -1,81 +1,104 @@
-:root {
-  --color-primario: #2d5a3f;
-  --color-primario-interaccion: #224430;
-  --color-secundario: #7c5a38;
-  --color-secundario-interaccion: #63472c;
-  --color-fondo: #f6f8f3;
-  --color-superficie: #ffffff;
-  --color-superficie-alt: #edf1ea;
-  --color-texto: #1d2a1f;
-  --color-texto-secundario: #526154;
-  --color-texto-inverso: #ffffff;
-  --color-borde: #d3ded2;
-  --color-exito: #2e7d32;
-  --color-error: #c62828;
-  --color-advertencia: #d97706;
-
-  --fuente-principal: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --texto-xs: 0.75rem;
-  --texto-sm: 0.875rem;
-  --texto-base: 1rem;
-  --texto-lg: 1.125rem;
-  --texto-xl: 1.25rem;
-  --texto-2xl: 1.5rem;
-  --texto-3xl: 1.875rem;
-  --texto-4xl: 2.25rem;
-
-  --peso-normal: 400;
-  --peso-medio: 500;
-  --peso-seminegrita: 600;
-  --peso-negrita: 700;
-
-  --interlineado-apretado: 1.25;
-  --interlineado-normal: 1.5;
-
-  --espacio-1: 0.25rem;
-  --espacio-2: 0.5rem;
-  --espacio-3: 0.75rem;
-  --espacio-4: 1rem;
-  --espacio-5: 1.25rem;
-  --espacio-6: 1.5rem;
-  --espacio-8: 2rem;
-  --espacio-10: 2.5rem;
-  --espacio-12: 3rem;
-  --espacio-16: 4rem;
-
-  --radio-sm: 0.25rem;
-  --radio-md: 0.5rem;
-  --radio-lg: 0.75rem;
-  --radio-full: 9999px;
-  --borde-ancho: 1px;
-
-  --sombra-sm: 0 1px 2px 0 rgba(29, 42, 31, 0.05);
-  --sombra-md: 0 4px 6px -1px rgba(29, 42, 31, 0.08), 0 2px 4px -2px rgba(29, 42, 31, 0.06);
-  --sombra-lg: 0 10px 15px -3px rgba(29, 42, 31, 0.1), 0 4px 6px -4px rgba(29, 42, 31, 0.06);
-
-  --ancho-maximo: 75rem;
-  --ancho-lectura: 40rem;
-}
-
-*,
-*::before,
-*::after {
+/* =========================================
+   1. RESET Y CONFIGURACIÓN BASE
+   ========================================= */
+* {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  font-family: var(--fuente-principal);
-  font-size: var(--texto-base);
-  line-height: var(--interlineado-normal);
-  color: var(--color-texto);
-  background-color: var(--color-fondo);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  /* Transición suave al cambiar entre modo claro y oscuro */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* =========================================
+   2. MODO CLARO (Light Theme por defecto)
+   ========================================= */
+:root {
+  /* 60% - Fondos y Superficies */
+  --bg-main: #F4F6F4;       /* Blanco Nube */
+  --bg-surface: #FFFFFF;    /* Blanco Puro para Tarjetas */
+  --bg-muted: #EAECEA;      
+
+  /* 30% - Textos y Estructura */
+  --text-primary: #2D302A;   
+  --text-secondary: #6A6E64; 
+  --text-inverse: #FFFFFF;   
+
+  /* Marca Principal (Verdes) */
+  --color-primary: #7BB342;       /* Verde Hoja (Visual/Iconos) */
+  --color-primary-action: #4C7A26; /* Verde Oliva (Botones) */
+  --color-primary-hover: #3D631E;  
+  --color-primary-light: #F0F7E6;  
+
+  /* Acento (Naranja Gamificación) */
+  --color-accent: #FF8A00; 
+  --color-accent-dark: #D96C00; 
+  --color-accent-light: #FFF4E6; 
+
+  /* Etiquetas de Plantas */
+  --tag-hot-bg: #FFF0E5;
+  --tag-hot-text: #C24F00;
+  --tag-cold-bg: #E8F4F8;
+  --tag-cold-text: #1A6E82;
+
+  /* Bordes y Sombras */
+  --border-color: #E6EAE6; 
+  --shadow-card: 0 6px 20px rgba(76, 122, 38, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-button: 0 4px 12px rgba(76, 122, 38, 0.25);
+  
+  /* Medidas estándar */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px; 
 }
+
+/* =========================================
+   3. MODO OSCURO (Dark Theme / Noche Lunar)
+   ========================================= */
+[data-theme="dark"] {
+  /* Fondos */
+  --bg-main: #121411;       
+  --bg-surface: #1E221D;    
+  --bg-muted: #2A2E27;      
+
+  /* Textos */
+  --text-primary: #ECEEE9;   
+  --text-secondary: #9DA396; 
+  --text-inverse: #121411;   
+
+  /* Marca */
+  --color-primary: #8DC653;  
+  --color-primary-action: #5E9630; 
+  --color-primary-hover: #74B33D;  
+  --color-primary-light: #1F2E17;  
+
+  /* Acento */
+  --color-accent: #FF9F2E; 
+  --color-accent-dark: #FFB86C; 
+  --color-accent-light: #33200C; 
+
+  /* Etiquetas */
+  --tag-hot-bg: #331D0B;
+  --tag-hot-text: #FFB380;
+  --tag-cold-bg: #122229;
+  --tag-cold-text: #7BD3EA;
+
+  /* Bordes y Sombras (En oscuro las sombras son más fuertes) */
+  --border-color: #31362F; 
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.4);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================================
+   4. CLASES UTILITARIAS BÁSICAS
+   ========================================= */
 
 .inicio {
   max-width: var(--ancho-lectura);
