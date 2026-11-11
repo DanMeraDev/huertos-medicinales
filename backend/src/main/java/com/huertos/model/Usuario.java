@@ -33,9 +33,13 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
-    private String email;
+    private String correo;
 
-    private String contrasena;
+    private String telefono;
+
+    private String passwordHash;
+
+    private boolean requiereCambioClave;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;

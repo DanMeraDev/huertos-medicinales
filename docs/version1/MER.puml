@@ -12,48 +12,61 @@ skinparam class {
 entity "usuarios" as usuarios {
   * **id** : BIGINT <<PK>>
   --
+  * nombre_completo : VARCHAR(120)
   * identificacion : VARCHAR(13) <<UK>>
-  * nombre : VARCHAR(120)
+  * fecha_nacimiento : DATE
+  * genero : VARCHAR(20)
   * correo : VARCHAR(180) <<UK>>
   telefono : VARCHAR(20)
   * password_hash : VARCHAR(255)
   * requiere_cambio_clave : BOOLEAN
-  * genero : ENUM
-  * rol : ENUM('TECNICO_SIS','TECNICO_MSP','RESPONSABLE_COMUNIDAD')
+  * rol : VARCHAR(30)
   * activo : BOOLEAN
-  * creado_en : DATETIME(6)
+  * creado_en : DATETIME
 }
 
 entity "solicitudes_comunidad" as solicitudes {
   * **id** : BIGINT <<PK>>
   --
   * nombre_comunidad : VARCHAR(150)
-  * tipo_organizacion : ENUM
-  * provincia / parroquia / direccion : VARCHAR
-  * latitud / longitud : DECIMAL(10,7)
+  * tipo_organizacion : VARCHAR(30)
+  * provincia : VARCHAR(100)
+  * parroquia : VARCHAR(100)
+  * direccion : VARCHAR(255)
+  * latitud : DECIMAL(10,7)
+  * longitud : DECIMAL(10,7)
   * altitud_msnm : INT
-  * diseno_principal : ENUM
+  * diseno_principal : VARCHAR(30)
   * subtipos_solicitados : VARCHAR(150)
   * cedula_solicitante : VARCHAR(13)
   * nombre_solicitante : VARCHAR(120)
+  * fecha_nacimiento_solicitante : DATE
+  * genero_solicitante : VARCHAR(20)
   * correo_solicitante : VARCHAR(180)
   * celular_solicitante : VARCHAR(20)
-  * estado : ENUM('PENDIENTE','APROBADA','RECHAZADA')
+  * consentimiento_datos : BOOLEAN
+  * consentimiento_en : DATETIME
+  * estado : VARCHAR(20)
   motivo_rechazo : VARCHAR(500)
   revisado_por_id : BIGINT <<FK>>
+  fecha_revision : DATETIME
+  * creado_en : DATETIME
 }
 
 entity "comunidades" as comunidades {
   * **id** : BIGINT <<PK>>
   --
   * nombre : VARCHAR(150) <<UK>>
-  * tipo_organizacion : ENUM
-  * provincia / parroquia / direccion : VARCHAR
+  * tipo_organizacion : VARCHAR(30)
+  * provincia : VARCHAR(100)
+  * parroquia : VARCHAR(100)
+  * direccion : VARCHAR(255)
   * telefono_contacto : VARCHAR(20)
   * correo_contacto : VARCHAR(180)
-  * responsable_id : BIGINT <<FK>>
+  * responsable_id : BIGINT <<FK, UK>>
   * puntos_comunidad : INT
   * activa : BOOLEAN
+  * creado_en : DATETIME
 }
 
 entity "miembros" as miembros {
@@ -63,10 +76,14 @@ entity "miembros" as miembros {
   * nombres : VARCHAR(100)
   * apellidos : VARCHAR(100)
   * fecha_nacimiento : DATE
-  * genero : ENUM
-  * nivel : ENUM('APRENDIZ','OFICIAL','MAESTRO')
+  * genero : VARCHAR(20)
+  telefono : VARCHAR(20)
+  * nivel : VARCHAR(20)
   * puntos_totales : INT
+  * consentimiento_datos : BOOLEAN
+  * consentimiento_en : DATETIME
   * activo : BOOLEAN
+  * creado_en : DATETIME
 }
 
 entity "comunidad_miembros" as com_miembros {
@@ -76,32 +93,8 @@ entity "comunidad_miembros" as com_miembros {
   * miembro_id : BIGINT <<FK>>
   * activo_en_comunidad : BOOLEAN
   * fecha_ingreso : DATE
-}
-
-entity "huertos" as huertos {
-  * **id** : BIGINT <<PK>>
-  --
-  * comunidad_id : BIGINT <<FK, UK>>
-  * nombre_huerto : VARCHAR(150)
-  * latitud / longitud : DECIMAL(10,7)
-  * altitud_msnm : INT
-  * area_total_m2 : DECIMAL(8,2)
-  * tipo_huerto : ENUM('BASICO','INTEGRAL')
-  * diseno_principal : ENUM
-  tipo_suelo : ENUM
-  fuente_agua : ENUM
-  tipo_abono : ENUM
-  tipo_cerca : ENUM
-  * puntos_huerto : INT
-}
-
-entity "subhuertos" as subhuertos {
-  * **id** : BIGINT <<PK>>
-  --
-  * huerto_id : BIGINT <<FK>>
-  * nombre_zona : VARCHAR(100)
-  * subtipo : ENUM
-  * area_m2 : DECIMAL(8,2)
+  fecha_baja : DATE
+  motivo_baja : VARCHAR(255)
 }
 
 entity "plantas" as plantas {
@@ -111,14 +104,62 @@ entity "plantas" as plantas {
   nombre_kichwa : VARCHAR(120)
   * nombre_cientifico : VARCHAR(150) <<UK>>
   * familia_botanica : VARCHAR(100)
-  * cualidad_termica : ENUM('CALIENTE','FRIA')
-  * ciclo_cultivo : ENUM('CORTO','LARGO')
-  * categoria_uso : ENUM
-  * altitud_min_msnm / altitud_max_msnm : INT
+  * cualidad_termica : VARCHAR(20)
+  ciclo_cultivo : VARCHAR(20)
+  origen : VARCHAR(20)
+  altitud_min_msnm : INT
+  altitud_max_msnm : INT
+  regiones_distribucion : VARCHAR(150)
   * usos_medicinales : TEXT
-  * preparacion_dosificacion : TEXT
+  preparacion_dosificacion : TEXT
   contraindicaciones : TEXT
-  * fotografia_url : VARCHAR(500)
+  fotografia_url : VARCHAR(500)
+  * activa : BOOLEAN
+  motivo_baja : VARCHAR(300)
+  fecha_baja : DATETIME
+  dado_de_baja_por_id : BIGINT <<FK>>
+  actualizado_por_id : BIGINT <<FK>>
+  * creado_en : DATETIME
+  * actualizado_en : DATETIME
+}
+
+entity "planta_categorias" as planta_cat {
+  * **planta_id** : BIGINT <<PK, FK>>
+  * **categoria** : VARCHAR(30) <<PK>>
+  --
+}
+
+entity "huertos" as huertos {
+  * **id** : BIGINT <<PK>>
+  --
+  * comunidad_id : BIGINT <<FK, UK>>
+  * nombre_huerto : VARCHAR(150)
+  * latitud : DECIMAL(10,7)
+  * longitud : DECIMAL(10,7)
+  * altitud_msnm : INT
+  orientacion : VARCHAR(30)
+  area_total_m2 : DECIMAL(8,2)
+  * tipo_huerto : VARCHAR(20)
+  * diseno_principal : VARCHAR(30)
+  tipo_suelo : VARCHAR(30)
+  fuente_agua : VARCHAR(30)
+  tipo_abono : VARCHAR(30)
+  tipo_cerca : VARCHAR(30)
+  detalle_cerca : VARCHAR(255)
+  * puntos_huerto : INT
+  * activo : BOOLEAN
+  * creado_en : DATETIME
+}
+
+entity "subhuertos" as subhuertos {
+  * **id** : BIGINT <<PK>>
+  --
+  * huerto_id : BIGINT <<FK>>
+  * nombre_zona : VARCHAR(100)
+  * subtipo : VARCHAR(30)
+  * area_m2 : DECIMAL(8,2)
+  * activo : BOOLEAN
+  * creado_en : DATETIME
 }
 
 entity "bodega_material_vegetal" as bodega {
@@ -126,31 +167,40 @@ entity "bodega_material_vegetal" as bodega {
   --
   * comunidad_id : BIGINT <<FK>>
   * planta_id : BIGINT <<FK>>
-  * tipo_material : ENUM('SEMILLAS','ESTACAS','ESQUEJES','PLANTULAS')
-  * cantidad_disponible : INT
-  * unidad_medida : ENUM
+  * tipo_material : VARCHAR(20)
+  * cantidad_disponible : DECIMAL(10,2)
+  * unidad_medida : VARCHAR(20)
+  lote_origen : VARCHAR(100)
+  * fecha_ingreso : DATE
+  * activo : BOOLEAN
+  * creado_en : DATETIME
+  * actualizado_en : DATETIME
 }
 
 entity "bajas_material_vegetal" as bajas {
   * **id** : BIGINT <<PK>>
   --
   * bodega_material_id : BIGINT <<FK>>
-  * cantidad_baja : INT
-  * causa_fracaso : ENUM
+  * cantidad_baja : DECIMAL(10,2)
+  * causa : VARCHAR(30)
   observacion : VARCHAR(300)
+  * fecha_baja : DATETIME
 }
 
 entity "siembras" as siembras {
   * **id** : BIGINT <<PK>>
   --
   * subhuerto_id : BIGINT <<FK>>
-  * planta_id : BIGINT <<FK>>
   * bodega_material_id : BIGINT <<FK>>
-  * tipo_siembra : ENUM
-  * cantidad_sembrada : INT
-  * fase_lunar_siembra : ENUM
+  * cantidad_sembrada : DECIMAL(10,2)
+  * fecha_siembra : DATE
+  * fase_lunar_siembra : VARCHAR(30)
   * tuvo_alerta_altitud : BOOLEAN
-  * color_senaletica : ENUM
+  * estado_cultivo : VARCHAR(20)
+  causa_perdida : VARCHAR(30)
+  observacion_perdida : VARCHAR(300)
+  * creado_en : DATETIME
+  * actualizado_en : DATETIME
 }
 
 entity "catalogo_actividades_comunidad" as cat_act {
@@ -158,8 +208,10 @@ entity "catalogo_actividades_comunidad" as cat_act {
   --
   * comunidad_id : BIGINT <<FK>>
   * nombre : VARCHAR(120)
-  * categoria : ENUM
+  * categoria : VARCHAR(30)
   * puntos_por_hora : INT
+  * activa : BOOLEAN
+  * creado_en : DATETIME
 }
 
 entity "talentos_comunidad" as talentos {
@@ -168,7 +220,11 @@ entity "talentos_comunidad" as talentos {
   * comunidad_id : BIGINT <<FK>>
   * actividad_comunidad_id : BIGINT <<FK>>
   * nombre_insignia : VARCHAR(120)
+  * descripcion : VARCHAR(255)
   * meta_repeticiones : INT
+  * icono_codigo : VARCHAR(60)
+  * activo : BOOLEAN
+  * creado_en : DATETIME
 }
 
 entity "registro_actividades_miembro" as reg_act {
@@ -177,15 +233,21 @@ entity "registro_actividades_miembro" as reg_act {
   * comunidad_id : BIGINT <<FK>>
   * miembro_id : BIGINT <<FK>>
   * actividad_comunidad_id : BIGINT <<FK>>
+  * fecha_actividad : DATE
   * horas_trabajadas : INT
   * puntos_otorgados : INT
+  observacion : VARCHAR(255)
+  * creado_en : DATETIME
 }
 
 entity "calendario_lunar" as cal_lunar {
   * **id** : BIGINT <<PK>>
   --
-  * fase_lunar : ENUM
+  * fase_lunar : VARCHAR(30)
   * nombre_kichwa : VARCHAR(80)
+  * nombre_espanol : VARCHAR(80)
+  * fecha_inicio : DATE
+  * fecha_fin : DATE
   * practicas_recomendadas : TEXT
   * consejo_kinti : VARCHAR(300)
 }
@@ -194,8 +256,14 @@ entity "saberes_ancestrales" as saberes {
   * **id** : BIGINT <<PK>>
   --
   * orden_paso : INT <<UK>>
-  * titulo / titulo_kichwa : VARCHAR
-  * fase_lunar_ideal : ENUM
+  * codigo_hito : VARCHAR(40)
+  * titulo : VARCHAR(150)
+  titulo_kichwa : VARCHAR(150)
+  * categoria : VARCHAR(30)
+  * fase_lunar_ideal : VARCHAR(30)
+  * horario_energetico : VARCHAR(100)
+  * contenido_educativo : TEXT
+  ingredientes_herramientas : TEXT
   * puntos_base_comunidad : INT
   * nombre_insignia_oficial : VARCHAR(120)
 }
@@ -206,10 +274,18 @@ entity "actividades_ancestrales_msp" as act_msp {
   * comunidad_id : BIGINT <<FK>>
   * huerto_id : BIGINT <<FK>>
   * saber_ancestral_id : BIGINT <<FK>>
+  * fecha_realizacion : DATE
+  * fase_lunar_ejecucion : VARCHAR(30)
+  * descripcion_bitacora : TEXT
   * evidencia_foto_url : VARCHAR(500)
+  evidencia_video_url : VARCHAR(500)
   * numero_intento : INT
-  * estado_verificacion : ENUM
+  * estado_verificacion : VARCHAR(30)
+  observacion_msp : VARCHAR(500)
+  * puntos_acreditar_comunidad : INT
   verificado_por_id : BIGINT <<FK>>
+  fecha_verificacion : DATETIME
+  * creado_en : DATETIME
 }
 
 entity "actividad_msp_participantes" as part_msp {
@@ -226,32 +302,44 @@ entity "miembro_insignias" as insignias {
   --
   * miembro_id : BIGINT <<FK>>
   * comunidad_id : BIGINT <<FK>>
-  * tipo_origen : ENUM('OFICIAL_SABER_MSP','TALENTO_COMUNIDAD')
+  * tipo_origen : VARCHAR(30)
   * nombre_insignia : VARCHAR(120)
+  * descripcion : VARCHAR(255)
+  * icono_codigo : VARCHAR(60)
   saber_ancestral_id : BIGINT <<FK>>
   talento_comunidad_id : BIGINT <<FK>>
+  * fecha_obtencion : DATE
 }
 
 ' Relaciones
-usuarios ||--o{ solicitudes : "revisa"
-usuarios ||--o{ comunidades : "es responsable"
-comunidades ||--|| huertos : "posee"
-huertos ||--o{ subhuertos : "fracciona (máx 3)"
+usuarios |o--o{ solicitudes : "revisa"
+usuarios ||--o| comunidades : "es responsable"
 comunidades ||--o{ com_miembros : "integra"
 miembros ||--o{ com_miembros : "participa"
+usuarios |o--o{ plantas : "da de baja"
+usuarios |o--o{ plantas : "actualiza"
+plantas ||--o{ planta_cat : "clasifica usos"
+comunidades ||--o| huertos : "posee"
+huertos ||--o{ subhuertos : "fracciona (máx 3)"
 comunidades ||--o{ bodega : "almacena"
 plantas ||--o{ bodega : "inventaría"
 bodega ||--o{ bajas : "registra bajas"
 subhuertos ||--o{ siembras : "aloja"
-plantas ||--o{ siembras : "se siembra"
 bodega ||--o{ siembras : "descuenta"
 comunidades ||--o{ cat_act : "define"
+comunidades ||--o{ talentos : "premia"
 cat_act ||--o{ talentos : "requiere meta"
+comunidades ||--o{ reg_act : "registra"
 miembros ||--o{ reg_act : "ejecuta"
 cat_act ||--o{ reg_act : "clasifica"
 comunidades ||--o{ act_msp : "reporta evidencia"
+huertos ||--o{ act_msp : "se realiza en"
 saberes ||--o{ act_msp : "guía paso"
+usuarios |o--o{ act_msp : "verifica"
 act_msp ||--o{ part_msp : "acredita horas"
 miembros ||--o{ part_msp : "trabaja en minka"
 miembros ||--o{ insignias : "gana"
+comunidades ||--o{ insignias : "reconoce"
+saberes |o--o{ insignias : "otorga"
+talentos |o--o{ insignias : "otorga"
 @enduml

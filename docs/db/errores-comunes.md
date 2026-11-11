@@ -89,7 +89,7 @@ Hibernate compara las entidades con las tablas y encontró una diferencia:
 
 - **Hay una entidad en `model` sin su migración:** créala en `db/migration`.
 - **El nombre no coincide:** por ejemplo, el campo `fechaNacimiento` espera la columna `fecha_nacimiento`. Revisa las [convenciones de nombres](estructura.md#4-convenciones-de-tablas-y-columnas).
-- **Mayúsculas:** la tabla se creó como `Comunidad` y la entidad busca `comunidad`. Los nombres de tabla van siempre en minúsculas.
+- **Mayúsculas:** la tabla se creó como `Comunidades` y la entidad busca `comunidades`. Los nombres de tabla van siempre en minúsculas.
 
 ### `Schema-validation: wrong column type encountered in column [...]`
 

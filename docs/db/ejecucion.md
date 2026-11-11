@@ -53,7 +53,7 @@ Consultas útiles:
 
 ```sql
 SHOW TABLES;
-DESCRIBE comunidad;
+DESCRIBE comunidades;
 SELECT version, description, success FROM flyway_schema_history;
 ```
 

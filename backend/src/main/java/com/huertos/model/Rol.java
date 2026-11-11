@@ -1,7 +1,7 @@
 package com.huertos.model;
 
 public enum Rol {
-    MIEMBRO,
-    RESPONSABLE_COMUNIDAD,
-    ADMIN_MSP
+    TECNICO_SIS,
+    TECNICO_MSP,
+    RESPONSABLE_COMUNIDAD
 }

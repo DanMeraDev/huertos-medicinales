@@ -9,16 +9,20 @@ Relacionados: [Ejecución de la base](ejecucion.md) · [Errores comunes de la ba
 ```
 backend/src/main/resources/
 └── db/migration/
-    ├── V1__crear_tabla_comunidad.sql
-    ├── V2__crear_tabla_miembro.sql
-    ├── V3__insertar_catalogo_tipo_suelo.sql
+    ├── V1__crear_usuarios_y_solicitudes.sql
+    ├── V2__crear_comunidades_y_miembros.sql
+    ├── V3__crear_catalogo_plantas.sql
+    ├── V4__crear_huertos_bodega_y_siembras.sql
+    ├── V5__crear_actividades_y_talentos_comunidad.sql
+    ├── V6__crear_saberes_y_actividades_msp.sql
+    ├── V7__crear_insignias_de_miembros.sql
     └── ...
 ```
 
 | Pieza | Dónde | Quién la controla |
 |---|---|---|
 | Tablas, columnas, índices, claves | `db/migration/*.sql` | Flyway, al arrancar el back |
-| Datos de catálogo (tipos de suelo, plantas iniciales del MSP) | `db/migration/*.sql`, como `INSERT` | Flyway |
+| Datos de catálogo (plantas iniciales del MSP, saberes ancestrales, calendario lunar) | `db/migration/*.sql`, como `INSERT` | Flyway |
 | Entidades que mapean las tablas | `backend/.../model/` | Hibernate, solo para validar |
 | Historial de migraciones aplicadas | Tabla `flyway_schema_history` | Flyway (no se toca a mano) |
 
@@ -46,9 +50,9 @@ V<número>__<descripcion_en_snake_case>.sql
 
 | Bien | Mal | Por qué está mal |
 |---|---|---|
-| `V4__crear_tabla_huerto.sql` | `V4_crear_tabla_huerto.sql` | Un solo guion bajo |
-| `V5__agregar_columna_area_a_huerto.sql` | `v5__huerto.sql` | Minúscula y descripción vaga |
-| `V6__insertar_catalogo_tipo_abono.sql` | `V6__insertar catálogo.sql` | Espacio y tilde |
+| `V8__insertar_plantas_msp.sql` | `V8_insertar_plantas_msp.sql` | Un solo guion bajo |
+| `V9__agregar_columna_area_a_subhuertos.sql` | `v9__subhuertos.sql` | Minúscula y descripción vaga |
+| `V10__insertar_saberes_ancestrales.sql` | `V10__insertar saberes.sql` | Espacio y tilde |
 
 **Si dos personas usan el mismo número:** el CI falla con `Found more than one migration with version`. Quien fusiona después renombra su archivo al siguiente número libre, antes de fusionar.
 
@@ -58,16 +62,19 @@ V<número>__<descripcion_en_snake_case>.sql
 
 | Elemento | Convención | Ejemplo |
 |---|---|---|
-| Tabla | snake_case, en **singular**, en minúsculas | `comunidad`, `miembro_comunidad` |
+| Tabla | snake_case, en **plural**, en minúsculas | `comunidades`, `miembros` |
 | Columna | snake_case, en minúsculas | `fecha_nacimiento`, `contacto_responsable` |
 | Clave primaria | `id BIGINT AUTO_INCREMENT PRIMARY KEY` | `id` |
 | Clave foránea (columna) | `<tabla_referida>_id` | `comunidad_id` |
-| Clave foránea (restricción) | `fk_<tabla>_<tabla_referida>` | `fk_miembro_comunidad` |
-| Restricción única | `uk_<tabla>_<columna>` | `uk_comunidad_nombre` |
-| Índice | `idx_<tabla>_<columna>` | `idx_actividad_fecha` |
-| Tabla intermedia (muchos a muchos) | `<tabla1>_<tabla2>` | `huerto_planta` |
+| Clave foránea (restricción) | `fk_<tabla>_<referencia>` | `fk_comunidad_miembros_comunidad` |
+| Restricción única | `uk_<tabla>_<columna>` | `uk_comunidades_nombre` |
+| Restricción de validación | `ck_<tabla>_<columna>` | `ck_talentos_comunidad_meta` |
+| Índice | `idx_<tabla>_<columna>` | `idx_siembras_fecha_siembra` |
+| Tabla intermedia (muchos a muchos) | `<tabla1_singular>_<tabla2>` | `comunidad_miembros` |
 
-**Nombres siempre en minúsculas:** dentro del contenedor, MariaDB distingue mayúsculas en los nombres de tabla. `Comunidad` y `comunidad` son tablas distintas.
+Cada tabla termina con `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`. Esa intercalación no distingue mayúsculas ni tildes, así que una búsqueda con `LIKE` encuentra `Manzanilla` al buscar `manzanilla`.
+
+**Nombres siempre en minúsculas:** dentro del contenedor, MariaDB distingue mayúsculas en los nombres de tabla. `Comunidades` y `comunidades` son tablas distintas.
 
 **Tipos de dato recomendados:**
 
@@ -84,12 +91,13 @@ V<número>__<descripcion_en_snake_case>.sql
 
 Las enumeraciones se guardan como texto, nunca como número (`EnumType.ORDINAL`): si alguien reordena el `enum`, los números guardados pasarían a significar otra cosa.
 
-**Columnas de auditoría** recomendadas en las tablas que registran acciones de usuarios:
+**Columna de auditoría** en las tablas que registran acciones de usuarios:
 
 ```sql
-creado_en      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-actualizado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ```
+
+En la entidad se mapea con `@CreationTimestamp` y `@Column(updatable = false)`.
 
 **Juego de caracteres:** la base usa `utf8mb4` por defecto, así que tildes, ñ y nombres en kichwa se guardan bien sin configurar nada en cada tabla.
 
@@ -97,66 +105,64 @@ actualizado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIM
 
 Spring Boot traduce automáticamente los nombres de Java a snake_case: el campo `contactoResponsable` se mapea a la columna `contacto_responsable`. Por eso no hace falta `@Column(name = ...)` si se respeta la convención.
 
-> El SQL de ejemplo es solo ilustrativo. Las tablas reales salen del diagrama de clases validado.
-
-`V1__crear_tabla_comunidad.sql`
+Ejemplo real, de `V2__crear_comunidades_y_miembros.sql`: la tabla intermedia que une comunidades y miembros.
 
 ```sql
-CREATE TABLE comunidad (
-    id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre               VARCHAR(120) NOT NULL,
-    contacto_responsable VARCHAR(120) NOT NULL,
-    creado_en            DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uk_comunidad_nombre UNIQUE (nombre)
-);
+CREATE TABLE comunidad_miembros (
+    id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
+    comunidad_id        BIGINT       NOT NULL,
+    miembro_id          BIGINT       NOT NULL,
+    activo_en_comunidad BOOLEAN      NOT NULL DEFAULT TRUE,
+    fecha_ingreso       DATE         NOT NULL,
+    fecha_baja          DATE         NULL,
+    motivo_baja         VARCHAR(255) NULL,
+    CONSTRAINT uk_comunidad_miembros_comunidad_miembro UNIQUE (comunidad_id, miembro_id),
+    CONSTRAINT fk_comunidad_miembros_comunidad FOREIGN KEY (comunidad_id) REFERENCES comunidades (id),
+    CONSTRAINT fk_comunidad_miembros_miembro FOREIGN KEY (miembro_id) REFERENCES miembros (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
-`V2__crear_tabla_miembro.sql`
-
-```sql
-CREATE TABLE miembro (
-    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
-    comunidad_id     BIGINT       NOT NULL,
-    nombre           VARCHAR(120) NOT NULL,
-    fecha_nacimiento DATE         NOT NULL,
-    nivel            VARCHAR(20)  NOT NULL DEFAULT 'APRENDIZ',
-    CONSTRAINT fk_miembro_comunidad FOREIGN KEY (comunidad_id) REFERENCES comunidad (id)
-);
-```
-
-La entidad `Miembro` correspondiente:
+La entidad `ComunidadMiembro` correspondiente:
 
 ```java
 @Entity
-@Table(name = "miembro")
+@Table(name = "comunidad_miembros")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Miembro {
+public class ComunidadMiembro {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Comunidad comunidad;          // columna comunidad_id
+    private Comunidad comunidad;
 
-    private String nombre;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Miembro miembro;
 
-    private LocalDate fechaNacimiento;    // columna fecha_nacimiento
+    private boolean activoEnComunidad;
 
-    @Enumerated(EnumType.STRING)
-    private Nivel nivel;                  // APRENDIZ, OFICIAL, MAESTRO
+    private LocalDate fechaIngreso;
+
+    private LocalDate fechaBaja;
+
+    private String motivoBaja;
 }
 ```
 
+El campo `comunidad` se mapea a la columna `comunidad_id` y `activoEnComunidad` a `activo_en_comunidad`, sin `@Column(name = ...)`.
+
 ## 6. Datos de catálogo
 
-Los catálogos que el sistema necesita desde el inicio (tipos de suelo, de agua de riego, de abono, de cerca, diseños de huerto y las plantas iniciales de los lineamientos del MSP) se cargan con migraciones de `INSERT`, separadas de las que crean la tabla:
+Las listas fijas (tipos de suelo, de agua de riego, de abono, de cerca, diseños de huerto, fases lunares) no son tablas: son `enum` de Java guardados como `VARCHAR(30)`.
+
+Los datos que el sistema necesita desde el inicio (las plantas de los lineamientos del MSP, los saberes ancestrales y el calendario lunar) se cargan con migraciones de `INSERT`, separadas de las que crean la tabla:
 
 ```
-V7__crear_tabla_tipo_suelo.sql
-V8__insertar_catalogo_tipo_suelo.sql
+V3__crear_catalogo_plantas.sql
+V8__insertar_plantas_msp.sql
 ```
 
 Así cualquier integrante que levante la base tiene los mismos datos de catálogo, y las pruebas de integración también los tienen.
