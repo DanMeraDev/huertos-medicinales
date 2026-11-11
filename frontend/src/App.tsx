@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router'
 import { Layout } from './components/Layout'
+import { CrearUsuarioPage } from './pages/CrearUsuarioPage'
 import { InicioPage } from './pages/InicioPage'
 import { LoginPage } from './pages/LoginPage'
 import { MiComunidadPage } from './pages/MiComunidadPage'
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/" element={<InicioPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
+        <Route path="/usuarios/nuevo" element={<CrearUsuarioPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>

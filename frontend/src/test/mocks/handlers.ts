@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { authMockHandlers } from '../../features/auth/authMockHandlers'
+import { usuariosMockHandlers } from '../../features/usuarios/usuariosMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
 
 export const mockMiComunidad: ComunidadDetalleResponse = {
@@ -17,7 +18,6 @@ export const mockMiComunidad: ComunidadDetalleResponse = {
   activa: true,
   creadoEn: '2026-10-15T09:30:00Z',
 }
-import { usuariosMockHandlers } from '../../features/usuarios/usuariosMockHandlers'
 
 export const handlers = [
   http.get('*/api/ping', () =>
