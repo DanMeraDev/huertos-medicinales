@@ -21,6 +21,7 @@ import com.huertos.repository.PlantaRepository;
 import com.huertos.service.impl.BodegaServiceImpl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -151,6 +152,72 @@ class BodegaServiceImplTest {
         assertThatThrownBy(() -> bodegaService.obtenerComunidadIdPorCorreo("ajeno@correo.com"))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No existe una comunidad asociada al usuario");
+    }
+
+    @Test
+    void listarMaterialPorComunidadExitoso() {
+        BodegaMaterialVegetal entidad = new BodegaMaterialVegetal();
+        entidad.setId(100L);
+        entidad.setComunidad(comunidad);
+        entidad.setPlanta(planta);
+        entidad.setTipoMaterial(TipoMaterialVegetal.SEMILLAS);
+        entidad.setCantidadDisponible(new BigDecimal("20.00"));
+
+        MaterialVegetalResponse respuesta = new MaterialVegetalResponse(
+                100L, 1L, 10L, "Manzanilla", "Matricaria chamomilla",
+                TipoMaterialVegetal.SEMILLAS, new BigDecimal("20.00"), UnidadMedida.GRAMOS,
+                "Lote A", LocalDate.now()
+        );
+
+        when(bodegaRepository.findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(1L))
+                .thenReturn(List.of(entidad));
+        when(bodegaMapper.toListMaterialVegetalResponse(List.of(entidad)))
+                .thenReturn(List.of(respuesta));
+
+        List<MaterialVegetalResponse> resultado = bodegaService.listarMaterialPorComunidad(1L);
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.get(0).nombreComunPlanta()).isEqualTo("Manzanilla");
+    }
+
+    @Test
+    void listarMaterialPorComunidadParaResponsableValidaComunidadPropia() {
+        List<BodegaMaterialVegetal> listaVacia = List.of();
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com"))
+                .thenReturn(Optional.of(comunidad));
+        when(bodegaRepository.findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(1L))
+                .thenReturn(listaVacia);
+        when(bodegaMapper.toListMaterialVegetalResponse(listaVacia)).thenReturn(List.of());
+
+        List<MaterialVegetalResponse> resultado = bodegaService.listarMaterialPorComunidad(
+                1L, "responsable@correo.com", false
+        );
+
+        assertThat(resultado).isEmpty();
+    }
+
+    @Test
+    void listarMaterialPorComunidadParaResponsableRechazaComunidadAjena() {
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com"))
+                .thenReturn(Optional.of(comunidad));
+
+        assertThatThrownBy(() -> bodegaService.listarMaterialPorComunidad(2L, "responsable@correo.com", false))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class)
+                .hasMessage("No tiene permisos para consultar el inventario de otra comunidad");
+    }
+
+    @Test
+    void listarMaterialPorComunidadParaTecnicoMspPermiteCualquierComunidad() {
+        List<BodegaMaterialVegetal> listaVacia = List.of();
+        when(bodegaRepository.findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(2L))
+                .thenReturn(listaVacia);
+        when(bodegaMapper.toListMaterialVegetalResponse(listaVacia)).thenReturn(List.of());
+
+        List<MaterialVegetalResponse> resultado = bodegaService.listarMaterialPorComunidad(
+                2L, "tecnico@msp.gob.ec", true
+        );
+
+        assertThat(resultado).isEmpty();
     }
 }
 
