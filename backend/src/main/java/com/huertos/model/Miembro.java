@@ -42,6 +42,10 @@ public class Miembro {
 
     private int puntosTotales;
 
+    private boolean consentimientoDatos;
+
+    private LocalDateTime consentimientoEn;
+
     private boolean activo;
 
     private LocalDateTime creadoEn;

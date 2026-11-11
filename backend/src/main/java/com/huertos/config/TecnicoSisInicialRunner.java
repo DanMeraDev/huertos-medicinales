@@ -5,6 +5,7 @@ import com.huertos.model.Rol;
 import com.huertos.model.Usuario;
 import com.huertos.repository.UsuarioRepository;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -23,25 +24,28 @@ public class TecnicoSisInicialRunner implements ApplicationRunner {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final Clock clock;
-    private final String email;
+    private final String correo;
     private final String contrasena;
+    private final String fechaNacimiento;
 
     public TecnicoSisInicialRunner(
             UsuarioRepository usuarioRepository,
             PasswordEncoder passwordEncoder,
             Clock clock,
-            @Value("${app.admin.email}") String email,
-            @Value("${app.admin.contrasena}") String contrasena) {
+            @Value("${app.admin.correo}") String correo,
+            @Value("${app.admin.contrasena}") String contrasena,
+            @Value("${app.admin.fecha-nacimiento}") String fechaNacimiento) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.clock = clock;
-        this.email = email;
+        this.correo = correo;
         this.contrasena = contrasena;
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     @Override
     public void run(ApplicationArguments args) {
-        if (StringUtils.hasText(email) && StringUtils.hasText(contrasena)
+        if (StringUtils.hasText(correo) && StringUtils.hasText(contrasena) && StringUtils.hasText(fechaNacimiento)
                 && !usuarioRepository.existsByRol(Rol.TECNICO_SIS)) {
             usuarioRepository.save(crearTecnicoDeSistemas());
         }
@@ -51,9 +55,10 @@ public class TecnicoSisInicialRunner implements ApplicationRunner {
         Usuario tecnico = new Usuario();
         tecnico.setNombreCompleto("Técnico de sistemas");
         tecnico.setIdentificacion("TECNICO-SIS");
+        tecnico.setFechaNacimiento(LocalDate.parse(fechaNacimiento));
         tecnico.setGenero(Genero.OTRO);
-        tecnico.setEmail(email);
-        tecnico.setContrasena(passwordEncoder.encode(contrasena));
+        tecnico.setCorreo(correo);
+        tecnico.setPasswordHash(passwordEncoder.encode(contrasena));
         tecnico.setRol(Rol.TECNICO_SIS);
         tecnico.setRequiereCambioClave(false);
         tecnico.setActivo(true);

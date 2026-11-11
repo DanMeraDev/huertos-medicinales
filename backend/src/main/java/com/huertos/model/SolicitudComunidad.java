@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,12 +53,18 @@ public class SolicitudComunidad {
 
     private String nombreSolicitante;
 
+    private LocalDate fechaNacimientoSolicitante;
+
+    @Enumerated(EnumType.STRING)
+    private Genero generoSolicitante;
+
     private String correoSolicitante;
 
     private String celularSolicitante;
 
-    @Enumerated(EnumType.STRING)
-    private Genero generoSolicitante;
+    private boolean consentimientoDatos;
+
+    private LocalDateTime consentimientoEn;
 
     @Enumerated(EnumType.STRING)
     private EstadoSolicitud estado;

@@ -34,5 +34,6 @@ app:
   jwt:
     expiracion-minutos: ${JWT_EXPIRACION_MINUTOS:480}
   admin:
-    email: ${ADMIN_EMAIL:}
+    correo: ${ADMIN_EMAIL:}
     contrasena: ${ADMIN_PASSWORD:}
+    fecha-nacimiento: ${ADMIN_FECHA_NACIMIENTO:}

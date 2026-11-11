@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    boolean existsByEmail(String email);
+    boolean existsByCorreo(String correo);
 
     boolean existsByIdentificacion(String identificacion);
 
-    Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByCorreo(String correo);
 
     boolean existsByRol(Rol rol);
 }

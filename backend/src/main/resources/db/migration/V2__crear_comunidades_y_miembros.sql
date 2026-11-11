@@ -17,17 +17,19 @@ CREATE TABLE comunidades (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE miembros (
-    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
-    cedula           VARCHAR(13)  NOT NULL,
-    nombres          VARCHAR(100) NOT NULL,
-    apellidos        VARCHAR(100) NOT NULL,
-    fecha_nacimiento DATE         NOT NULL,
-    genero           VARCHAR(20)  NOT NULL,
-    telefono         VARCHAR(20)  NULL,
-    nivel            VARCHAR(20)  NOT NULL DEFAULT 'APRENDIZ',
-    puntos_totales   INT          NOT NULL DEFAULT 0,
-    activo           BOOLEAN      NOT NULL DEFAULT TRUE,
-    creado_en        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id                   BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    cedula               VARCHAR(13)  NOT NULL,
+    nombres              VARCHAR(100) NOT NULL,
+    apellidos            VARCHAR(100) NOT NULL,
+    fecha_nacimiento     DATE         NOT NULL,
+    genero               VARCHAR(20)  NOT NULL,
+    telefono             VARCHAR(20)  NULL,
+    nivel                VARCHAR(20)  NOT NULL DEFAULT 'APRENDIZ',
+    puntos_totales       INT          NOT NULL DEFAULT 0,
+    consentimiento_datos BOOLEAN      NOT NULL,
+    consentimiento_en    DATETIME     NOT NULL,
+    activo               BOOLEAN      NOT NULL DEFAULT TRUE,
+    creado_en            DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_miembros_cedula UNIQUE (cedula)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
