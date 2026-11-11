@@ -34,9 +34,9 @@ class JwtServiceTest {
         Jwt jwt = jwtService.validar(token).orElseThrow();
 
         assertThat(jwt.getSubject()).isEqualTo("rosa@correo.com");
-        assertThat(jwt.getClaim("id")).isEqualTo(15L);
+        assertThat(jwt.<Long>getClaim("id")).isEqualTo(15L);
         assertThat(jwt.getClaimAsString("rol")).isEqualTo("RESPONSABLE_COMUNIDAD");
-        assertThat(jwt.getClaim("requiereCambioClave")).isEqualTo(true);
+        assertThat(jwt.<Boolean>getClaim("requiereCambioClave")).isTrue();
     }
 
     @Test
