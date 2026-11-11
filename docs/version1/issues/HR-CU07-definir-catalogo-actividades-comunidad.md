@@ -91,8 +91,8 @@ labels: ["caso-de-uso", "back", "front", "importante"]
 - [x] **DTOs:** `CrearActividadCatalogoRequest.java`, `ActividadCatalogoResponse.java`.
 - [x] **Service:** `ActividadCatalogoService.java`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
-- [x] **Tabla `catalogo_actividades_comunidad`:** Clave foránea `fk_cat_act_comunidad`.
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V5__crear_actividades_y_talentos_comunidad.sql`; ya existen, NO crear migraciones)
+- [x] **Tabla `catalogo_actividades_comunidad`:** Clave foránea `fk_catalogo_actividades_comunidad_comunidad`.
 
 ---
 

@@ -44,7 +44,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 1. El **Visitante / Voluntario (Modo Libre - Sin Cuenta)** interactuará con el campo de búsqueda (pulsando con el dedo en móvil o presionando `/` o clic en PC).
 2. El usuario ingresará al menos 2 caracteres (ej: *"chupa"* o *"matico"*).
 3. El **Sistema** frontend activará el debounce (300 ms) y enviará la petición HTTP `GET /api/publico/plantas/buscar?criterio={criterio}`.
-4. El **Sistema** backend ejecutará la consulta `ILIKE` en `nombre_comun`, `nombre_cientifico` y `nombre_kichwa` filtrando `activa = true`.
+4. El **Sistema** backend ejecutará la consulta `LIKE` (MariaDB no tiene `ILIKE`; la intercalación de la tabla ya ignora mayúsculas y tildes) en `nombre_comun`, `nombre_cientifico` y `nombre_kichwa` filtrando `activa = true`.
 5. El **Sistema** backend responderá con código HTTP `200 OK` y `List<PlantaResumenResponse>`.
 6. El **Sistema** frontend actualizará la vista: lista vertical en smartphone o cuadrícula multicolumna en PC.
 7. Al borrar el texto o pulsar el botón "X", el sistema reestablece la vista del catálogo completo.
@@ -79,8 +79,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Service (`com.huertos.service.PlantaService.java`):**
   - Método `List<PlantaResumenResponse> buscarPorNombre(String criterio)`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
-- [x] **Repository (`com.huertos.repository.PlantaRepository.java`):** Consulta `ILIKE` en los 3 nombres.
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)
+- [x] **Repository (`com.huertos.repository.PlantaRepository.java`):** Consulta `LIKE` en los 3 nombres.
 
 ---
 

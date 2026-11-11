@@ -98,7 +98,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **DTOs:** `RegistrarSiembraRequest.java`, `SiembraDetalleResponse.java`.
 - [x] **Service:** `SiembraService.java`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V4__crear_huertos_bodega_y_siembras.sql`; ya existen, NO crear migraciones)
 - [x] **Tablas:** `siembras`, `bodega_material_vegetal`, `subhuertos`, `huertos`.
 
 ---

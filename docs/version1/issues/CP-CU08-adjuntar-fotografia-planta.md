@@ -76,7 +76,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **DTOs:** `FotografiaSubidaResponse.java` (`record`).
 - [x] **Service:** `AlmacenamientoService.java`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)
 - [x] **Tabla `plantas`:** `fotografia_url`.
 
 ---

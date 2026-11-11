@@ -89,7 +89,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **DTOs:** `ActualizarHuertoRequest.java`, `HuertoDetalleResponse.java`.
 - [x] **Service:** `HuertoService.java`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V4__crear_huertos_bodega_y_siembras.sql`; ya existen, NO crear migraciones)
 - [x] **Tabla `huertos`:** Clave única sobre `comunidad_id`.
 
 ---

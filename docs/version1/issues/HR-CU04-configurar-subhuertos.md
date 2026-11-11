@@ -93,8 +93,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **DTOs:** `CrearSubhuertoRequest.java`, `SubhuertoResponse.java`.
 - [x] **Service:** `SubhuertoService.java`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
-- [x] **Tabla `subhuertos`:** Clave foránea `fk_subhuerto_huerto`.
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V4__crear_huertos_bodega_y_siembras.sql`; ya existen, NO crear migraciones)
+- [x] **Tabla `subhuertos`:** Clave foránea `fk_subhuertos_huerto`.
 
 ---
 

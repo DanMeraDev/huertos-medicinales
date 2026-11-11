@@ -78,7 +78,7 @@ labels: ["caso-de-uso", "back", "front", "deseable"]
   - `PATCH /api/msp/plantas/{id}/baja` con `@PreAuthorize("hasRole('TECNICO_MSP')")`. Retorna `204 No Content`.
 - [x] **Service:** `PlantaAdminService.java`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)
 - [x] **Tabla `plantas`:** Columna `activa`.
 
 ---

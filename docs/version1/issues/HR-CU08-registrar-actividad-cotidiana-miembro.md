@@ -103,7 +103,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **DTOs:** `RegistrarLaborMiembroRequest.java`, `ResultadoAcreditacionMiembroResponse.java`.
 - [x] **Service:** `RegistroActividadMiembroService.java`.
 
-### 4.3. Objetos Entity y Base de Datos (`docs/version1/V2__esquema__completo_v1.sql`)
+### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V2__crear_comunidades_y_miembros.sql`, `V5__crear_actividades_y_talentos_comunidad.sql` y `V7__crear_insignias_de_miembros.sql`; ya existen, NO crear migraciones)
 - [x] **Tablas:** `registro_actividades_miembro`, `miembros`, `catalogo_actividades_comunidad`, `talentos_comunidad`, `miembro_insignias`.
 - [x] **Regla Estricta:** No se modifican los puntos en las tablas `comunidades` ni `huertos`.
 
