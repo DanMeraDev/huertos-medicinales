@@ -56,9 +56,9 @@ labels: ["caso-de-uso", "back", "imprescindible"]
 
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Service (`com.huertos.service.BodegaService.java` y `com.huertos.service.impl.BodegaServiceImpl.java`):**
-  - Método `@Transactional void descontarStockPorSiembra(Long bodegaMaterialId, Integer cantidadSembrada)`.
+  - Método `@Transactional void descontarStockPorSiembra(Long bodegaMaterialId, BigDecimal cantidadSembrada)`.
 - [x] **DTOs (`com.huertos.dto`):**
-  - `DescuentoStockRequest.java` (`record` con: `@NotNull Long bodegaMaterialId`, `@NotNull @Positive Integer cantidadSembrada`).
+  - `DescuentoStockRequest.java` (`record` con: `@NotNull Long bodegaMaterialId`, `@NotNull @Positive @Digits(integer = 8, fraction = 2) BigDecimal cantidadSembrada`).
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:** Tablas `bodega_material_vegetal` y `siembras` en `V4__crear_huertos_bodega_y_siembras.sql` (ya existen; NO crear migraciones).

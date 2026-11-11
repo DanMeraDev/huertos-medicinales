@@ -30,7 +30,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 1. El **Responsable de Comunidad** visualiza el inventario en `"/bodega/inventario"` y pulsa la acción **`"Dar de Baja"`** en la fila del material afectado.
 2. El **Sistema** abre el componente `Modal` con el formulario de baja conteniendo:
    - Nombre de la planta y stock disponible actual (solo lectura).
-   - `Cantidad a dar de baja` (`cantidadBaja`: entero positivo menor o igual al stock, obligatorio).
+   - `Cantidad a dar de baja` (`cantidadBaja`: numérico positivo con hasta 2 decimales, menor o igual al stock, obligatorio).
    - `Causa del Fracaso` (`causaFracaso`: componente `Selector` con opciones: `HELADA_CLIMA_EXTREMO`, `PLAGA_ENFERMEDAD`, `SEQUIA_FALTA_RIEGO`, `SUELO_INADECUADO`, `DANIO_EXTERNO`, `CADUCIDAD_PUDRICION`).
    - `Observaciones / Detalle` (`observacion`: componente `CampoTexto`, opcional, máx 300 caracteres).
    - Botón **`"Confirmar Baja"`** (componente `Boton`).
@@ -72,8 +72,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Controller (`com.huertos.controller.BodegaController.java`):**
   - `POST /api/bodega/material-vegetal/{id}/bajas` -> Retorna `201 Created` con `BajaMaterialResponse`. Protegido con `@PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")`.
 - [x] **DTOs (`com.huertos.dto`):**
-  - `RegistrarBajaMaterialRequest.java` (`record` con: `@NotNull @Positive Integer cantidadBaja`, `@NotNull CausaFracaso causaFracaso`, `String observacion`).
-  - `BajaMaterialResponse.java` (`record` con: `Long id`, `Long bodegaMaterialId`, `Integer cantidadBaja`, `CausaFracaso causaFracaso`, `String observacion`, `LocalDateTime fechaBaja`).
+  - `RegistrarBajaMaterialRequest.java` (`record` con: `@NotNull @Positive @Digits(integer = 8, fraction = 2) BigDecimal cantidadBaja`, `@NotNull CausaFracaso causaFracaso`, `String observacion`).
+  - `BajaMaterialResponse.java` (`record` con: `Long id`, `Long bodegaMaterialId`, `BigDecimal cantidadBaja`, `CausaFracaso causaFracaso`, `String observacion`, `LocalDateTime fechaBaja`).
 - [x] **Service (`com.huertos.service.BodegaService.java` y `com.huertos.service.impl.BodegaServiceImpl.java`):**
   - Método `@Transactional BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request)`.
 - [x] **Mapper (`com.huertos.mapper.BodegaMapper.java`):**
@@ -83,6 +83,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Migración Flyway:** Tablas `bodega_material_vegetal` y `bajas_material_vegetal` en `V4__crear_huertos_bodega_y_siembras.sql` (ya existen; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.BajaMaterialVegetal.java` y `CausaFracaso.java`):**
   - Mapeo de la entidad con clave foránea hacia `BodegaMaterialVegetal`.
+  - El campo `causaFracaso` del DTO se guarda en el atributo `causa` de la entidad (columna `causa`); la cantidad va en `cantidadBaja` (`BigDecimal`, columna `cantidad_baja DECIMAL(10,2)`).
 - [x] **Repository (`com.huertos.repository.BajaMaterialVegetalRepository.java`):**
   - Interfaz `JpaRepository<BajaMaterialVegetal, Long>`.
 

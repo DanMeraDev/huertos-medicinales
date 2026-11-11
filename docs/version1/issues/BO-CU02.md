@@ -74,7 +74,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Controller (`com.huertos.controller.BodegaController.java`):**
   - `GET /api/bodega/comunidades/{comunidadId}/material-vegetal` -> Retorna `200 OK` con `List<MaterialVegetalResponse>`. Protegido con `@PreAuthorize("hasAnyRole('RESPONSABLE_COMUNIDAD', 'TECNICO_MSP')")`.
 - [x] **DTOs (`com.huertos.dto`):**
-  - `MaterialVegetalResponse.java` (`record` con: `Long id`, `Long comunidadId`, `Long plantaId`, `String nombreComunPlanta`, `String nombreCientificoPlanta`, `TipoMaterialVegetal tipoMaterial`, `Integer cantidadDisponible`, `UnidadMedida unidadMedida`, `String loteOrigen`, `LocalDate fechaIngreso`).
+  - `MaterialVegetalResponse.java` (`record` con: `Long id`, `Long comunidadId`, `Long plantaId`, `String nombreComunPlanta`, `String nombreCientificoPlanta`, `TipoMaterialVegetal tipoMaterial`, `BigDecimal cantidadDisponible`, `UnidadMedida unidadMedida`, `String loteOrigen`, `LocalDate fechaIngreso`).
 - [x] **Service (`com.huertos.service.BodegaService.java` y `com.huertos.service.impl.BodegaServiceImpl.java`):**
   - Método `List<MaterialVegetalResponse> listarMaterialPorComunidad(Long comunidadId)`.
 - [x] **Mapper (`com.huertos.mapper.BodegaMapper.java`):**

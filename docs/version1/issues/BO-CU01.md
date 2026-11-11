@@ -31,7 +31,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 2. El **Sistema** despliega el formulario de ingreso utilizando los componentes `Selector`, `CampoTexto` y `Boton`:
    - `Planta del Catálogo` (`plantaId`: selector con búsqueda de plantas activas).
    - `Tipo de Material` (`tipoMaterial`: selector con valores `SEMILLAS`, `ESTACAS`, `ESQUEJES`, `PLANTULAS`).
-   - `Cantidad Ingresada` (`cantidad`: numérico entero positivo, obligatorio).
+   - `Cantidad Ingresada` (`cantidad`: numérico positivo con hasta 2 decimales, obligatorio; admite decimales porque la unidad puede ser `GRAMOS`).
    - `Unidad de Medida` (`unidadMedida`: selector con valores `UNIDADES`, `GRAMOS`, `MANOJOS`).
    - `Lote u Origen` (`loteOrigen`: texto opcional, ej. "Donación vivero local").
    - `Fecha de Ingreso` (`fechaIngreso`: selector de fecha, obligatorio).
@@ -73,8 +73,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Controller (`com.huertos.controller.BodegaController.java`):**
   - `POST /api/bodega/material-vegetal` -> Retorna `201 Created` con `MaterialVegetalResponse`. Endpoint asegurado con `@PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")`.
 - [x] **DTOs (`com.huertos.dto`):**
-  - `RegistrarMaterialVegetalRequest.java` (`record` con: `@NotNull Long plantaId`, `@NotNull TipoMaterialVegetal tipoMaterial`, `@NotNull @Positive Integer cantidad`, `@NotNull UnidadMedida unidadMedida`, `String loteOrigen`, `@NotNull LocalDate fechaIngreso`).
-  - `MaterialVegetalResponse.java` (`record` con: `Long id`, `Long comunidadId`, `Long plantaId`, `String nombrePlanta`, `TipoMaterialVegetal tipoMaterial`, `Integer cantidadDisponible`, `UnidadMedida unidadMedida`, `String loteOrigen`, `LocalDate fechaIngreso`).
+  - `RegistrarMaterialVegetalRequest.java` (`record` con: `@NotNull Long plantaId`, `@NotNull TipoMaterialVegetal tipoMaterial`, `@NotNull @Positive @Digits(integer = 8, fraction = 2) BigDecimal cantidad`, `@NotNull UnidadMedida unidadMedida`, `String loteOrigen`, `@NotNull LocalDate fechaIngreso`).
+  - `MaterialVegetalResponse.java` (`record` con: `Long id`, `Long comunidadId`, `Long plantaId`, `String nombreComunPlanta`, `String nombreCientificoPlanta`, `TipoMaterialVegetal tipoMaterial`, `BigDecimal cantidadDisponible`, `UnidadMedida unidadMedida`, `String loteOrigen`, `LocalDate fechaIngreso`); es el mismo DTO que usa `BO-CU02`, no crear otro distinto.
 - [x] **Service (`com.huertos.service.BodegaService.java` y `com.huertos.service.impl.BodegaServiceImpl.java`):**
   - Método `MaterialVegetalResponse registrarIngresoMaterial(Long comunidadId, RegistrarMaterialVegetalRequest request)`.
 - [x] **Mapper (`com.huertos.mapper.BodegaMapper.java`):**
