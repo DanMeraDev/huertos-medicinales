@@ -88,7 +88,13 @@ labels: ["caso-de-uso", "back", "front", "importante"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.ActividadCatalogoController.java`):**
   - `POST /api/comunidad/actividades-catalogo` con `@PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")`. Retorna `201 Created`.
-- [x] **DTOs:** `CrearActividadCatalogoRequest.java`, `ActividadCatalogoResponse.java`.
+- [x] **DTOs (`com.huertos.dto`):**
+  - `CrearActividadCatalogoRequest.java` (`record`):
+    - `nombre`: `String`, obligatorio (`@NotBlank`, `@Size(max = 120)`); no se repite dentro de la misma comunidad (HTTP 409).
+    - `categoria`: `CategoriaActividad` (`LIMPIEZA_DESHIERBE`, `RIEGO`, `ABONO_COMPOST`, `REPLANTE_APORQUE`, `CUIDADO_GENERAL`), obligatorio.
+    - No se envían `comunidadId` (sale del usuario autenticado) ni `puntosPorHora` (siempre 1).
+  - `ActividadCatalogoResponse.java` (`record`): `Long id`, `String nombre`, `CategoriaActividad categoria`, `Integer puntosPorHora`, `boolean activa`.
+- [x] **Entidad JPA:** `com.huertos.model.ActividadComunidad` sobre `catalogo_actividades_comunidad` (`V5__crear_actividades_y_talentos_comunidad.sql`; ya existe, NO crear migraciones).
 - [x] **Service:** `ActividadCatalogoService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V5__crear_actividades_y_talentos_comunidad.sql`; ya existen, NO crear migraciones)

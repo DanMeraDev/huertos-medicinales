@@ -100,7 +100,15 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.RegistroActividadMiembroController.java`):**
   - `POST /api/comunidad/actividades-miembros` con `@PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")`. Retorna `201 Created`.
-- [x] **DTOs:** `RegistrarLaborMiembroRequest.java`, `ResultadoAcreditacionMiembroResponse.java`.
+- [x] **DTOs (`com.huertos.dto`):**
+  - `RegistrarLaborMiembroRequest.java` (`record`):
+    - `miembroId`: `Long`, obligatorio; debe estar activo en la comunidad del usuario (`comunidad_miembros.activo_en_comunidad = true`).
+    - `actividadComunidadId`: `Long`, obligatorio; actividad activa del catálogo de la misma comunidad (`HR-CU07`).
+    - `fechaActividad`: `LocalDate`, obligatorio, no futura (`@NotNull`, `@PastOrPresent`).
+    - `horasTrabajadas`: `Integer`, obligatorio, entre 1 y 24 (`@Min(1)`, `@Max(24)`).
+    - `observacion`: `String`, opcional (`@Size(max = 255)`).
+  - `ResultadoAcreditacionMiembroResponse.java` (`record`): `Long registroId`, `Long miembroId`, `Integer puntosOtorgados`, `Integer puntosTotales`, `NivelMiembro nivel`, `boolean subioDeNivel`, `List<String> talentosDesbloqueados`.
+- [x] **Entidad JPA:** `com.huertos.model.RegistroActividadMiembro` sobre `registro_actividades_miembro` (`V5`; ya existe, NO crear migraciones). `puntos_otorgados = horas_trabajadas * puntos_por_hora` de la actividad.
 - [x] **Service:** `RegistroActividadMiembroService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V2__crear_comunidades_y_miembros.sql`, `V5__crear_actividades_y_talentos_comunidad.sql` y `V7__crear_insignias_de_miembros.sql`; ya existen, NO crear migraciones)
