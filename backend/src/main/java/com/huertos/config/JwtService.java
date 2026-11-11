@@ -45,13 +45,21 @@ public class JwtService {
     }
 
     public String generarToken(String email, String rol) {
+        return generarToken(null, email, rol, false);
+    }
+
+    public String generarToken(Long id, String email, String rol, boolean requiereCambioClave) {
         Instant ahora = clock.instant();
-        JwtClaimsSet datos = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
                 .subject(email)
                 .claim("rol", rol)
+                .claim("requiereCambioClave", requiereCambioClave)
                 .issuedAt(ahora)
-                .expiresAt(ahora.plus(expiracion))
-                .build();
+                .expiresAt(ahora.plus(expiracion));
+        if (id != null) {
+            builder.claim("id", id);
+        }
+        JwtClaimsSet datos = builder.build();
         JwsHeader encabezado = JwsHeader.with(MacAlgorithm.HS256).build();
         return codificador.encode(JwtEncoderParameters.from(encabezado, datos)).getTokenValue();
     }

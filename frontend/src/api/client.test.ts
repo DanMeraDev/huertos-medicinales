@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/mocks/server'
-import { ApiError, apiGet, apiPost, apiPostFormData, apiPut } from './client'
+import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPostFormData, apiPut } from './client'
 
 async function capturarError(promesa: Promise<unknown>): Promise<ApiError> {
   try {
@@ -13,6 +13,10 @@ async function capturarError(promesa: Promise<unknown>): Promise<ApiError> {
 }
 
 describe('client', () => {
+  afterEach(() => {
+    localStorage.clear()
+  })
+
   it('apiGet devuelve el cuerpo de la respuesta', async () => {
     server.use(http.get('*/api/prueba', () => HttpResponse.json({ valor: 1 })))
 
@@ -49,6 +53,49 @@ describe('client', () => {
     await expect(apiPut('/prueba/7', { nombre: 'Ruda' })).resolves.toEqual({ id: 7, nombre: 'Ruda' })
     expect(tipoContenido).toBe('application/json')
     expect(cuerpo).toEqual({ nombre: 'Ruda' })
+  })
+
+  it('apiPatch envía el cuerpo como JSON y devuelve la respuesta', async () => {
+    let tipoContenido: string | null = null
+    let cuerpo: unknown
+    server.use(
+      http.patch('*/api/prueba/7', async ({ request }) => {
+        tipoContenido = request.headers.get('Content-Type')
+        cuerpo = await request.json()
+        return HttpResponse.json({ id: 7, activo: false })
+      }),
+    )
+
+    await expect(apiPatch('/prueba/7', { activo: false })).resolves.toEqual({ id: 7, activo: false })
+    expect(tipoContenido).toBe('application/json')
+    expect(cuerpo).toEqual({ activo: false })
+  })
+
+  it('apiDelete envía la petición DELETE y maneja 204', async () => {
+    let metodo: string | null = null
+    server.use(
+      http.delete('*/api/prueba/7', ({ request }) => {
+        metodo = request.method
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+
+    await expect(apiDelete('/prueba/7')).resolves.toBeUndefined()
+    expect(metodo).toBe('DELETE')
+  })
+
+  it('adjunta el token de localStorage si existe', async () => {
+    localStorage.setItem('token', 'mi-token-jwt')
+    let authHeader: string | null = null
+    server.use(
+      http.get('*/api/privado', ({ request }) => {
+        authHeader = request.headers.get('Authorization')
+        return HttpResponse.json({ ok: true })
+      }),
+    )
+
+    await apiGet('/privado')
+    expect(authHeader).toBe('Bearer mi-token-jwt')
   })
 
   it('apiPostFormData envía el FormData sin forzar JSON', async () => {

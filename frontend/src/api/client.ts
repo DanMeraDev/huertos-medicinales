@@ -39,6 +39,11 @@ async function solicitar<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
+
   const respuesta = await fetch(new URL(`/api${path}`, window.location.origin), { ...init, headers })
 
   if (!respuesta.ok) {
@@ -74,6 +79,14 @@ export function apiPost<T>(path: string, body: unknown): Promise<T> {
 
 export function apiPut<T>(path: string, body: unknown): Promise<T> {
   return solicitar<T>(path, conJson('PUT', body))
+}
+
+export function apiPatch<T>(path: string, body: unknown): Promise<T> {
+  return solicitar<T>(path, conJson('PATCH', body))
+}
+
+export function apiDelete<T>(path: string): Promise<T> {
+  return solicitar<T>(path, { method: 'DELETE' })
 }
 
 export function apiPostFormData<T>(path: string, formData: FormData): Promise<T> {

@@ -12,6 +12,8 @@ const MODULOS = [
   { nombre: 'Huerto Real', ruta: '/huerto-real' },
   { nombre: 'Catálogo de Plantas', ruta: '/plantas' },
   { nombre: 'Bodega', ruta: '/bodega' },
+  { nombre: 'Saberes Ancestrales', ruta: '/saberes-ancestrales' },
+  { nombre: 'Rankings', ruta: '/ranking/comunidades' },
 ]
 
 export function Layout({ children }: LayoutProps) {
