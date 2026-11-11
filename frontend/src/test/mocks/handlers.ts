@@ -17,6 +17,7 @@ export const mockMiComunidad: ComunidadDetalleResponse = {
   activa: true,
   creadoEn: '2026-10-15T09:30:00Z',
 }
+import { usuariosMockHandlers } from '../../features/usuarios/usuariosMockHandlers'
 
 export const handlers = [
   http.get('*/api/ping', () =>
@@ -33,4 +34,5 @@ export const handlers = [
       ...datos,
     })
   }),
+  ...usuariosMockHandlers,
 ]
