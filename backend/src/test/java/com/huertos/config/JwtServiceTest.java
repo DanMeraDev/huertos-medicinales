@@ -28,6 +28,18 @@ class JwtServiceTest {
     }
 
     @Test
+    void generaUnTokenConIdYRequiereCambioClave() {
+        String token = jwtService.generarToken(15L, "rosa@correo.com", "RESPONSABLE_COMUNIDAD", true);
+
+        Jwt jwt = jwtService.validar(token).orElseThrow();
+
+        assertThat(jwt.getSubject()).isEqualTo("rosa@correo.com");
+        assertThat(jwt.getClaim("id")).isEqualTo(15L);
+        assertThat(jwt.getClaimAsString("rol")).isEqualTo("RESPONSABLE_COMUNIDAD");
+        assertThat(jwt.getClaim("requiereCambioClave")).isEqualTo(true);
+    }
+
+    @Test
     void rechazaUnTokenFirmadoConOtraClave() {
         JwtService otroServicio = new JwtService(
                 "otra-clave-de-prueba-con-mas-de-32-caracteres", 480, relojEn(AHORA));

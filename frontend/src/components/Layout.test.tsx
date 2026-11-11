@@ -28,6 +28,8 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: 'Huerto Real' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Catálogo de Plantas' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Bodega' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Saberes Ancestrales' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Rankings' })).toBeInTheDocument()
   })
 
   it('renderiza el contenido hijo', () => {

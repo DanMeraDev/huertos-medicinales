@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/api/auth/**", "/api/usuarios/registro", "/api/ping", "/actuator/health/**",
+                        .requestMatchers("/api/auth/**", "/api/publico/**", "/api/usuarios/registro", "/api/ping", "/actuator/health/**",
                                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(b -> b.disable())
