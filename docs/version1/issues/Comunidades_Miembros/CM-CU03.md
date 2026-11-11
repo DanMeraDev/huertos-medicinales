@@ -17,7 +17,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 1. `El usuario ha iniciado sesión con el rol RESPONSABLE_COMUNIDAD y cuenta con un token JWT válido (Authorization: Bearer <token>).`
 2. `El usuario lidera una comunidad activa vinculada a su responsable_id en la tabla comunidades.`
 3. `La comunidad cuenta con al menos una actividad registrada y activa en catalogo_actividades_comunidad (HR-CU07).`
-4. `Las tablas talentos_comunidad y catalogo_actividades_comunidad vienen en una migración Flyway posterior (confirmar con Daniel cuál: V5–V7; NO crear la migración por cuenta propia).`
+4. `Las tablas talentos_comunidad y catalogo_actividades_comunidad están en la migración `V5__crear_actividades_y_talentos_comunidad.sql`; NO crear la migración por cuenta propia.`
 5. `El endpoint POST /api/comunidades/mi-comunidad/talentos se encuentra protegido exigiendo rol RESPONSABLE_COMUNIDAD en SecurityConfig.java.`
 
 ### Postcondiciones
@@ -154,7 +154,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
-  - Las tablas requeridas para este caso de uso (`talentos_comunidad` y `catalogo_actividades_comunidad`) NO forman parte de las migraciones V1 a V4; vienen en una migración Flyway posterior (confirmar con Daniel cuál: V5–V7).
+  - Las tablas requeridas para este caso de uso (`talentos_comunidad` y `catalogo_actividades_comunidad`) están en la migración `V5__crear_actividades_y_talentos_comunidad.sql`.
   - *(ADVERTENCIA PARA EL AGENTE DE IA: NO crear ningún archivo de migración SQL por cuenta propia; asumir que la estructura ya existe en la base de datos al momento de programar)*.
   - Estructura prevista de `talentos_comunidad`:
     - `id` BIGINT AUTO_INCREMENT PRIMARY KEY

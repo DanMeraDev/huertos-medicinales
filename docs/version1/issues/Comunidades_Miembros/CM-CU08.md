@@ -129,7 +129,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
 - [x] **Migración Flyway:**
   - Emplea las tablas base `miembros`, `comunidad_miembros` y `comunidades` del esquema MariaDB en las migraciones reales del backend (`db/migration/` V1 a V4 con tipos `VARCHAR` y `DATETIME` estándar, incluyendo `consentimiento_datos BOOLEAN NOT NULL` y `consentimiento_en DATETIME NOT NULL` en `miembros`).
-  - La tabla `miembro_insignias` NO forma parte de las migraciones V1 a V4; viene en una migración posterior (confirmar con Daniel cuál: V5–V7).
+  - La tabla `miembro_insignias` está en la migración `V7__crear_insignias_de_miembros.sql`.
   - *(ADVERTENCIA PARA EL AGENTE DE IA: NO crear ningún archivo de migración SQL por cuenta propia; asumir que la estructura ya existe en la base de datos al momento de programar)*.
 - [x] **Entidad JPA (`com.huertos.model.Miembro.java`, `com.huertos.model.MiembroInsignia.java`):**
   - Mapeo de entidades con JPA.
