@@ -5,6 +5,7 @@ import { InicioPage } from './pages/InicioPage'
 import { LoginPage } from './pages/LoginPage'
 import { MiComunidadPage } from './pages/MiComunidadPage'
 import { NoEncontradaPage } from './pages/NoEncontradaPage'
+import { SolicitarComunidadPage } from './pages/SolicitarComunidadPage'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
         <Route path="/usuarios/nuevo" element={<CrearUsuarioPage />} />
+        <Route path="/solicitar-comunidad" element={<SolicitarComunidadPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
