@@ -10,7 +10,7 @@ const MODULOS = [
   { nombre: 'Acceso', ruta: '/' },
   { nombre: 'Comunidades y Miembros', ruta: '/comunidades' },
   { nombre: 'Huerto Real', ruta: '/huerto-real' },
-  { nombre: 'Catálogo de Plantas', ruta: '/plantas' },
+  { nombre: 'Catálogo de Plantas', ruta: '/catalogo-plantas' },
   { nombre: 'Bodega', ruta: '/bodega' },
   { nombre: 'Saberes Ancestrales', ruta: '/saberes-ancestrales' },
   { nombre: 'Rankings', ruta: '/ranking/comunidades' },
