@@ -86,7 +86,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Método `toActividadAncestralResponse(ActividadAncestralMsp entidad)`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tablas `actividades_ancestrales_msp` y `actividad_msp_participantes` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tablas `actividades_ancestrales_msp` y `actividad_msp_participantes` en `V6__crear_saberes_y_actividades_msp.sql` (ya existen; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.ActividadAncestralMsp.java`, `ActividadMspParticipante.java`, `EstadoVerificacion.java`):**
   - Relación `@OneToMany` entre actividad y participantes con cascade persist.
 - [x] **Repository (`com.huertos.repository.ActividadAncestralMspRepository.java`):**

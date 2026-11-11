@@ -76,7 +76,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Método `toCalendarioLunarResponse(CalendarioLunar entidad)`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tabla `calendario_lunar` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tabla `calendario_lunar` en `V6__crear_saberes_y_actividades_msp.sql` (ya existe; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.CalendarioLunar.java`, `FaseLunar.java`):**
   - Mapeo de la entidad sobre la tabla `calendario_lunar`.
 - [x] **Repository (`com.huertos.repository.CalendarioLunarRepository.java`):**

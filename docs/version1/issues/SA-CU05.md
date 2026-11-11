@@ -77,7 +77,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Método `@Transactional ActividadAncestralResponse reenviarEvidencias(Long id, ReenviarEvidenciasRequest request)`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tabla `actividades_ancestrales_msp` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tabla `actividades_ancestrales_msp` en `V6__crear_saberes_y_actividades_msp.sql` (ya existe; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.ActividadAncestralMsp.java`):**
   - Actualización de campos `numeroIntento`, `estadoVerificacion`, `evidenciaFotoUrl` y `descripcionBitacora`.
 

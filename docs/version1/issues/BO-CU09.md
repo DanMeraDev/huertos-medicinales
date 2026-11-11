@@ -80,7 +80,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Método `toBajaMaterialResponse(BajaMaterialVegetal entidad)`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tablas `bodega_material_vegetal` y `bajas_material_vegetal` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tablas `bodega_material_vegetal` y `bajas_material_vegetal` en `V4__crear_huertos_bodega_y_siembras.sql` (ya existen; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.BajaMaterialVegetal.java` y `CausaFracaso.java`):**
   - Mapeo de la entidad con clave foránea hacia `BodegaMaterialVegetal`.
 - [x] **Repository (`com.huertos.repository.BajaMaterialVegetalRepository.java`):**

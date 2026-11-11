@@ -64,11 +64,11 @@ labels: ["caso-de-uso", "back", "imprescindible"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Service (`com.huertos.service.GamificacionService.java` y `com.huertos.service.impl.GamificacionServiceImpl.java`):**
   - Método `@Transactional void procesarActividadCotidiana(Long registroActividadId)`.
-- [x] **Colaboradores:** Inyecta `MiembroRepository`, `RegistroActividadesMiembroRepository`, `TalentoComunidadRepository`, `MiembroInsigniaRepository`.
+- [x] **Colaboradores:** Inyecta `MiembroRepository`, `RegistroActividadMiembroRepository`, `TalentoComunidadRepository`, `MiembroInsigniaRepository`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tablas `registro_actividades_miembro`, `talentos_comunidad`, `miembro_insignias` en `V2__esquema_completo_v1.sql`.
-- [x] **Entidad JPA:** `RegistroActividadesMiembro.java`, `TalentoComunidad.java`, `MiembroInsignia.java`.
+- [x] **Migración Flyway:** Tablas `registro_actividades_miembro`, `talentos_comunidad`, `miembro_insignias` en `V5__crear_actividades_y_talentos_comunidad.sql` y `V7__crear_insignias_de_miembros.sql` (ya existen; NO crear migraciones).
+- [x] **Entidad JPA:** `RegistroActividadMiembro.java`, `TalentoComunidad.java`, `MiembroInsignia.java`.
 
 ---
 

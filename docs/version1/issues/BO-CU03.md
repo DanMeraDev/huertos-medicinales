@@ -61,7 +61,7 @@ labels: ["caso-de-uso", "back", "imprescindible"]
   - `DescuentoStockRequest.java` (`record` con: `@NotNull Long bodegaMaterialId`, `@NotNull @Positive Integer cantidadSembrada`).
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tablas `bodega_material_vegetal` y `siembras` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tablas `bodega_material_vegetal` y `siembras` en `V4__crear_huertos_bodega_y_siembras.sql` (ya existen; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.BodegaMaterialVegetal.java`):**
   - Campo `cantidadDisponible` con validación de no negatividad.
 - [x] **Repository (`com.huertos.repository.BodegaMaterialVegetalRepository.java`):**

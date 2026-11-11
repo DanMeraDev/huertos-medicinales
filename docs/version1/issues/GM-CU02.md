@@ -64,7 +64,7 @@ labels: ["caso-de-uso", "back", "imprescindible"]
   - `UMBRAL_MAESTRO = 150`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tabla `miembros` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tabla `miembros` en `V2__crear_comunidades_y_miembros.sql` (ya existe; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.Miembro.java`, `NivelMiembro.java`):**
   - Enum con valores `APRENDIZ`, `OFICIAL`, `MAESTRO`.
 

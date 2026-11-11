@@ -73,7 +73,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Mapeo de miembros a DTOs con su posición numérica.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tablas `miembros` y `miembro_insignias` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tablas `miembros` y `miembro_insignias` en `V2__crear_comunidades_y_miembros.sql` y `V7__crear_insignias_de_miembros.sql` (ya existen; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.Miembro.java`):**
   - Campos `nombres`, `apellidos`, `nivel`, `puntosTotales`.
 - [x] **Repository (`com.huertos.repository.MiembroRepository.java`):**

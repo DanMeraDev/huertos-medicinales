@@ -81,7 +81,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Método `toMaterialVegetalResponse(BodegaMaterialVegetal entidad)`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tabla `bodega_material_vegetal` definida en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tabla `bodega_material_vegetal` en `V4__crear_huertos_bodega_y_siembras.sql` (ya existe; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.BodegaMaterialVegetal.java`, `TipoMaterialVegetal.java`, `UnidadMedida.java`):**
   - Mapeo de `@Entity` sobre `bodega_material_vegetal`.
 - [x] **Repository (`com.huertos.repository.BodegaMaterialVegetalRepository.java`):**

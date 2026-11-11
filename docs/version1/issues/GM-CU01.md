@@ -68,7 +68,7 @@ labels: ["caso-de-uso", "back", "imprescindible"]
 - [x] **Colaboradores:** Inyecta `ComunidadRepository`, `HuertoRepository`, `MiembroRepository`, `ActividadAncestralMspRepository`, `MiembroInsigniaRepository`.
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tablas `comunidades`, `huertos`, `miembros`, `actividades_ancestrales_msp`, `actividad_msp_participantes` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tablas `comunidades`, `huertos`, `miembros`, `actividades_ancestrales_msp`, `actividad_msp_participantes` en `V2__crear_comunidades_y_miembros.sql`, `V4__crear_huertos_bodega_y_siembras.sql` y `V6__crear_saberes_y_actividades_msp.sql` (ya existen; NO crear migraciones).
 - [x] **Entidades JPA:** `Comunidad.java`, `Huerto.java`, `Miembro.java`, `ActividadAncestralMsp.java`, `ActividadMspParticipante.java`.
 
 ---

@@ -73,7 +73,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
   - Mapeo de entidades a DTOs de ranking asignando la posición correlativa (1, 2, 3...).
 
 ### 4.3. Objetos Entity y Base de Datos (`backend/src/main/resources/db/migration/` y `com.huertos`)
-- [x] **Migración Flyway:** Tabla `comunidades` en `V2__esquema_completo_v1.sql`.
+- [x] **Migración Flyway:** Tabla `comunidades` en `V2__crear_comunidades_y_miembros.sql` (ya existe; NO crear migraciones).
 - [x] **Entidad JPA (`com.huertos.model.Comunidad.java`):**
   - Campo `puntosComunidad`.
 - [x] **Repository (`com.huertos.repository.ComunidadRepository.java`):**
