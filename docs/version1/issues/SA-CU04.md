@@ -21,7 +21,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 3. `El hito/saber ancestral seleccionado está activo en la tabla saberes_ancestrales.`
 
 ### Postcondiciones
-1. `Se crea un registro en actividades_ancestrales_msp con estado_verificacion = 'PENDIENTE' e intento = 1.`
+1. `Se crea un registro en actividades_ancestrales_msp con estado_verificacion = 'PENDIENTE', numero_intento = 1 y huerto_id = huerto de la comunidad del usuario.`
 2. `Se insertan los participantes asociados en actividad_msp_participantes.`
 3. `Queda disponible en la bandeja del Técnico MSP para su revisión (SA-CU06).`
 

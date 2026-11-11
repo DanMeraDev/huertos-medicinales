@@ -36,7 +36,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 4. El **Responsable de Comunidad** actualiza la URL de la evidencia fotográfica (`evidenciaFotoUrl`), el enlace de video y/o complementa la bitácora (`CampoTexto`).
 5. El **Responsable de Comunidad** pulsa **`"Reenviar Evidencias Corregidas"`** (`Boton`).
 6. El **Sistema** envía la petición `PUT /api/actividades-ancestrales/{id}/reenviar` con el DTO `ReenviarEvidenciasRequest`.
-7. El **Sistema** verifica que la actividad esté en estado `OBSERVADA_CORREGIR`, incrementa `numero_intento`, asigna estado `PENDIENTE` y limpia o archiva la observación previa.
+7. El **Sistema** verifica que la actividad esté en estado `OBSERVADA_CORREGIR`, incrementa `numero_intento`, asigna estado `PENDIENTE` y deja `observacion_msp = NULL` (no hay tabla de historial de observaciones).
 8. El **Sistema** retorna el código HTTP `200 OK` con el DTO `ActividadAncestralResponse`.
 9. El **Sistema** notifica el reenvío exitoso y redirige al listado.
 

@@ -38,7 +38,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
    - **Rechazar definitivamente** (requiere justificación técnica).
 6. El **Técnico MSP** pulsa el botón **`"Emitir Dictamen"`** (`Boton`).
 7. El **Sistema** realiza la petición `POST /api/msp/actividades-ancestrales/{id}/verificar` con el DTO `VerificarActividadMspRequest`.
-8. El **Sistema** actualiza la actividad. Al ser aprobada, calcula los puntos de comunidad según el intento (intento 1 = 100% de puntos base; intento 2 = porcentaje proporcional), registra el `verificado_por_id` y delega al servicio de gamificación la acreditación.
+8. El **Sistema** actualiza la actividad. Al ser aprobada, calcula los puntos de comunidad según el intento (intento 1 = 100% de `puntos_base_comunidad`; intento 2 = 70%, igual que `GM-CU01`), guarda ese valor en `puntos_acreditar_comunidad`, registra el `verificado_por_id` y delega al servicio de gamificación la acreditación.
 9. El **Sistema** responde con HTTP `200 OK` y el DTO `ResultadoVerificacionResponse`.
 10. El **Sistema** despliega una notificación de confirmación (`Notificacion`) y actualiza la bandeja de pendientes.
 
