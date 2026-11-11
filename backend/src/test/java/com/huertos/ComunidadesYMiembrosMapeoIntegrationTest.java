@@ -49,9 +49,12 @@ class ComunidadesYMiembrosMapeoIntegrationTest {
         solicitud.setSubtiposSolicitados("SURCOS_WACHU");
         solicitud.setCedulaSolicitante("1712345678");
         solicitud.setNombreSolicitante("Rosa Quishpe");
+        solicitud.setFechaNacimientoSolicitante(LocalDate.of(1990, 5, 14));
         solicitud.setCorreoSolicitante("rosa@correo.com");
         solicitud.setCelularSolicitante("0991234567");
         solicitud.setGeneroSolicitante(Genero.FEMENINO);
+        solicitud.setConsentimientoDatos(true);
+        solicitud.setConsentimientoEn(AHORA);
         solicitud.setEstado(EstadoSolicitud.RECHAZADA);
         solicitud.setMotivoRechazo("Datos de ubicación incompletos");
         solicitud.setRevisadoPor(tecnico);
@@ -66,7 +69,10 @@ class ComunidadesYMiembrosMapeoIntegrationTest {
         assertThat(leida.getTipoOrganizacion()).isEqualTo(TipoOrganizacion.BARRIO);
         assertThat(leida.getDisenoPrincipal()).isEqualTo(DisenoPrincipal.EN_TIERRA);
         assertThat(leida.getLatitud()).isEqualByComparingTo("-0.0950000");
-        assertThat(leida.getRevisadoPor().getEmail()).isEqualTo("tecnico@correo.com");
+        assertThat(leida.getFechaNacimientoSolicitante()).isEqualTo(LocalDate.of(1990, 5, 14));
+        assertThat(leida.isConsentimientoDatos()).isTrue();
+        assertThat(leida.getConsentimientoEn()).isEqualTo(AHORA);
+        assertThat(leida.getRevisadoPor().getCorreo()).isEqualTo("tecnico@correo.com");
     }
 
     @Test
@@ -93,6 +99,8 @@ class ComunidadesYMiembrosMapeoIntegrationTest {
         miembro.setFechaNacimiento(LocalDate.of(2000, 1, 15));
         miembro.setGenero(Genero.FEMENINO);
         miembro.setNivel(NivelMiembro.APRENDIZ);
+        miembro.setConsentimientoDatos(true);
+        miembro.setConsentimientoEn(AHORA);
         miembro.setActivo(true);
         miembro.setCreadoEn(AHORA);
         entityManager.persist(miembro);
@@ -107,18 +115,21 @@ class ComunidadesYMiembrosMapeoIntegrationTest {
 
         ComunidadMiembro leida = entityManager.find(ComunidadMiembro.class, id);
 
-        assertThat(leida.getComunidad().getResponsable().getEmail()).isEqualTo("rosa@correo.com");
+        assertThat(leida.getComunidad().getResponsable().getCorreo()).isEqualTo("rosa@correo.com");
         assertThat(leida.getMiembro().getNivel()).isEqualTo(NivelMiembro.APRENDIZ);
         assertThat(leida.isActivoEnComunidad()).isTrue();
+        assertThat(leida.getMiembro().isConsentimientoDatos()).isTrue();
+        assertThat(leida.getMiembro().getConsentimientoEn()).isEqualTo(AHORA);
     }
 
-    private Usuario usuario(String email, String identificacion, Rol rol) {
+    private Usuario usuario(String correo, String identificacion, Rol rol) {
         Usuario usuario = new Usuario();
         usuario.setNombreCompleto("Persona de prueba");
         usuario.setIdentificacion(identificacion);
+        usuario.setFechaNacimiento(LocalDate.of(1990, 5, 14));
         usuario.setGenero(Genero.OTRO);
-        usuario.setEmail(email);
-        usuario.setContrasena("hash");
+        usuario.setCorreo(correo);
+        usuario.setPasswordHash("hash");
         usuario.setRol(rol);
         usuario.setActivo(true);
         usuario.setCreadoEn(AHORA);

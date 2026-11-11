@@ -84,8 +84,8 @@ class PlantasHuertosBodegaMapeoIntegrationTest {
                 .containsExactlyInAnyOrder(CategoriaUso.ANTIESPASMODICA, CategoriaUso.ANTIINFLAMATORIA);
         assertThat(leida.isActiva()).isFalse();
         assertThat(leida.getMotivoBaja()).isEqualTo("Registro duplicado");
-        assertThat(leida.getDadoDeBajaPor().getEmail()).isEqualTo("tecnico@msp.gob.ec");
-        assertThat(leida.getActualizadoPor().getEmail()).isEqualTo("tecnico@msp.gob.ec");
+        assertThat(leida.getDadoDeBajaPor().getCorreo()).isEqualTo("tecnico@msp.gob.ec");
+        assertThat(leida.getActualizadoPor().getCorreo()).isEqualTo("tecnico@msp.gob.ec");
         assertThat(leida.getCreadoEn()).isNotNull();
         assertThat(leida.getActualizadoEn()).isNotNull();
     }
@@ -243,13 +243,14 @@ class PlantasHuertosBodegaMapeoIntegrationTest {
         return subhuerto;
     }
 
-    private Usuario usuario(String email, String identificacion, Rol rol) {
+    private Usuario usuario(String correo, String identificacion, Rol rol) {
         Usuario usuario = new Usuario();
         usuario.setNombreCompleto("Persona de prueba");
         usuario.setIdentificacion(identificacion);
+        usuario.setFechaNacimiento(LocalDate.of(1990, 5, 14));
         usuario.setGenero(Genero.OTRO);
-        usuario.setEmail(email);
-        usuario.setContrasena("hash");
+        usuario.setCorreo(correo);
+        usuario.setPasswordHash("hash");
         usuario.setRol(rol);
         usuario.setActivo(true);
         usuario.setCreadoEn(AHORA);

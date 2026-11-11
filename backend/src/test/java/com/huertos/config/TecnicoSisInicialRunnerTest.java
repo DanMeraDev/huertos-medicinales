@@ -11,6 +11,7 @@ import com.huertos.model.Usuario;
 import com.huertos.repository.UsuarioRepository;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
@@ -35,36 +36,38 @@ class TecnicoSisInicialRunnerTest {
     void creaElTecnicoDeSistemasCuandoNoExisteNinguno() {
         when(usuarioRepository.existsByRol(Rol.TECNICO_SIS)).thenReturn(false);
 
-        runner("admin@correo.com", "clave-inicial").run(null);
+        runner("admin@correo.com", "clave-inicial", "1985-03-20").run(null);
 
         ArgumentCaptor<Usuario> guardado = ArgumentCaptor.forClass(Usuario.class);
         verify(usuarioRepository).save(guardado.capture());
         Usuario tecnico = guardado.getValue();
-        assertThat(tecnico.getEmail()).isEqualTo("admin@correo.com");
+        assertThat(tecnico.getCorreo()).isEqualTo("admin@correo.com");
+        assertThat(tecnico.getFechaNacimiento()).isEqualTo(LocalDate.of(1985, 3, 20));
         assertThat(tecnico.getRol()).isEqualTo(Rol.TECNICO_SIS);
         assertThat(tecnico.isActivo()).isTrue();
         assertThat(tecnico.isRequiereCambioClave()).isFalse();
         assertThat(tecnico.getCreadoEn()).isEqualTo(LocalDateTime.of(2026, 11, 5, 12, 0));
-        assertThat(passwordEncoder.matches("clave-inicial", tecnico.getContrasena())).isTrue();
+        assertThat(passwordEncoder.matches("clave-inicial", tecnico.getPasswordHash())).isTrue();
     }
 
     @Test
     void noCreaOtroCuandoYaHayUnTecnicoDeSistemas() {
         when(usuarioRepository.existsByRol(Rol.TECNICO_SIS)).thenReturn(true);
 
-        runner("admin@correo.com", "clave-inicial").run(null);
+        runner("admin@correo.com", "clave-inicial", "1985-03-20").run(null);
 
         verify(usuarioRepository, never()).save(any());
     }
 
     @Test
     void noCreaNadaSinLasVariablesDefinidas() {
-        runner("", "").run(null);
+        runner("", "", "").run(null);
 
         verify(usuarioRepository, never()).save(any());
     }
 
-    private TecnicoSisInicialRunner runner(String email, String contrasena) {
-        return new TecnicoSisInicialRunner(usuarioRepository, passwordEncoder, RELOJ, email, contrasena);
+    private TecnicoSisInicialRunner runner(String correo, String contrasena, String fechaNacimiento) {
+        return new TecnicoSisInicialRunner(
+                usuarioRepository, passwordEncoder, RELOJ, correo, contrasena, fechaNacimiento);
     }
 }

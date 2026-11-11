@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,15 +40,35 @@ class EsquemaInicialIntegrationTest {
                 INSERT INTO solicitudes_comunidad
                     (nombre_comunidad, tipo_organizacion, provincia, parroquia, direccion, latitud, longitud,
                      diseno_principal, subtipos_solicitados, cedula_solicitante, nombre_solicitante,
-                     correo_solicitante, celular_solicitante)
+                     fecha_nacimiento_solicitante, correo_solicitante, celular_solicitante,
+                     consentimiento_datos, consentimiento_en)
                 VALUES ('Hampi Chakra', 'BARRIO', 'Pichincha', 'Calderón', 'Calle 1', -0.0950000, -78.4220000,
                         'EN_TIERRA', 'SURCOS_WACHU', '1712345678', 'Rosa Quishpe',
-                        'rosa@correo.com', '0991234567')
+                        '1990-05-14', 'rosa@correo.com', '0991234567',
+                        TRUE, '2026-11-09 10:00:00')
                 """);
 
         String estado = jdbcTemplate.queryForObject(
                 "SELECT estado FROM solicitudes_comunidad WHERE nombre_comunidad = 'Hampi Chakra'", String.class);
         assertThat(estado).isEqualTo("PENDIENTE");
+    }
+
+    @Test
+    void exigeElConsentimientoExplicitoEnSolicitudesYMiembros() {
+        assertThatThrownBy(() -> jdbcTemplate.update("""
+                INSERT INTO solicitudes_comunidad
+                    (nombre_comunidad, tipo_organizacion, provincia, parroquia, direccion, latitud, longitud,
+                     diseno_principal, subtipos_solicitados, cedula_solicitante, nombre_solicitante,
+                     fecha_nacimiento_solicitante, correo_solicitante, celular_solicitante)
+                VALUES ('Hampi Chakra', 'BARRIO', 'Pichincha', 'Calderón', 'Calle 1', -0.0950000, -78.4220000,
+                        'EN_TIERRA', 'SURCOS_WACHU', '1712345678', 'Rosa Quishpe',
+                        '1990-05-14', 'rosa@correo.com', '0991234567')
+                """)).isInstanceOf(DataAccessException.class).hasMessageContaining("consentimiento_datos");
+
+        assertThatThrownBy(() -> jdbcTemplate.update("""
+                INSERT INTO miembros (cedula, nombres, apellidos, fecha_nacimiento, genero)
+                VALUES ('1711111111', 'Ana', 'Guamán', '2000-01-15', 'FEMENINO')
+                """)).isInstanceOf(DataAccessException.class).hasMessageContaining("consentimiento_datos");
     }
 
     @Test
@@ -63,14 +84,15 @@ class EsquemaInicialIntegrationTest {
     void permiteQueUnMiembroParticipeEnVariasComunidadesUnaVezEnCada() {
         Long primera = insertarComunidad("Hampi Chakra", insertarResponsable());
         jdbcTemplate.update("""
-                INSERT INTO usuarios (nombre_completo, identificacion, genero, email, contrasena, rol)
-                VALUES ('Luis Tipán', '1798765432', 'MASCULINO', 'luis@correo.com', 'hash', 'RESPONSABLE_COMUNIDAD')
+                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol)
+                VALUES ('Luis Tipán', '1798765432', '1990-05-14', 'MASCULINO', 'luis@correo.com', 'hash', 'RESPONSABLE_COMUNIDAD')
                 """);
         Long segunda = insertarComunidad("Sumak Yura",
-                jdbcTemplate.queryForObject("SELECT id FROM usuarios WHERE email = 'luis@correo.com'", Long.class));
+                jdbcTemplate.queryForObject("SELECT id FROM usuarios WHERE correo = 'luis@correo.com'", Long.class));
         jdbcTemplate.update("""
-                INSERT INTO miembros (cedula, nombres, apellidos, fecha_nacimiento, genero)
-                VALUES ('1711111111', 'Ana', 'Guamán', '2000-01-15', 'FEMENINO')
+                INSERT INTO miembros
+                    (cedula, nombres, apellidos, fecha_nacimiento, genero, consentimiento_datos, consentimiento_en)
+                VALUES ('1711111111', 'Ana', 'Guamán', '2000-01-15', 'FEMENINO', TRUE, '2026-11-09 10:00:00')
                 """);
         Long miembroId = jdbcTemplate.queryForObject(
                 "SELECT id FROM miembros WHERE cedula = '1711111111'", Long.class);
@@ -84,10 +106,10 @@ class EsquemaInicialIntegrationTest {
 
     private Long insertarResponsable() {
         jdbcTemplate.update("""
-                INSERT INTO usuarios (nombre_completo, identificacion, genero, email, contrasena, rol)
-                VALUES ('Rosa Quishpe', '1712345678', 'FEMENINO', 'rosa@correo.com', 'hash', 'RESPONSABLE_COMUNIDAD')
+                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol)
+                VALUES ('Rosa Quishpe', '1712345678', '1990-05-14', 'FEMENINO', 'rosa@correo.com', 'hash', 'RESPONSABLE_COMUNIDAD')
                 """);
-        return jdbcTemplate.queryForObject("SELECT id FROM usuarios WHERE email = 'rosa@correo.com'", Long.class);
+        return jdbcTemplate.queryForObject("SELECT id FROM usuarios WHERE correo = 'rosa@correo.com'", Long.class);
     }
 
     private Long insertarComunidad(String nombre, Long responsableId) {

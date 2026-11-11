@@ -186,20 +186,20 @@ class EsquemaPlantasBodegaIntegrationTest {
 
     private Long insertarTecnicoMsp() {
         jdbcTemplate.update("""
-                INSERT INTO usuarios (nombre_completo, identificacion, genero, email, contrasena, rol)
-                VALUES ('Carlos Andrade', '1700000001', 'MASCULINO', 'carlos@msp.gob.ec', 'hash', 'TECNICO_MSP')
+                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol)
+                VALUES ('Carlos Andrade', '1700000001', '1990-05-14', 'MASCULINO', 'carlos@msp.gob.ec', 'hash', 'TECNICO_MSP')
                 """);
         return jdbcTemplate.queryForObject(
-                "SELECT id FROM usuarios WHERE email = 'carlos@msp.gob.ec'", Long.class);
+                "SELECT id FROM usuarios WHERE correo = 'carlos@msp.gob.ec'", Long.class);
     }
 
     private Long insertarComunidad() {
         jdbcTemplate.update("""
-                INSERT INTO usuarios (nombre_completo, identificacion, genero, email, contrasena, rol)
-                VALUES ('Rosa Quishpe', '1712345678', 'FEMENINO', 'rosa@correo.com', 'hash', 'RESPONSABLE_COMUNIDAD')
+                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol)
+                VALUES ('Rosa Quishpe', '1712345678', '1990-05-14', 'FEMENINO', 'rosa@correo.com', 'hash', 'RESPONSABLE_COMUNIDAD')
                 """);
         Long responsableId = jdbcTemplate.queryForObject(
-                "SELECT id FROM usuarios WHERE email = 'rosa@correo.com'", Long.class);
+                "SELECT id FROM usuarios WHERE correo = 'rosa@correo.com'", Long.class);
         jdbcTemplate.update("""
                 INSERT INTO comunidades
                     (nombre, tipo_organizacion, provincia, parroquia, direccion,
