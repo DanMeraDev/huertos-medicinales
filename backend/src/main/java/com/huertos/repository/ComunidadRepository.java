@@ -11,4 +11,6 @@ public interface ComunidadRepository extends JpaRepository<Comunidad, Long> {
     Optional<Comunidad> findByResponsableId(Long responsableId);
 
     boolean existsByNombreAndIdNot(String nombre, Long id);
+
+    boolean existsByResponsableIdentificacion(String identificacion);
 }
