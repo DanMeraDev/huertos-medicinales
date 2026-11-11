@@ -78,11 +78,30 @@ labels: ["caso-de-uso", "back", "front", "importante"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.PlantaAdminController.java`):**
   - `PUT /api/msp/plantas/{id}` con `@PreAuthorize("hasRole('TECNICO_MSP')")`.
-- [x] **DTOs:** `ActualizarPlantaRequest.java` (`record`).
+- [x] **DTOs (`com.huertos.dto`):**
+  - `ActualizarPlantaRequest.java` (`record`) con los mismos campos y validaciones que `CrearPlantaRequest` (`CP-CU05`):
+    - `nombreComun`: `String`, obligatorio (`@NotBlank`, `@Size(max = 120)`).
+    - `nombreKichwa`: `String`, opcional (`@Size(max = 120)`).
+    - `nombreCientifico`: `String`, obligatorio y único (`@NotBlank`, `@Size(max = 150)`).
+    - `familiaBotanica`: `String`, obligatorio (`@NotBlank`, `@Size(max = 100)`).
+    - `cualidadTermica`: `CualidadTermica` (`CALIENTE`, `FRIA`), obligatorio (`@NotNull`).
+    - `cicloCultivo`: `CicloCultivo` (`CORTO`, `LARGO`), opcional.
+    - `origen`: `OrigenPlanta` (`NATIVA`, `ENDEMICA`, `INTRODUCIDA`), opcional.
+    - `altitudMinMsnm`: `Integer`, opcional (`@PositiveOrZero`).
+    - `altitudMaxMsnm`: `Integer`, opcional (`@PositiveOrZero`); si vienen las dos, `altitudMinMsnm <= altitudMaxMsnm` (si no, HTTP 400).
+    - `regionesDistribucion`: `String`, opcional (`@Size(max = 150)`).
+    - `usosMedicinales`: `String`, obligatorio (`@NotBlank`).
+    - `preparacionDosificacion`: `String`, opcional.
+    - `contraindicaciones`: `String`, opcional.
+    - `categorias`: `Set<CategoriaUso>`, al menos una (`@NotEmpty`); se guarda en la tabla `planta_categorias`.
+    - `fotografiaUrl`: `String`, opcional (`@Size(max = 500)`); es la URL que devuelve `CP-CU08`.
+  - Responde `200 OK` con `PlantaDetalleResponse` (definido en `CP-CU04`).
 - [x] **Service:** `PlantaAdminService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)
-- [x] **Repository:** `PlantaRepository.java` con `existsByNombreCientificoAndIdNot(...)`.
+- [x] **Repository:** `PlantaRepository.java` con `existsByNombreCientificoAndIdNot(String nombreCientifico, Long id)`.
+- [x] **Tabla `plantas`:** al actualizar se guarda `actualizado_por_id` = id del Técnico MSP autenticado; `actualizado_en` se actualiza solo. Las categorías se reemplazan en `planta_categorias`.
+- [x] **Entidad JPA:** `com.huertos.model.Planta` (ya existe; NO crear `PlantaMedicinal`). Los nombres de los campos del DTO son los mismos que los de la entidad.
 
 ---
 

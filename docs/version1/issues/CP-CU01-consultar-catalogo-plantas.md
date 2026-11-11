@@ -89,7 +89,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 - [x] **Controller (`com.huertos.controller.PlantaPublicoController.java`):**
   - `GET /api/publico/plantas` -> Retorna `200 OK` con `PageResponse<PlantaResumenResponse>`.
 - [x] **DTOs (`com.huertos.dto`):**
-  - `PlantaResumenResponse.java` (`record`).
+  - `PlantaResumenResponse.java` (`record`): `Long id`, `String nombreComun`, `String nombreKichwa`, `String nombreCientifico`, `CualidadTermica cualidadTermica`, `Set<CategoriaUso> categorias`, `String fotografiaUrl`. Lo usan también `CP-CU02` y `CP-CU03`.
 - [x] **Service (`com.huertos.service.PlantaService.java`):**
   - `Page<PlantaResumenResponse> listarPlantasPublicas(Pageable pageable)`.
 

@@ -60,7 +60,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 4. En PC, el panel derecho actualizará en tiempo real el medidor de altitud y el remanente de bodega.
 5. El usuario pulsará **`"Confirmar Siembra"`** (`Boton`).
 6. El **Sistema** frontend enviará la petición HTTP `POST /api/comunidad/siembras` con `RegistrarSiembraRequest`.
-7. El **Sistema** backend descontará el stock en bodega, asignará la señalética térmica y creará el registro en `siembras`.
+7. El **Sistema** backend descontará el stock en bodega (`BO-CU03`), creará el registro en `siembras` con `estado_cultivo = 'SEMBRADO'` y devolverá la señalética térmica tomada de `plantas.cualidad_termica` (no se guarda en `siembras`).
 8. El **Sistema** backend responderá con código HTTP `201 Created` y `SiembraDetalleResponse`.
 9. El **Sistema** frontend desplegará una notificación con `Notificacion`: *"Siembra registrada con éxito. Stock de bodega actualizado"*.
 
@@ -95,11 +95,20 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.SiembraController.java`):**
   - `POST /api/comunidad/siembras` con `@PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")`. Retorna `201 Created`.
-- [x] **DTOs:** `RegistrarSiembraRequest.java`, `SiembraDetalleResponse.java`.
+- [x] **DTOs (`com.huertos.dto`):**
+  - `RegistrarSiembraRequest.java` (`record`):
+    - `subhuertoId`: `Long`, obligatorio; debe ser un subhuerto activo del huerto de la comunidad del usuario.
+    - `bodegaMaterialId`: `Long`, obligatorio; lote de `bodega_material_vegetal` de la misma comunidad. La planta y el tipo de material salen del lote, no se envían.
+    - `cantidadSembrada`: `BigDecimal`, obligatorio (`@NotNull`, `@Positive`, `@Digits(integer = 8, fraction = 2)`).
+    - `fechaSiembra`: `LocalDate`, obligatorio, no futura (`@NotNull`, `@PastOrPresent`).
+    - `faseLunarSiembra`: `FaseLunar` (`YANA_KILLA_OSCURA`, `WINAK_KILLA_CRECIENTE`, `PURA_KILLA_LLENA`, `WANUK_KILLA_MENGUANTE`), obligatorio.
+    - `aceptaRiesgoAltitud`: `boolean`; si la altitud del huerto está fuera del rango de la planta y llega `false`, HTTP 400 para que el frontend muestre la alerta; si llega `true`, se guarda `tuvo_alerta_altitud = true`.
+  - `SiembraDetalleResponse.java` (`record`): `Long id`, `Long subhuertoId`, `String nombreZona`, `Long plantaId`, `String nombreComunPlanta`, `CualidadTermica cualidadTermica`, `TipoMaterialVegetal tipoMaterial`, `BigDecimal cantidadSembrada`, `LocalDate fechaSiembra`, `FaseLunar faseLunarSiembra`, `boolean tuvoAlertaAltitud`, `EstadoCultivo estadoCultivo`, `BigDecimal cantidadRestanteBodega`.
 - [x] **Service:** `SiembraService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V4__crear_huertos_bodega_y_siembras.sql`; ya existen, NO crear migraciones)
 - [x] **Tablas:** `siembras`, `bodega_material_vegetal`, `subhuertos`, `huertos`.
+- [x] **Entidad JPA:** `com.huertos.model.Siembra` (ya existe): `subhuerto`, `bodegaMaterial`, `cantidadSembrada` (`BigDecimal`), `fechaSiembra`, `faseLunarSiembra`, `tuvoAlertaAltitud`, `estadoCultivo`. Todo en una sola transacción `@Transactional` con el descuento de bodega.
 
 ---
 

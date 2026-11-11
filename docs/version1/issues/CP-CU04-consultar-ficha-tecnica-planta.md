@@ -85,7 +85,8 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.PlantaPublicoController.java`):**
   - `GET /api/publico/plantas/{id}` -> Retorna `200 OK`.
-- [x] **DTOs:** `PlantaDetalleResponse.java` (`record`).
+- [x] **DTOs (`com.huertos.dto`):**
+  - `PlantaDetalleResponse.java` (`record`): `Long id`, `String nombreComun`, `String nombreKichwa`, `String nombreCientifico`, `String familiaBotanica`, `CualidadTermica cualidadTermica`, `CicloCultivo cicloCultivo`, `OrigenPlanta origen`, `Integer altitudMinMsnm`, `Integer altitudMaxMsnm`, `String regionesDistribucion`, `String usosMedicinales`, `String preparacionDosificacion`, `String contraindicaciones`, `Set<CategoriaUso> categorias`, `String fotografiaUrl`.
 - [x] **Service:** `PlantaService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)

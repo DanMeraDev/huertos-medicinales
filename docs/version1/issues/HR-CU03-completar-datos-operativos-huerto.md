@@ -86,10 +86,21 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.HuertoController.java`):**
   - `GET /api/comunidad/huerto` y `PUT /api/comunidad/huerto` con `@PreAuthorize("hasAnyRole('RESPONSABLE_COMUNIDAD', 'TECNICO_MSP')")`.
-- [x] **DTOs:** `ActualizarHuertoRequest.java`, `HuertoDetalleResponse.java`.
+- [x] **DTOs (`com.huertos.dto`):**
+  - `ActualizarHuertoRequest.java` (`record`):
+    - `latitud`, `longitud`: `BigDecimal`, obligatorios.
+    - `altitudMsnm`: `Integer`, obligatorio (`@PositiveOrZero`).
+    - `orientacion`: `String`, opcional (`ESTE_OESTE` o `NORTE_SUR`; la columna es VARCHAR, no hay enum).
+    - `areaTotalM2`: `BigDecimal`, obligatorio en este caso de uso, entre 16.00 y 400.00 (`@DecimalMin("16.00")`, `@DecimalMax("400.00")`).
+    - `disenoPrincipal`: `DisenoPrincipal`, obligatorio.
+    - `tipoSuelo`: `TipoSuelo`, `fuenteAgua`: `FuenteAgua`, `tipoAbono`: `TipoAbono`, `tipoCerca`: `TipoCerca`, opcionales.
+    - `detalleCerca`: `String`, opcional (`@Size(max = 255)`).
+  - `HuertoDetalleResponse.java` (`record`): `Long id`, `Long comunidadId`, `String nombreHuerto`, los mismos campos del request, `TipoHuerto tipoHuerto`, `int puntosHuerto` y `BigDecimal areaOcupadaSubhuertosM2`.
+  - No se modifican `nombre_huerto`, `comunidad_id`, `tipo_huerto` ni `puntos_huerto` en este caso de uso.
 - [x] **Service:** `HuertoService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V4__crear_huertos_bodega_y_siembras.sql`; ya existen, NO crear migraciones)
+- [x] **Tabla `huertos`:** la fila ya existe (se crea al aprobar la solicitud en `US-CU06` con `area_total_m2 = NULL`); aquí solo se actualiza. Entidad `com.huertos.model.Huerto` (ya existe).
 - [x] **Tabla `huertos`:** Clave única sobre `comunidad_id`.
 
 ---

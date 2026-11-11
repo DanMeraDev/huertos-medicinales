@@ -73,7 +73,7 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.PlantaAdminController.java`):**
   - `POST /api/msp/plantas/fotografia` con `@PreAuthorize("hasRole('TECNICO_MSP')")`. Retorna `200 OK`.
-- [x] **DTOs:** `FotografiaSubidaResponse.java` (`record`).
+- [x] **DTOs:** `FotografiaSubidaResponse.java` (`record`): `String fotografiaUrl`. Esa URL se envía luego en `fotografiaUrl` de `CrearPlantaRequest` o `ActualizarPlantaRequest`.
 - [x] **Service:** `AlmacenamientoService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)

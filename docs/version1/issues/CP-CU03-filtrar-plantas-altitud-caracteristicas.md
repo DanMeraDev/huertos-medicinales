@@ -85,7 +85,12 @@ labels: ["caso-de-uso", "back", "front", "importante"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.PlantaPublicoController.java`):**
   - `GET /api/publico/plantas/filtrar` -> Retorna `200 OK`.
-- [x] **DTOs:** `FiltrosPlantaRequest.java` (`record`).
+- [x] **DTOs:** `FiltrosPlantaRequest.java` (`record`), todos los filtros opcionales y combinables, solo plantas con `activa = true`:
+  - `cualidad`: `CualidadTermica` → columna `cualidad_termica`.
+  - `altitud`: `Integer` → plantas con `altitud_min_msnm <= altitud <= altitud_max_msnm` (si la planta no tiene rango, no se excluye).
+  - `region`: `String` → `regiones_distribucion LIKE %region%`.
+  - `categoria`: `CategoriaUso` → plantas que tengan esa categoría en `planta_categorias`.
+  - `ciclo`: `CicloCultivo` y `origen`: `OrigenPlanta` (opcionales).
 - [x] **Service:** `PlantaService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)

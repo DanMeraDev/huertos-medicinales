@@ -17,7 +17,7 @@ labels: ["caso-de-uso", "back", "front", "deseable"]
 2. La planta se encuentra con `activa = true`.
 
 ### Postcondiciones
-1. El sistema actualizará `activa = FALSE` en la tabla `plantas`.
+1. El sistema actualizará `activa = FALSE` en la tabla `plantas` y guardará `motivo_baja`, `fecha_baja` y `dado_de_baja_por_id`.
 2. La planta dejará de aparecer en las búsquedas públicas del catálogo.
 
 ---
@@ -37,7 +37,7 @@ labels: ["caso-de-uso", "back", "front", "deseable"]
   - **Modal Centrado en Pantalla (`Modal.tsx`):**
     - Ventana modal centrada de 480px de ancho con fondo semitransparente difuminado (*backdrop blur*).
     - Título: *"Confirmar baja de planta medicinal"* con icono de advertencia.
-    - Contenido: Explicación de que las siembras históricas permanecen intactas.
+    - Contenido: Explicación de que las siembras históricas permanecen intactas y campo obligatorio **`Motivo de la baja`** (`CampoTexto` multilínea, máx. 300 caracteres).
     - **Botones Alineados Horizontalmente a la Derecha:**
       - Botón secundario: **`"Cancelar"`** (`Boton`).
       - Botón principal de peligro: **`"Sí, dar de baja"`** (`Boton` con `variante="peligro"`).
@@ -46,9 +46,9 @@ labels: ["caso-de-uso", "back", "front", "deseable"]
 ### 2.2. Flujo Interactivo Paso a Paso
 1. El **Técnico MSP** pulsará el botón **`"Dar de baja"`** en la fila o tarjeta de la planta.
 2. El **Sistema** desplegará la confirmación: Bottom Sheet en smartphone o Modal centrado en PC.
-3. El **Técnico MSP** confirmará la acción pulsando **`"Sí, dar de baja"`** (`Boton`).
-4. El **Sistema** frontend enviará la petición HTTP `PATCH /api/msp/plantas/{id}/baja`.
-5. El **Sistema** backend actualizará `activa = FALSE` en la tabla `plantas`.
+3. El **Técnico MSP** escribirá el motivo y confirmará la acción pulsando **`"Sí, dar de baja"`** (`Boton`).
+4. El **Sistema** frontend enviará la petición HTTP `PATCH /api/msp/plantas/{id}/baja` con `DarBajaPlantaRequest`.
+5. El **Sistema** backend actualizará `activa = FALSE`, `motivo_baja`, `fecha_baja` (con `Clock`) y `dado_de_baja_por_id` (Técnico MSP autenticado) en la tabla `plantas`.
 6. El **Sistema** backend responderá con código HTTP `204 No Content`.
 7. El **Sistema** frontend cerrará el diálogo y mostrará una notificación con `Notificacion`: *"Planta retirada del catálogo"*.
 
@@ -71,15 +71,16 @@ labels: ["caso-de-uso", "back", "front", "deseable"]
   - `Notificacion`: Alerta de confirmación de baja.
 - [x] **Feature (`frontend/src/features/catalogo-admin/`):**
   - `ModalConfirmacionBaja.tsx`: Componente responsivo (Bottom Sheet en mobile / Modal centrado en desktop).
-  - `plantasAdminApi.ts`: Función `darDeBajaPlanta(id: number)`.
+  - `plantasAdminApi.ts`: Función `darDeBajaPlanta(id: number, datos: DarBajaPlantaRequest)`.
 
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.PlantaAdminController.java`):**
   - `PATCH /api/msp/plantas/{id}/baja` con `@PreAuthorize("hasRole('TECNICO_MSP')")`. Retorna `204 No Content`.
-- [x] **Service:** `PlantaAdminService.java`.
+- [x] **DTOs:** `DarBajaPlantaRequest.java` (`record`): `motivo`: `String`, obligatorio (`@NotBlank`, `@Size(max = 300)`). Si falta, HTTP 400.
+- [x] **Service:** `PlantaAdminService.java`. Si la planta ya está con `activa = false`, lanza `ReglaNegocioException`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V3__crear_catalogo_plantas.sql`; ya existen, NO crear migraciones)
-- [x] **Tabla `plantas`:** Columna `activa`.
+- [x] **Tabla `plantas`:** Columnas `activa`, `motivo_baja` (VARCHAR(300)), `fecha_baja` (DATETIME) y `dado_de_baja_por_id` (FK a `usuarios`). No se borra la fila.
 
 ---
 

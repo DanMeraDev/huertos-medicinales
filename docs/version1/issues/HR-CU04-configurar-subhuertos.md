@@ -90,10 +90,17 @@ labels: ["caso-de-uso", "back", "front", "imprescindible"]
 ### 4.2. Objetos Control (Backend Spring Boot - `backend/src/main/java/com/huertos/`)
 - [x] **Controller (`com.huertos.controller.SubhuertoController.java`):**
   - `POST /api/comunidad/subhuertos` con `@PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")`. Retorna `201 Created`.
-- [x] **DTOs:** `CrearSubhuertoRequest.java`, `SubhuertoResponse.java`.
+- [x] **DTOs (`com.huertos.dto`):**
+  - `CrearSubhuertoRequest.java` (`record`):
+    - `nombreZona`: `String`, obligatorio (`@NotBlank`, `@Size(max = 100)`).
+    - `subtipo`: `SubtipoSubhuerto` (`SURCOS_WACHU`, `TERRAZAS_ANTI`, `CAMELLONES_INKA_WACHU`, `VERTICAL_PARED`, `COLGANTE_TECHO`, `MACETAS_PISO`, `LLANTAS_RECICLADAS`), obligatorio.
+    - `areaM2`: `BigDecimal`, obligatorio (`@Positive`, `@Digits(integer = 6, fraction = 2)`).
+  - `SubhuertoResponse.java` (`record`): `Long id`, `Long huertoId`, `String nombreZona`, `SubtipoSubhuerto subtipo`, `BigDecimal areaM2`, `boolean activo`.
+  - Si el huerto todavía tiene `area_total_m2 = NULL` (no se hizo `HR-CU03`), lanza `ReglaNegocioException`: *"Primero completa el área del huerto"*.
 - [x] **Service:** `SubhuertoService.java`.
 
 ### 4.3. Objetos Entity y Base de Datos (migraciones en `backend/src/main/resources/db/migration/`: `V4__crear_huertos_bodega_y_siembras.sql`; ya existen, NO crear migraciones)
+- [x] **Tabla `subhuertos`:** entidad `com.huertos.model.Subhuerto` (ya existe). Las reglas de máximo 3 subtipos y de área se validan en el servicio con los subhuertos `activo = true`; la BD solo exige `area_m2 > 0`.
 - [x] **Tabla `subhuertos`:** Clave foránea `fk_subhuertos_huerto`.
 
 ---
