@@ -2,6 +2,7 @@ package com.huertos.service;
 
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
+import java.util.List;
 
 /**
  * Servicio para la administración del material vegetal en las bodegas comunitarias.
@@ -24,5 +25,23 @@ public interface BodegaService {
      * @return identificador de la comunidad
      */
     Long obtenerComunidadIdPorCorreo(String correo);
+
+    /**
+     * Lista el material vegetal disponible en la bodega de una comunidad.
+     *
+     * @param comunidadId identificador de la comunidad a consultar
+     * @return lista de lotes de material vegetal disponibles
+     */
+    List<MaterialVegetalResponse> listarMaterialPorComunidad(Long comunidadId);
+
+    /**
+     * Lista el material vegetal de una comunidad validando permisos del usuario.
+     *
+     * @param comunidadId identificador de la comunidad a consultar
+     * @param correoUsuario correo del usuario autenticado
+     * @param esTecnicoMsp indica si el usuario tiene rol de técnico MSP
+     * @return lista de lotes de material vegetal disponibles
+     */
+    List<MaterialVegetalResponse> listarMaterialPorComunidad(Long comunidadId, String correoUsuario, boolean esTecnicoMsp);
 }
 

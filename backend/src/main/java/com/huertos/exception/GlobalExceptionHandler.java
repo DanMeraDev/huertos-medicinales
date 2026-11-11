@@ -54,4 +54,11 @@ public class GlobalExceptionHandler {
                                 HttpStatus.BAD_REQUEST,
                                 ex.getMessage());
         }
+
+        @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+        ProblemDetail manejarAccesoDenegado(org.springframework.security.access.AccessDeniedException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.FORBIDDEN,
+                                ex.getMessage());
+        }
 }

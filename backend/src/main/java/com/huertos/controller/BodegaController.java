@@ -6,10 +6,13 @@ import com.huertos.service.BodegaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,5 +40,17 @@ public class BodegaController {
                 ? comunidadId
                 : (authentication != null ? bodegaService.obtenerComunidadIdPorCorreo(authentication.getName()) : null);
         return bodegaService.registrarIngresoMaterial(idComunidad, request);
+    }
+
+    @Operation(summary = "Lista el material vegetal disponible en la bodega de una comunidad")
+    @GetMapping("/comunidades/{comunidadId}/material-vegetal")
+    @PreAuthorize("hasAnyRole('RESPONSABLE_COMUNIDAD', 'TECNICO_MSP')")
+    public List<MaterialVegetalResponse> listarMaterialPorComunidad(
+            @PathVariable Long comunidadId,
+            Authentication authentication) {
+        boolean esTecnicoMsp = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_TECNICO_MSP"));
+        String correo = authentication != null ? authentication.getName() : null;
+        return bodegaService.listarMaterialPorComunidad(comunidadId, correo, esTecnicoMsp);
     }
 }
