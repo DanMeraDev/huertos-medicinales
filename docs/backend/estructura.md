@@ -140,7 +140,7 @@ backend/src/main/
 │   ├── dto/ComunidadRequest.java
 │   ├── dto/ComunidadResponse.java
 │   └── mapper/ComunidadMapper.java
-└── resources/db/migration/V1__crear_tabla_comunidad.sql
+└── resources/db/migration/V2__crear_comunidades_y_miembros.sql
 
 backend/src/test/java/com/huertos/
 ├── service/ComunidadServiceImplTest.java
@@ -152,7 +152,7 @@ backend/src/test/java/com/huertos/
 
 ```java
 @Entity
-@Table(name = "comunidad")
+@Table(name = "comunidades")
 @Getter
 @Setter
 @NoArgsConstructor
