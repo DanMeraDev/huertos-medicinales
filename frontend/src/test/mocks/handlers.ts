@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { authMockHandlers } from '../../features/auth/authMockHandlers'
+import { solicitudesPublicoMockHandlers } from '../../features/solicitudes-publico/solicitudesPublicoMockHandlers'
 import { usuariosMockHandlers } from '../../features/usuarios/usuariosMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
 
@@ -35,4 +36,5 @@ export const handlers = [
     })
   }),
   ...usuariosMockHandlers,
+  ...solicitudesPublicoMockHandlers,
 ]
