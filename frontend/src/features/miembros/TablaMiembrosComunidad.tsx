@@ -6,6 +6,7 @@ import { Notificacion, type NotificacionProps } from '../../components/Notificac
 import { Tabla, type ColumnaTabla } from '../../components/Tabla'
 import { ConfirmarBajaModal } from './ConfirmarBajaModal'
 import { EditarMiembroModal } from './EditarMiembroModal'
+import { FichaMiembroModal } from './FichaMiembroModal'
 import {
   cambiarEstadoMiembro,
   listarMiembrosDeMiComunidad,
@@ -23,6 +24,7 @@ export function TablaMiembrosComunidad() {
   const [aviso, setAviso] = useState<NotificacionProps | null>(null)
   const [miembroParaBaja, setMiembroParaBaja] = useState<MiembroDetalleResponse | null>(null)
   const [miembroParaEditar, setMiembroParaEditar] = useState<MiembroDetalleResponse | null>(null)
+  const [miembroParaFicha, setMiembroParaFicha] = useState<number | null>(null)
   const [enviando, setEnviando] = useState(false)
 
   const cargar = useCallback(() => {
@@ -145,6 +147,14 @@ export function TablaMiembrosComunidad() {
         <div className="miembro-acciones">
           <Boton
             variante="secundario"
+            aria-label={`Ver ficha completa de ${fila.nombreCompleto}`}
+            onClick={() => setMiembroParaFicha(fila.id)}
+            disabled={enviando}
+          >
+            Ver ficha completa
+          </Boton>
+          <Boton
+            variante="secundario"
             aria-label={`Editar a ${fila.nombreCompleto}`}
             onClick={() => setMiembroParaEditar(fila)}
             disabled={enviando}
@@ -245,6 +255,12 @@ export function TablaMiembrosComunidad() {
         miembro={miembroParaEditar}
         alCerrar={() => setMiembroParaEditar(null)}
         alExito={manejarExitoEdicion}
+      />
+
+      <FichaMiembroModal
+        abierto={miembroParaFicha !== null}
+        miembroId={miembroParaFicha}
+        alCerrar={() => setMiembroParaFicha(null)}
       />
     </section>
   )
