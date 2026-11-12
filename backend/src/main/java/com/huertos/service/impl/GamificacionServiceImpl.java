@@ -1,0 +1,198 @@
+package com.huertos.service.impl;
+
+import com.huertos.exception.RecursoNoEncontradoException;
+import com.huertos.exception.ReglaNegocioException;
+import com.huertos.model.ActividadAncestralMsp;
+import com.huertos.model.ActividadMspParticipante;
+import com.huertos.model.Comunidad;
+import com.huertos.model.EstadoVerificacion;
+import com.huertos.model.Huerto;
+import com.huertos.model.Miembro;
+import com.huertos.model.MiembroInsignia;
+import com.huertos.model.NivelMiembro;
+import com.huertos.model.SaberAncestral;
+import com.huertos.model.TipoOrigenInsignia;
+import com.huertos.repository.ActividadAncestralMspRepository;
+import com.huertos.repository.ComunidadRepository;
+import com.huertos.repository.HuertoRepository;
+import com.huertos.repository.MiembroInsigniaRepository;
+import com.huertos.repository.MiembroRepository;
+import com.huertos.service.GamificacionService;
+import java.time.LocalDate;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class GamificacionServiceImpl implements GamificacionService {
+
+    private static final int UMBRAL_OFICIAL = 50;
+    private static final int UMBRAL_MAESTRO = 150;
+    private static final int PUNTOS_BASE_DEFECTO = 20;
+    private static final int PUNTOS_POR_HORA = 1;
+    private static final float FACTOR_PENALIZACION_INTENTO_DOS = 0.70f;
+    private static final String ICONO_INSIGNIA_OFICIAL = "medalla-kinti";
+    private static final String PREFIJO_DESCRIPCION_INSIGNIA = "Insignia oficial obtenida por completar el hito: ";
+
+    private final ComunidadRepository comunidadRepository;
+    private final HuertoRepository huertoRepository;
+    private final MiembroRepository miembroRepository;
+    private final ActividadAncestralMspRepository actividadMspRepository;
+    private final MiembroInsigniaRepository miembroInsigniaRepository;
+
+    @Override
+    @Transactional
+    public void procesarPuntosActividadMsp(Long actividadId) {
+        ActividadAncestralMsp actividad = obtenerYValidarActividad(actividadId);
+
+        int puntosComunidad = calcularPuntosComunidad(actividad);
+        actividad.setPuntosAcreditarComunidad(puntosComunidad);
+
+        actualizarPuntosComunidadYHuerto(actividad, puntosComunidad);
+        procesarPuntosParticipantes(actividad);
+        otorgarInsigniaOficial(actividadId);
+
+        actividadMspRepository.save(actividad);
+    }
+
+    @Override
+    public NivelMiembro evaluarAscensoNivel(Long miembroId) {
+        Miembro miembro = miembroRepository.findById(miembroId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Miembro no encontrado con id: " + miembroId));
+
+        evaluarAscensoNivelEntidad(miembro);
+        return miembro.getNivel();
+    }
+
+    @Override
+    @Transactional
+    public void otorgarInsigniaOficial(Long actividadId) {
+        ActividadAncestralMsp actividad = actividadMspRepository.findById(actividadId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Actividad ancestral no encontrada con id: " + actividadId));
+
+        SaberAncestral saber = actividad.getSaberAncestral();
+        if (saber == null || saber.getNombreInsigniaOficial() == null || saber.getNombreInsigniaOficial().isBlank()) {
+            return;
+        }
+
+        if (actividad.getParticipantes() == null) {
+            return;
+        }
+
+        for (ActividadMspParticipante participante : actividad.getParticipantes()) {
+            Miembro miembro = participante.getMiembro();
+            if (miembro == null || miembro.getId() == null) {
+                continue;
+            }
+
+            boolean yaPosee = miembroInsigniaRepository.existsByMiembroIdAndSaberAncestralId(
+                    miembro.getId(), saber.getId());
+
+            if (!yaPosee) {
+                MiembroInsignia insignia = construirInsigniaOficial(miembro, actividad.getComunidad(), saber);
+                miembroInsigniaRepository.save(insignia);
+            }
+        }
+    }
+
+    private ActividadAncestralMsp obtenerYValidarActividad(Long actividadId) {
+        ActividadAncestralMsp actividad = actividadMspRepository.findById(actividadId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Actividad ancestral no encontrada con id: " + actividadId));
+
+        if (actividad.getEstadoVerificacion() != EstadoVerificacion.APROBADA) {
+            throw new ReglaNegocioException("No se pueden otorgar puntos de gamificación en actividades no aprobadas");
+        }
+        return actividad;
+    }
+
+    private int calcularPuntosComunidad(ActividadAncestralMsp actividad) {
+        int puntosBase = actividad.getSaberAncestral() != null
+                ? actividad.getSaberAncestral().getPuntosBaseComunidad()
+                : PUNTOS_BASE_DEFECTO;
+
+        if (actividad.getNumeroIntento() == 1) {
+            return puntosBase;
+        }
+        return Math.round(puntosBase * FACTOR_PENALIZACION_INTENTO_DOS);
+    }
+
+    private void actualizarPuntosComunidadYHuerto(ActividadAncestralMsp actividad, int puntosComunidad) {
+        Comunidad comunidad = actividad.getComunidad();
+        if (comunidad != null) {
+            comunidad.setPuntosComunidad(comunidad.getPuntosComunidad() + puntosComunidad);
+            comunidadRepository.save(comunidad);
+        }
+
+        Huerto huerto = actividad.getHuerto();
+        if (huerto != null) {
+            huerto.setPuntosHuerto(huerto.getPuntosHuerto() + puntosComunidad);
+            huertoRepository.save(huerto);
+        }
+    }
+
+    private void procesarPuntosParticipantes(ActividadAncestralMsp actividad) {
+        if (actividad.getParticipantes() == null) {
+            return;
+        }
+
+        for (ActividadMspParticipante participante : actividad.getParticipantes()) {
+            int puntosVoluntario = participante.getHorasTrabajadas() * PUNTOS_POR_HORA;
+            participante.setPuntosAcreditados(puntosVoluntario);
+
+            Miembro miembro = participante.getMiembro();
+            if (miembro != null) {
+                acreditarPuntosAMiembro(miembro, puntosVoluntario);
+            }
+        }
+    }
+
+    private void acreditarPuntosAMiembro(Miembro miembro, int puntosVoluntario) {
+        Miembro miembroPersistido = miembro.getId() != null
+                ? miembroRepository.findById(miembro.getId()).orElse(miembro)
+                : miembro;
+
+        miembroPersistido.setPuntosTotales(miembroPersistido.getPuntosTotales() + puntosVoluntario);
+        evaluarAscensoNivelEntidad(miembroPersistido);
+        miembroRepository.save(miembroPersistido);
+
+        if (!miembroPersistido.isActivo()) {
+            log.info("Miembro inactivo id {} acumuló {} puntos sin notificaciones activas.",
+                    miembroPersistido.getId(), puntosVoluntario);
+        }
+    }
+
+    private MiembroInsignia construirInsigniaOficial(Miembro miembro, Comunidad comunidad, SaberAncestral saber) {
+        MiembroInsignia insignia = new MiembroInsignia();
+        insignia.setMiembro(miembro);
+        insignia.setComunidad(comunidad);
+        insignia.setTipoOrigen(TipoOrigenInsignia.OFICIAL_SABER_MSP);
+        insignia.setNombreInsignia(saber.getNombreInsigniaOficial());
+        insignia.setDescripcion(PREFIJO_DESCRIPCION_INSIGNIA + saber.getTitulo());
+        insignia.setIconoCodigo(ICONO_INSIGNIA_OFICIAL);
+        insignia.setSaberAncestral(saber);
+        insignia.setFechaObtencion(LocalDate.now());
+        return insignia;
+    }
+
+    private void evaluarAscensoNivelEntidad(Miembro miembro) {
+        int puntos = miembro.getPuntosTotales();
+        NivelMiembro actual = miembro.getNivel();
+
+        if (puntos >= UMBRAL_MAESTRO) {
+            if (actual != NivelMiembro.MAESTRO) {
+                miembro.setNivel(NivelMiembro.MAESTRO);
+                log.info("Miembro id {} ascendió a nivel MAESTRO", miembro.getId());
+            }
+        } else if (puntos >= UMBRAL_OFICIAL) {
+            if (actual == null || actual == NivelMiembro.APRENDIZ) {
+                miembro.setNivel(NivelMiembro.OFICIAL);
+                log.info("Miembro id {} ascendió a nivel OFICIAL", miembro.getId());
+            }
+        } else if (actual == null) {
+            miembro.setNivel(NivelMiembro.APRENDIZ);
+        }
+    }
+}
