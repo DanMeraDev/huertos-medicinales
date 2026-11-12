@@ -7,7 +7,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.MiembroDetalleResponse;
+import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -29,6 +31,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -366,5 +369,250 @@ class MiembroServiceImplTest {
         assertThatThrownBy(() -> miembroService.registrarMiembroPorCorreo(correo, request))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void darDeBajaAMiembroExitosamente() {
+        Long responsableId = 1L;
+        Long miembroId = 15L;
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+
+        CambiarEstadoMiembroRequest request = new CambiarEstadoMiembroRequest(false, "Cambio temporal de domicilio");
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+        when(comunidadMiembroRepository.save(any(ComunidadMiembro.class))).thenAnswer(i -> i.getArgument(0));
+
+        MiembroEstadoResponse response = miembroService.cambiarEstadoEnComunidad(responsableId, miembroId, request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.miembroId()).isEqualTo(miembroId);
+        assertThat(response.comunidadId()).isEqualTo(3L);
+        assertThat(response.nombreMiembro()).isEqualTo("María Tránsito Amaguaña Alba");
+        assertThat(response.activoEnComunidad()).isFalse();
+        assertThat(response.fechaBaja()).isEqualTo(LocalDate.now(clock));
+        assertThat(response.motivoBaja()).isEqualTo("Cambio temporal de domicilio");
+        assertThat(response.mensaje()).isEqualTo("Estado de participación actualizado exitosamente");
+
+        verify(comunidadMiembroRepository).save(relacion);
+        assertThat(relacion.isActivoEnComunidad()).isFalse();
+        assertThat(relacion.getFechaBaja()).isEqualTo(LocalDate.now(clock));
+        assertThat(relacion.getMotivoBaja()).isEqualTo("Cambio temporal de domicilio");
+    }
+
+    @Test
+    void darDeAltaAMiembroInactivoExitosamente() {
+        Long responsableId = 1L;
+        Long miembroId = 15L;
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(false);
+        relacion.setFechaBaja(LocalDate.of(2026, 10, 1));
+        relacion.setMotivoBaja("Viaje familiar");
+
+        CambiarEstadoMiembroRequest request = new CambiarEstadoMiembroRequest(true, null);
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+        when(comunidadMiembroRepository.save(any(ComunidadMiembro.class))).thenAnswer(i -> i.getArgument(0));
+
+        MiembroEstadoResponse response = miembroService.cambiarEstadoEnComunidad(responsableId, miembroId, request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.miembroId()).isEqualTo(miembroId);
+        assertThat(response.comunidadId()).isEqualTo(3L);
+        assertThat(response.activoEnComunidad()).isTrue();
+        assertThat(response.fechaBaja()).isNull();
+        assertThat(response.motivoBaja()).isNull();
+        assertThat(response.mensaje()).isEqualTo("Estado de participación actualizado exitosamente");
+
+        verify(comunidadMiembroRepository).save(relacion);
+        assertThat(relacion.isActivoEnComunidad()).isTrue();
+        assertThat(relacion.getFechaBaja()).isNull();
+        assertThat(relacion.getMotivoBaja()).isNull();
+    }
+
+    @Test
+    void rechazaCambioDeEstadoCuandoMiembroNoPerteneceAComunidad() {
+        Long responsableId = 1L;
+        Long miembroId = 99L;
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        CambiarEstadoMiembroRequest request = new CambiarEstadoMiembroRequest(false, "Motivo");
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.cambiarEstadoEnComunidad(responsableId, miembroId, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("El miembro especificado no pertenece a tu comunidad");
+
+        verify(comunidadMiembroRepository, never()).save(any());
+    }
+
+    @Test
+    void rechazaCambioDeEstadoCuandoYaTieneElEstadoSolicitado() {
+        Long responsableId = 1L;
+        Long miembroId = 15L;
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setComunidad(comunidad);
+        relacion.setActivoEnComunidad(false);
+
+        CambiarEstadoMiembroRequest request = new CambiarEstadoMiembroRequest(false, "Otro motivo");
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+
+        assertThatThrownBy(() -> miembroService.cambiarEstadoEnComunidad(responsableId, miembroId, request))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("El voluntario ya se encuentra en el estado solicitado");
+
+        verify(comunidadMiembroRepository, never()).save(any());
+    }
+
+    @Test
+    void rechazaCambioDeEstadoCuandoResponsableNoTieneComunidad() {
+        Long responsableId = 1L;
+        Long miembroId = 15L;
+        CambiarEstadoMiembroRequest request = new CambiarEstadoMiembroRequest(false, null);
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.cambiarEstadoEnComunidad(responsableId, miembroId, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró ninguna comunidad asociada al responsable autenticado");
+    }
+
+    @Test
+    void cambiarEstadoPorCorreoResuelveUsuarioYEjecutaCambio() {
+        String correo = "responsable@huertos.gob.ec";
+        Long usuarioId = 10L;
+        Long miembroId = 15L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+        usuario.setCorreo(correo);
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+
+        CambiarEstadoMiembroRequest request = new CambiarEstadoMiembroRequest(false, null);
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(comunidadRepository.findByResponsableId(usuarioId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+        when(comunidadMiembroRepository.save(any(ComunidadMiembro.class))).thenAnswer(i -> i.getArgument(0));
+
+        MiembroEstadoResponse response = miembroService.cambiarEstadoPorCorreo(correo, miembroId, request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.activoEnComunidad()).isFalse();
+    }
+
+    @Test
+    void rechazaCambiarEstadoPorCorreoCuandoUsuarioNoExiste() {
+        String correo = "inexistente@huertos.gob.ec";
+        Long miembroId = 15L;
+        CambiarEstadoMiembroRequest request = new CambiarEstadoMiembroRequest(false, null);
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.cambiarEstadoPorCorreo(correo, miembroId, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void listarMiembrosDeMiComunidadRetornaLista() {
+        Long responsableId = 1L;
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(15L);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.FEMENINO);
+        miembro.setTelefono("0981234567");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+        miembro.setPuntosTotales(0);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadId(3L)).thenReturn(List.of(relacion));
+
+        List<MiembroDetalleResponse> response = miembroService.listarMiembrosDeMiComunidad(responsableId);
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).id()).isEqualTo(15L);
+        assertThat(response.get(0).nombreCompleto()).isEqualTo("María Tránsito Amaguaña Alba");
+        assertThat(response.get(0).activoEnComunidad()).isTrue();
+    }
+
+    @Test
+    void listarMiembrosPorCorreoResuelveUsuario() {
+        String correo = "responsable@huertos.gob.ec";
+        Usuario usuario = new Usuario();
+        usuario.setId(10L);
+        usuario.setCorreo(correo);
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(comunidadRepository.findByResponsableId(10L)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadId(3L)).thenReturn(List.of());
+
+        List<MiembroDetalleResponse> response = miembroService.listarMiembrosPorCorreo(correo);
+
+        assertThat(response).isEmpty();
     }
 }
