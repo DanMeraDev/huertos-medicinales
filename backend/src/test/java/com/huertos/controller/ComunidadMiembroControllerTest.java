@@ -3,6 +3,7 @@ package com.huertos.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.MiembroDetalleResponse;
+import com.huertos.dto.MiembroResumenResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.GlobalExceptionHandler;
@@ -18,6 +20,7 @@ import com.huertos.model.Genero;
 import com.huertos.model.NivelMiembro;
 import com.huertos.service.MiembroService;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -219,6 +222,18 @@ class ComunidadMiembroControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value("No se encontró ninguna comunidad asociada al responsable autenticado"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void listarMiembrosActivosRetorna200ConMiembrosDeLaComunidad() throws Exception {
+        when(miembroService.listarMiembrosActivosPorCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(List.of(new MiembroResumenResponse(7L, "María Tránsito Amaguaña Alba")));
+
+        mockMvc.perform(get("/api/comunidades/mi-comunidad/miembros"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(7))
+                .andExpect(jsonPath("$[0].nombreCompleto").value("María Tránsito Amaguaña Alba"));
     }
 
     @Test
