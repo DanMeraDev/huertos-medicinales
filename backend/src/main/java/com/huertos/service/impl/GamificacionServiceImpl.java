@@ -31,6 +31,11 @@ public class GamificacionServiceImpl implements GamificacionService {
 
     private static final int UMBRAL_OFICIAL = 50;
     private static final int UMBRAL_MAESTRO = 150;
+    private static final int PUNTOS_BASE_DEFECTO = 20;
+    private static final int PUNTOS_POR_HORA = 1;
+    private static final float FACTOR_PENALIZACION_INTENTO_DOS = 0.70f;
+    private static final String ICONO_INSIGNIA_OFICIAL = "medalla-kinti";
+    private static final String PREFIJO_DESCRIPCION_INSIGNIA = "Insignia oficial obtenida por completar el hito: ";
 
     private final ComunidadRepository comunidadRepository;
     private final HuertoRepository huertoRepository;
@@ -41,57 +46,13 @@ public class GamificacionServiceImpl implements GamificacionService {
     @Override
     @Transactional
     public void procesarPuntosActividadMsp(Long actividadId) {
-        ActividadAncestralMsp actividad = actividadMspRepository.findById(actividadId)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Actividad ancestral no encontrada con id: " + actividadId));
+        ActividadAncestralMsp actividad = obtenerYValidarActividad(actividadId);
 
-        if (actividad.getEstadoVerificacion() != EstadoVerificacion.APROBADA) {
-            throw new ReglaNegocioException("No se pueden otorgar puntos de gamificación en actividades no aprobadas");
-        }
-
-        int puntosBase = actividad.getSaberAncestral() != null ? actividad.getSaberAncestral().getPuntosBaseComunidad() : 20;
-        int puntosComunidad;
-        if (actividad.getNumeroIntento() == 1) {
-            puntosComunidad = puntosBase;
-        } else {
-            puntosComunidad = Math.round(puntosBase * 0.70f);
-        }
+        int puntosComunidad = calcularPuntosComunidad(actividad);
         actividad.setPuntosAcreditarComunidad(puntosComunidad);
 
-        Comunidad comunidad = actividad.getComunidad();
-        if (comunidad != null) {
-            comunidad.setPuntosComunidad(comunidad.getPuntosComunidad() + puntosComunidad);
-            comunidadRepository.save(comunidad);
-        }
-
-        Huerto huerto = actividad.getHuerto();
-        if (huerto != null) {
-            huerto.setPuntosHuerto(huerto.getPuntosHuerto() + puntosComunidad);
-            huertoRepository.save(huerto);
-        }
-
-        if (actividad.getParticipantes() != null) {
-            for (ActividadMspParticipante participante : actividad.getParticipantes()) {
-                int puntosVoluntario = participante.getHorasTrabajadas() * 1;
-                participante.setPuntosAcreditados(puntosVoluntario);
-
-                Miembro miembro = participante.getMiembro();
-                if (miembro != null) {
-                    Miembro miembroPersistido = miembro.getId() != null
-                            ? miembroRepository.findById(miembro.getId()).orElse(miembro)
-                            : miembro;
-
-                    miembroPersistido.setPuntosTotales(miembroPersistido.getPuntosTotales() + puntosVoluntario);
-                    evaluarAscensoNivelEntidad(miembroPersistido);
-                    miembroRepository.save(miembroPersistido);
-
-                    if (!miembroPersistido.isActivo()) {
-                        log.info("Miembro inactivo id {} acumuló {} puntos sin notificaciones activas.",
-                                miembroPersistido.getId(), puntosVoluntario);
-                    }
-                }
-            }
-        }
-
+        actualizarPuntosComunidadYHuerto(actividad, puntosComunidad);
+        procesarPuntosParticipantes(actividad);
         otorgarInsigniaOficial(actividadId);
 
         actividadMspRepository.save(actividad);
@@ -104,25 +65,6 @@ public class GamificacionServiceImpl implements GamificacionService {
 
         evaluarAscensoNivelEntidad(miembro);
         return miembro.getNivel();
-    }
-
-    private void evaluarAscensoNivelEntidad(Miembro miembro) {
-        int puntos = miembro.getPuntosTotales();
-        NivelMiembro actual = miembro.getNivel();
-
-        if (puntos >= UMBRAL_MAESTRO) {
-            if (actual != NivelMiembro.MAESTRO) {
-                miembro.setNivel(NivelMiembro.MAESTRO);
-                log.info("Miembro id {} ascendió a nivel MAESTRO", miembro.getId());
-            }
-        } else if (puntos >= UMBRAL_OFICIAL) {
-            if (actual == null || actual == NivelMiembro.APRENDIZ) {
-                miembro.setNivel(NivelMiembro.OFICIAL);
-                log.info("Miembro id {} ascendió a nivel OFICIAL", miembro.getId());
-            }
-        } else if (actual == null) {
-            miembro.setNivel(NivelMiembro.APRENDIZ);
-        }
     }
 
     @Override
@@ -150,17 +92,107 @@ public class GamificacionServiceImpl implements GamificacionService {
                     miembro.getId(), saber.getId());
 
             if (!yaPosee) {
-                MiembroInsignia insignia = new MiembroInsignia();
-                insignia.setMiembro(miembro);
-                insignia.setComunidad(actividad.getComunidad());
-                insignia.setTipoOrigen(TipoOrigenInsignia.OFICIAL_SABER_MSP);
-                insignia.setNombreInsignia(saber.getNombreInsigniaOficial());
-                insignia.setDescripcion("Insignia oficial obtenida por completar el hito: " + saber.getTitulo());
-                insignia.setIconoCodigo("medalla-kinti");
-                insignia.setSaberAncestral(saber);
-                insignia.setFechaObtencion(LocalDate.now());
+                MiembroInsignia insignia = construirInsigniaOficial(miembro, actividad.getComunidad(), saber);
                 miembroInsigniaRepository.save(insignia);
             }
+        }
+    }
+
+    private ActividadAncestralMsp obtenerYValidarActividad(Long actividadId) {
+        ActividadAncestralMsp actividad = actividadMspRepository.findById(actividadId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Actividad ancestral no encontrada con id: " + actividadId));
+
+        if (actividad.getEstadoVerificacion() != EstadoVerificacion.APROBADA) {
+            throw new ReglaNegocioException("No se pueden otorgar puntos de gamificación en actividades no aprobadas");
+        }
+        return actividad;
+    }
+
+    private int calcularPuntosComunidad(ActividadAncestralMsp actividad) {
+        int puntosBase = actividad.getSaberAncestral() != null
+                ? actividad.getSaberAncestral().getPuntosBaseComunidad()
+                : PUNTOS_BASE_DEFECTO;
+
+        if (actividad.getNumeroIntento() == 1) {
+            return puntosBase;
+        }
+        return Math.round(puntosBase * FACTOR_PENALIZACION_INTENTO_DOS);
+    }
+
+    private void actualizarPuntosComunidadYHuerto(ActividadAncestralMsp actividad, int puntosComunidad) {
+        Comunidad comunidad = actividad.getComunidad();
+        if (comunidad != null) {
+            comunidad.setPuntosComunidad(comunidad.getPuntosComunidad() + puntosComunidad);
+            comunidadRepository.save(comunidad);
+        }
+
+        Huerto huerto = actividad.getHuerto();
+        if (huerto != null) {
+            huerto.setPuntosHuerto(huerto.getPuntosHuerto() + puntosComunidad);
+            huertoRepository.save(huerto);
+        }
+    }
+
+    private void procesarPuntosParticipantes(ActividadAncestralMsp actividad) {
+        if (actividad.getParticipantes() == null) {
+            return;
+        }
+
+        for (ActividadMspParticipante participante : actividad.getParticipantes()) {
+            int puntosVoluntario = participante.getHorasTrabajadas() * PUNTOS_POR_HORA;
+            participante.setPuntosAcreditados(puntosVoluntario);
+
+            Miembro miembro = participante.getMiembro();
+            if (miembro != null) {
+                acreditarPuntosAMiembro(miembro, puntosVoluntario);
+            }
+        }
+    }
+
+    private void acreditarPuntosAMiembro(Miembro miembro, int puntosVoluntario) {
+        Miembro miembroPersistido = miembro.getId() != null
+                ? miembroRepository.findById(miembro.getId()).orElse(miembro)
+                : miembro;
+
+        miembroPersistido.setPuntosTotales(miembroPersistido.getPuntosTotales() + puntosVoluntario);
+        evaluarAscensoNivelEntidad(miembroPersistido);
+        miembroRepository.save(miembroPersistido);
+
+        if (!miembroPersistido.isActivo()) {
+            log.info("Miembro inactivo id {} acumuló {} puntos sin notificaciones activas.",
+                    miembroPersistido.getId(), puntosVoluntario);
+        }
+    }
+
+    private MiembroInsignia construirInsigniaOficial(Miembro miembro, Comunidad comunidad, SaberAncestral saber) {
+        MiembroInsignia insignia = new MiembroInsignia();
+        insignia.setMiembro(miembro);
+        insignia.setComunidad(comunidad);
+        insignia.setTipoOrigen(TipoOrigenInsignia.OFICIAL_SABER_MSP);
+        insignia.setNombreInsignia(saber.getNombreInsigniaOficial());
+        insignia.setDescripcion(PREFIJO_DESCRIPCION_INSIGNIA + saber.getTitulo());
+        insignia.setIconoCodigo(ICONO_INSIGNIA_OFICIAL);
+        insignia.setSaberAncestral(saber);
+        insignia.setFechaObtencion(LocalDate.now());
+        return insignia;
+    }
+
+    private void evaluarAscensoNivelEntidad(Miembro miembro) {
+        int puntos = miembro.getPuntosTotales();
+        NivelMiembro actual = miembro.getNivel();
+
+        if (puntos >= UMBRAL_MAESTRO) {
+            if (actual != NivelMiembro.MAESTRO) {
+                miembro.setNivel(NivelMiembro.MAESTRO);
+                log.info("Miembro id {} ascendió a nivel MAESTRO", miembro.getId());
+            }
+        } else if (puntos >= UMBRAL_OFICIAL) {
+            if (actual == null || actual == NivelMiembro.APRENDIZ) {
+                miembro.setNivel(NivelMiembro.OFICIAL);
+                log.info("Miembro id {} ascendió a nivel OFICIAL", miembro.getId());
+            }
+        } else if (actual == null) {
+            miembro.setNivel(NivelMiembro.APRENDIZ);
         }
     }
 }
