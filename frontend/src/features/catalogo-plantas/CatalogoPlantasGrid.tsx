@@ -29,6 +29,13 @@ export function CatalogoPlantasGrid() {
   const [resultado, setResultado] = useState<Resultado | null>(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
+  const [eraEscritorio, setEraEscritorio] = useState(esEscritorio)
+
+  if (eraEscritorio !== esEscritorio) {
+    setEraEscritorio(esEscritorio)
+    setCargando(true)
+    setConsulta({ pagina: 0, tamano: consulta.tamano, acumular: false })
+  }
 
   useEffect(() => {
     let vigente = true
