@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { server } from '../../test/mocks/server'
-import { buscarPlantas, obtenerDetallePlanta } from './plantasApi'
+import { buscarPlantas, filtrarPlantas, obtenerDetallePlanta } from './plantasApi'
 import { colaDeCaballoDetalle, plantasMock } from './plantasMockHandlers'
 
 describe('plantasApi', () => {
@@ -19,6 +19,51 @@ describe('plantasApi', () => {
 
   it('buscarPlantas no es atendida por el handler de la ficha técnica', async () => {
     await expect(buscarPlantas('chupa')).resolves.toEqual([plantasMock[4]])
+  })
+
+  it('filtrarPlantas envía solo los filtros con valor y el criterio, codificados', async () => {
+    let busquedaRecibida = ''
+    let parametros: string[][] = []
+    server.use(
+      http.get('*/api/publico/plantas/filtrar', ({ request }) => {
+        const url = new URL(request.url)
+        busquedaRecibida = url.search
+        parametros = [...url.searchParams]
+        return HttpResponse.json([plantasMock[4]])
+      }),
+    )
+
+    await expect(
+      filtrarPlantas({ cualidad: 'FRIA', altitud: 2800, region: 'Amazonía', categoria: undefined }, 'té & ruda'),
+    ).resolves.toEqual([plantasMock[4]])
+    expect(parametros).toEqual([
+      ['cualidad', 'FRIA'],
+      ['altitud', '2800'],
+      ['region', 'Amazonía'],
+      ['criterio', 'té & ruda'],
+    ])
+    expect(busquedaRecibida).toContain('region=Amaz%C3%B3nia')
+  })
+
+  it('filtrarPlantas omite la región y el criterio vacíos', async () => {
+    let parametros: string[][] = []
+    server.use(
+      http.get('*/api/publico/plantas/filtrar', ({ request }) => {
+        parametros = [...new URL(request.url).searchParams]
+        return HttpResponse.json([])
+      }),
+    )
+
+    await filtrarPlantas({ region: '', ciclo: 'LARGO', altitud: 0 }, '')
+
+    expect(parametros).toEqual([
+      ['ciclo', 'LARGO'],
+      ['altitud', '0'],
+    ])
+  })
+
+  it('filtrarPlantas no es atendida por el handler de la ficha técnica', async () => {
+    await expect(filtrarPlantas({ region: 'amazonia' })).resolves.toEqual([plantasMock[4]])
   })
 
   it('obtenerDetallePlanta pide la ficha técnica de la planta por su id', async () => {
