@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { authMockHandlers } from '../../features/auth/authMockHandlers'
+import { rankingMockHandlers } from '../../features/ranking/rankingMockHandlers'
 import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
 import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { miembrosHandlers } from '../../features/miembros/miembrosMockHandlers'
@@ -47,6 +48,7 @@ export const handlers = [
   ...bodegaMockHandlers,
   ...plantasHandlers,
   ...authMockHandlers,
+  ...rankingMockHandlers,
   ...calendarioLunarMockHandlers,
   ...miembrosHandlers,
 
