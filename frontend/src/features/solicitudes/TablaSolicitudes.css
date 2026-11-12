@@ -1,0 +1,81 @@
+.solicitudes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.solicitudes-kinti {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.solicitudes-kinti p {
+  margin: 0;
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-primario);
+}
+
+.solicitudes-desplazable {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.solicitudes-ver-mas {
+  min-height: 44px;
+  padding: var(--espacio-2) var(--espacio-3);
+}
+
+.solicitud-ficha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.solicitud-bloque {
+  padding: var(--espacio-3);
+  background-color: var(--color-superficie-alt);
+  border-radius: var(--radio-md);
+}
+
+.solicitud-bloque h3 {
+  margin: 0 0 var(--espacio-2);
+  font-size: var(--texto-lg);
+}
+
+.solicitud-bloque dl {
+  display: grid;
+  gap: var(--espacio-2);
+  margin: 0;
+}
+
+.solicitud-dato dt {
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+}
+
+.solicitud-dato dd {
+  margin: 0;
+}
+
+.solicitud-motivo {
+  min-height: 120px;
+  padding: var(--espacio-2) var(--espacio-3);
+  resize: vertical;
+}
+
+.modal:has(.solicitud-ficha) .modal-acciones {
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .solicitud-bloque dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .modal:has(.solicitud-ficha) .modal-acciones {
+    flex-direction: row;
+  }
+}

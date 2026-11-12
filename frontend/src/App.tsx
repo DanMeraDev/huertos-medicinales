@@ -16,6 +16,7 @@ import { NoEncontradaPage } from './pages/NoEncontradaPage'
 import { SolicitarComunidadPage } from './pages/SolicitarComunidadPage'
 import { RankingComunidadesPage } from './pages/RankingComunidadesPage'
 import { RegistrarMiembroPage } from './pages/RegistrarMiembroPage'
+import { SolicitudesPage } from './pages/SolicitudesPage'
 import { SaberesAncestralesPage } from './pages/SaberesAncestralesPage'
 import { SubhuertosPage } from './pages/SubhuertosPage'
 import { CatalogoActividadesPage } from './pages/CatalogoActividadesPage'
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/bodega/ingreso-material" element={<IngresoMaterialPage />} />
         <Route path="/bodega/inventario" element={<InventarioBodegaPage />} />
         <Route path="/saberes-ancestrales" element={<SaberesAncestralesPage />} />
+        <Route path="/solicitudes" element={<SolicitudesPage />} />
         <Route path="/huerto/subhuertos" element={<SubhuertosPage />} />
         <Route path="/comunidad/actividades-catalogo" element={<CatalogoActividadesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
