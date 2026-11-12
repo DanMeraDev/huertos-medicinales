@@ -1,0 +1,92 @@
+.ruta-saberes {
+  list-style: none;
+  display: grid;
+  gap: var(--espacio-4);
+  margin-top: var(--espacio-6);
+}
+
+.ruta-saberes-paso {
+  position: relative;
+  padding-left: var(--espacio-10);
+}
+
+.ruta-saberes-paso::before {
+  content: '';
+  position: absolute;
+  left: 1.35rem;
+  top: 0;
+  bottom: calc(var(--espacio-4) * -1);
+  width: 2px;
+  background-color: var(--color-borde);
+}
+
+.ruta-saberes-paso:last-child::before {
+  bottom: 0;
+}
+
+.ruta-saberes-numero {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radio-full);
+  background-color: var(--color-primario);
+  color: var(--color-texto-inverso);
+  font-weight: var(--peso-negrita);
+  font-size: var(--texto-lg);
+  box-shadow: var(--sombra-md);
+}
+
+.ruta-saberes-tarjeta {
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--espacio-4);
+  display: grid;
+  gap: var(--espacio-2);
+  justify-items: start;
+}
+
+.ruta-saberes-titulo {
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
+  line-height: var(--interlineado-apretado);
+  overflow-wrap: anywhere;
+}
+
+.ruta-saberes-kichwa {
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-sm);
+}
+
+.ruta-saberes-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
+.ruta-saberes-insignia {
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+}
+
+.ruta-saberes-aviso {
+  margin-top: var(--espacio-6);
+  color: var(--color-texto-secundario);
+}
+
+@media (min-width: 720px) {
+  .ruta-saberes {
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: var(--espacio-6);
+  }
+
+  .ruta-saberes-paso {
+    padding-left: var(--espacio-12);
+  }
+}

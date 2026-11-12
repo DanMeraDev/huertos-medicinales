@@ -11,6 +11,7 @@ import { MiComunidadPage } from './pages/MiComunidadPage'
 import { NoEncontradaPage } from './pages/NoEncontradaPage'
 import { RankingComunidadesPage } from './pages/RankingComunidadesPage'
 import { RegistrarMiembroPage } from './pages/RegistrarMiembroPage'
+import { SaberesAncestralesPage } from './pages/SaberesAncestralesPage'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/bodega" element={<Navigate to="/bodega/ingreso-material" replace />} />
         <Route path="/bodega/ingreso-material" element={<IngresoMaterialPage />} />
         <Route path="/bodega/inventario" element={<InventarioBodegaPage />} />
+        <Route path="/saberes-ancestrales" element={<SaberesAncestralesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
