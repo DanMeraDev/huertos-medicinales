@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Boton } from '../../components/Boton'
 import { Modal } from '../../components/Modal'
 import './ModalConsentimientoMiembroLopdp.css'
@@ -18,21 +18,25 @@ export function ModalConsentimientoMiembroLopdp({
 }: ModalConsentimientoMiembroLopdpProps) {
   const [certificado, setCertificado] = useState(false)
 
-  useEffect(() => {
-    if (abierto) {
-      setCertificado(false)
-    }
-  }, [abierto])
+  function manejarCancelar() {
+    setCertificado(false)
+    alCancelar()
+  }
+
+  function manejarConfirmar() {
+    setCertificado(false)
+    alConfirmar()
+  }
 
   return (
     <Modal
       abierto={abierto}
       titulo="Cumplimiento LOPDP - Consentimiento de Voluntario"
-      alCancelar={alCancelar}
+      alCancelar={manejarCancelar}
       acciones={
         <Boton
           variante="primario"
-          onClick={alConfirmar}
+          onClick={manejarConfirmar}
           disabled={!certificado || cargando}
         >
           {cargando ? 'Registrando...' : 'Confirmar Registro'}

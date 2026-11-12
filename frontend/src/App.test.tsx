@@ -42,7 +42,6 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: 'Registrar Voluntario' })).toBeInTheDocument()
   })
-  })
 
   it('vuelve al inicio desde la página no encontrada', async () => {
     renderizarEn('/ruta-inexistente')
