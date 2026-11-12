@@ -177,4 +177,116 @@ class ComunidadServiceImplTest {
 
         verify(comunidadRepository, never()).save(any());
     }
+
+    @Test
+    void obtenerPorCorreoRetornaDetalleDeComunidad() {
+        String correo = "responsable@huertos.gob.ec";
+        Long responsableId = 2L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(responsableId);
+        usuario.setCorreo(correo);
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(20L);
+        comunidad.setResponsable(usuario);
+
+        ComunidadDetalleResponse esperado = new ComunidadDetalleResponse(
+                20L,
+                "Huerto Norte",
+                TipoOrganizacion.BARRIO,
+                "Pichincha",
+                "Calderón",
+                "Av. Central",
+                "0991112233",
+                correo,
+                responsableId,
+                "Lider Comunitario",
+                0,
+                true,
+                LocalDateTime.now()
+        );
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMapper.toDetalleResponse(comunidad)).thenReturn(esperado);
+
+        ComunidadDetalleResponse resultado = comunidadService.obtenerPorCorreo(correo);
+
+        assertThat(resultado).isEqualTo(esperado);
+    }
+
+    @Test
+    void obtenerPorCorreoLanzaExcepcionCuandoNoExisteUsuario() {
+        String correo = "desconocido@huertos.gob.ec";
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> comunidadService.obtenerPorCorreo(correo))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void actualizarPorCorreoActualizaExitosamente() {
+        String correo = "responsable@huertos.gob.ec";
+        Long responsableId = 3L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(responsableId);
+        usuario.setCorreo(correo);
+
+        ActualizarComunidadRequest request = new ActualizarComunidadRequest(
+                "Huerto Actualizado",
+                "0998887766",
+                "nuevo@huertos.gob.ec"
+        );
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(30L);
+        comunidad.setNombre("Huerto Antiguo");
+        comunidad.setResponsable(usuario);
+
+        ComunidadDetalleResponse responseActualizado = new ComunidadDetalleResponse(
+                30L,
+                "Huerto Actualizado",
+                TipoOrganizacion.BARRIO,
+                "Pichincha",
+                "Calderón",
+                "Av. Central",
+                "0998887766",
+                "nuevo@huertos.gob.ec",
+                responsableId,
+                "Lider",
+                0,
+                true,
+                LocalDateTime.now()
+        );
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadRepository.existsByNombreAndIdNot("Huerto Actualizado", 30L)).thenReturn(false);
+        when(comunidadRepository.save(comunidad)).thenReturn(comunidad);
+        when(comunidadMapper.toDetalleResponse(comunidad)).thenReturn(responseActualizado);
+
+        ComunidadDetalleResponse resultado = comunidadService.actualizarPorCorreo(correo, request);
+
+        assertThat(resultado).isEqualTo(responseActualizado);
+        assertThat(comunidad.getNombre()).isEqualTo("Huerto Actualizado");
+    }
+
+    @Test
+    void actualizarPorCorreoLanzaExcepcionCuandoNoExisteUsuario() {
+        String correo = "inexistente@huertos.gob.ec";
+        ActualizarComunidadRequest request = new ActualizarComunidadRequest(
+                "Huerto",
+                "0998887766",
+                "nuevo@huertos.gob.ec"
+        );
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> comunidadService.actualizarPorCorreo(correo, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró el usuario");
+    }
 }
