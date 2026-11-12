@@ -53,6 +53,13 @@ export const bodegaMockHandlers = [
     )
   }),
 
+  http.get('*/api/bodega/contexto', () =>
+    HttpResponse.json({
+      rol: 'RESPONSABLE_COMUNIDAD',
+      comunidades: [{ id: 1, nombre: 'Comunidad San Pedro' }],
+    }),
+  ),
+
   http.get('*/api/bodega/comunidades/:comunidadId/material-vegetal', ({ params }) => {
     const comunidadId = Number(params.comunidadId)
     if (comunidadId === 88) {
