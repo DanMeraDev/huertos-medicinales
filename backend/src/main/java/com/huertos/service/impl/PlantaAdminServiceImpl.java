@@ -63,6 +63,17 @@ public class PlantaAdminServiceImpl implements PlantaAdminService {
     @Override
     @Transactional
     public void darDeBajaPlanta(Long id, DarBajaPlantaRequest request, String correo) {
+        Planta planta = plantaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("La planta no existe"));
+        if (!planta.isActiva()) {
+            throw new ReglaNegocioException("La planta ya está dada de baja");
+        }
+        planta.setActiva(false);
+        planta.setMotivoBaja(request.motivo().strip());
+        planta.setFechaBaja(LocalDateTime.now(clock));
+        planta.setDadoDeBajaPor(usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario")));
+        plantaRepository.save(planta);
     }
 
     private void validarRangoAltitud(Integer altitudMinima, Integer altitudMaxima) {
