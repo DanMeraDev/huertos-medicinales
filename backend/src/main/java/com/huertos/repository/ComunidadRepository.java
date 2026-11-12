@@ -16,6 +16,8 @@ public interface ComunidadRepository extends JpaRepository<Comunidad, Long> {
 
     boolean existsByNombreAndIdNot(String nombre, Long id);
 
+    boolean existsByResponsableIdentificacion(String identificacion);
+
     List<Comunidad> findByActivaTrueOrderByPuntosComunidadDescCreadoEnAsc();
 
     @Query("SELECT c FROM Comunidad c WHERE c.activa = true ORDER BY c.nombre ASC")

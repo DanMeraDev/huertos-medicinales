@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { authMockHandlers } from '../../features/auth/authMockHandlers'
+import { solicitudesPublicoMockHandlers } from '../../features/solicitudes-publico/solicitudesPublicoMockHandlers'
 import { usuariosMockHandlers } from '../../features/usuarios/usuariosMockHandlers'
 import { rankingMockHandlers } from '../../features/ranking/rankingMockHandlers'
 import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
@@ -65,6 +66,7 @@ export const handlers = [
     })
   }),
   ...usuariosMockHandlers,
+  ...solicitudesPublicoMockHandlers,
 
   http.get('*/api/publico/comunidades', () => HttpResponse.json(mockDirectorioComunidades)),
 ]

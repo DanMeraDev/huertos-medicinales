@@ -1,42 +1,10 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
 import { Link } from 'react-router'
-import { urlFoto } from '../../api/fotos'
 import '../../components/Boton.css'
-import { Insignia, type InsigniaProps } from '../../components/Insignia'
+import { Insignia } from '../../components/Insignia'
 import { Tarjeta } from '../../components/Tarjeta'
-import { ETIQUETAS_CATEGORIA, type CualidadTermica, type PlantaResumen } from './types'
-
-const INSIGNIAS_TERMICAS: Record<CualidadTermica, InsigniaProps> = {
-  CALIENTE: { texto: 'Caliente', tono: 'error' },
-  FRIA: { texto: 'Fría', tono: 'exito' },
-}
-
-interface FotoPlantaProps {
-  ruta: string | null
-  nombreComun: string
-}
-
-function FotoPlanta({ ruta, nombreComun }: FotoPlantaProps) {
-  const [fallo, setFallo] = useState(false)
-  const url = urlFoto(ruta)
-
-  if (!url || fallo) {
-    return (
-      <div className="planta-foto planta-foto-marcador" role="img" aria-label={`Sin fotografía de ${nombreComun}`}>
-        <span aria-hidden="true">{nombreComun.charAt(0)}</span>
-      </div>
-    )
-  }
-  return (
-    <img
-      className="planta-foto"
-      src={url}
-      alt={`Fotografía de ${nombreComun}`}
-      loading="lazy"
-      onError={() => setFallo(true)}
-    />
-  )
-}
+import { FotoPlanta } from './FotoPlanta'
+import { ETIQUETAS_CATEGORIA, INSIGNIAS_TERMICAS, type PlantaResumen } from './types'
 
 export interface TarjetaPlantaProps {
   planta: PlantaResumen

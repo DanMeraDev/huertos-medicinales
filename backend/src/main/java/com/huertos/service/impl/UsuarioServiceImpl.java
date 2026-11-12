@@ -1,8 +1,11 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.CambiarClaveRequest;
+import com.huertos.dto.CambioClaveResponse;
 import com.huertos.dto.CrearUsuarioRequest;
 import com.huertos.dto.UsuarioDetalleResponse;
 import com.huertos.exception.ConflictoException;
+import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.UsuarioMapper;
 import com.huertos.model.Usuario;
@@ -41,6 +44,25 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioMapper.toUsuario(request, passwordEncoder.encode(request.password()));
         usuario.setCreadoEn(LocalDateTime.now(clock));
         return usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public CambioClaveResponse cambiarClave(String correo, CambiarClaveRequest request) {
+        if (!request.nuevaPassword().equals(request.confirmarPassword())) {
+            throw new ReglaNegocioException("La nueva contraseña y su confirmación no coinciden");
+        }
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+        if (!passwordEncoder.matches(request.passwordActual(), usuario.getPasswordHash())) {
+            throw new ReglaNegocioException("La contraseña actual ingresada es incorrecta");
+        }
+        if (request.nuevaPassword().equals(request.passwordActual())) {
+            throw new ConflictoException("La nueva contraseña no puede ser idéntica a la contraseña actual");
+        }
+        usuario.setPasswordHash(passwordEncoder.encode(request.nuevaPassword()));
+        usuario.setRequiereCambioClave(false);
+        usuarioRepository.save(usuario);
+        return new CambioClaveResponse("Contraseña actualizada exitosamente", false);
     }
 
     private void validarMayoriaDeEdad(LocalDate fechaNacimiento) {

@@ -1,0 +1,70 @@
+.busqueda-plantas-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.busqueda-plantas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  list-style: none;
+}
+
+.busqueda-plantas-fila {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-2);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background-color: var(--color-superficie);
+}
+
+.busqueda-plantas-fila:focus-within {
+  border-color: var(--color-primario);
+}
+
+.busqueda-plantas-miniatura {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: var(--radio-md);
+}
+
+.busqueda-plantas-miniatura .planta-foto {
+  width: 64px;
+  height: 64px;
+  aspect-ratio: 1;
+}
+
+.busqueda-plantas-miniatura .planta-foto-marcador {
+  font-size: var(--texto-xl);
+}
+
+.busqueda-plantas-datos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-1);
+  min-width: 0;
+}
+
+.busqueda-plantas-nombre {
+  font-size: var(--texto-base);
+  line-height: var(--interlineado-apretado);
+}
+
+.busqueda-plantas-enlace {
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.busqueda-plantas-enlace::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}

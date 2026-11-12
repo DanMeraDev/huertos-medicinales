@@ -1,0 +1,12 @@
+.solicitar-comunidad-pagina {
+  width: 100%;
+  padding: var(--espacio-4);
+}
+
+@media (min-width: 640px) {
+  .solicitar-comunidad-pagina {
+    max-width: var(--ancho-lectura);
+    margin: 0 auto;
+    padding: var(--espacio-8) var(--espacio-4);
+  }
+}
