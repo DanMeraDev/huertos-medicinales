@@ -2,20 +2,6 @@ import { http, HttpResponse } from 'msw'
 import type { RegistrarMaterialVegetalRequest } from './types'
 
 export const bodegaMockHandlers = [
-  http.get('*/api/publico/plantas', () =>
-    HttpResponse.json({
-      contenido: [
-        { id: 1, nombreComun: 'Manzanilla' },
-        { id: 2, nombreComun: 'Menta' },
-        { id: 3, nombreComun: 'Toronjil' },
-      ],
-      pagina: 0,
-      tamanio: 10,
-      totalElementos: 3,
-      totalPaginas: 1,
-    }),
-  ),
-
   http.post('*/api/bodega/material-vegetal', async ({ request }) => {
     const cuerpo = (await request.json()) as RegistrarMaterialVegetalRequest
 
