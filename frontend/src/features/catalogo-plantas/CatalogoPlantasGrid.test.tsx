@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { MemoryRouter } from 'react-router'
@@ -6,16 +6,27 @@ import { server } from '../../test/mocks/server'
 import { CatalogoPlantasGrid } from './CatalogoPlantasGrid'
 import { paginaDePlantas, plantasMock } from './plantasMockHandlers'
 
+let pantallaEscritorio = false
+const avisosDePantalla = new Set<() => void>()
+
 function simularPantalla(esEscritorio: boolean) {
+  pantallaEscritorio = esEscritorio
   Object.defineProperty(window, 'matchMedia', {
     configurable: true,
     writable: true,
     value: (consulta: string) => ({
-      matches: esEscritorio && consulta === '(min-width: 1024px)',
+      matches: pantallaEscritorio && consulta === '(min-width: 1024px)',
       media: consulta,
-      addEventListener: () => {},
-      removeEventListener: () => {},
+      addEventListener: (_tipo: string, avisar: () => void) => avisosDePantalla.add(avisar),
+      removeEventListener: (_tipo: string, avisar: () => void) => avisosDePantalla.delete(avisar),
     }),
+  })
+}
+
+function cambiarPantalla(esEscritorio: boolean) {
+  act(() => {
+    pantallaEscritorio = esEscritorio
+    ;[...avisosDePantalla].forEach((avisar) => avisar())
   })
 }
 
@@ -134,6 +145,22 @@ describe('CatalogoPlantasGrid', () => {
       expect(screen.getByRole('article', { name: 'Achicoria' })).toBeInTheDocument()
       expect(screen.getAllByRole('article')).toHaveLength(20)
       expect(screen.queryByRole('button', { name: 'Cargar más plantas' })).not.toBeInTheDocument()
+    })
+  })
+
+  describe('al cambiar de pantalla', () => {
+    it('vuelve a la primera página al pasar de móvil a escritorio', async () => {
+      renderizar()
+      await tarjetaDe('Achicoria')
+      await userEvent.click(screen.getByRole('button', { name: 'Cargar más plantas' }))
+      await tarjetaDe('Violeta')
+
+      cambiarPantalla(true)
+
+      expect(await screen.findByText('Mostrando 12 de 20 especies')).toBeInTheDocument()
+      expect(screen.getAllByRole('article')).toHaveLength(12)
+      expect(screen.queryByRole('article', { name: 'Violeta' })).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Página 1' })).toHaveAttribute('aria-current', 'page')
     })
   })
 
