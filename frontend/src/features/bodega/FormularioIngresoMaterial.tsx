@@ -52,7 +52,15 @@ export function FormularioIngresoMaterial({
           setPlantasCargadas(resultado)
         }
       })
-      .catch(() => {})
+      .catch((error: unknown) => {
+        if (montado) {
+          const mensaje =
+            error instanceof ApiError
+              ? (error.detalle ?? error.message)
+              : 'No se pudo cargar el catálogo de plantas'
+          setNotificacion({ tipo: 'error', mensaje })
+        }
+      })
     return () => {
       montado = false
     }

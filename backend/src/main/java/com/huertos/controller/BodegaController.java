@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,12 +33,9 @@ public class BodegaController {
     @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
     public MaterialVegetalResponse registrarIngresoMaterial(
             @Valid @RequestBody RegistrarMaterialVegetalRequest request,
-            @RequestParam(required = false) Long comunidadId,
             Authentication authentication) {
-        Long idComunidad = comunidadId != null
-                ? comunidadId
-                : (authentication != null ? bodegaService.obtenerComunidadIdPorCorreo(authentication.getName()) : null);
-        return bodegaService.registrarIngresoMaterial(idComunidad, request);
+        return bodegaService.registrarIngresoMaterial(
+                bodegaService.obtenerComunidadIdPorCorreo(authentication.getName()), request);
     }
 
     @Operation(summary = "Lista el material vegetal disponible en la bodega de una comunidad")
