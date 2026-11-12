@@ -69,7 +69,14 @@ describe('TablaMiembrosComunidad', () => {
     const botonBaja = screen.getByRole('button', { name: /dar de baja a maría tránsito amaguaña alba/i })
     await user.click(botonBaja)
 
-    expect(screen.getByText(/¿está seguro de dar de baja a maría tránsito amaguaña alba\?/i)).toBeInTheDocument()
+    expect(
+      screen.getByText((_content, element) => {
+        return (
+          element?.tagName.toLowerCase() === 'p' &&
+          /¿está seguro de dar de baja a maría tránsito amaguaña alba\?/i.test(element.textContent ?? '')
+        )
+      }),
+    ).toBeInTheDocument()
 
     const inputMotivo = screen.getByLabelText(/motivo de la baja/i)
     await user.type(inputMotivo, 'Cambio de domicilio fuera de la parroquia')

@@ -55,7 +55,7 @@ export function ConfirmarBajaModal({
     >
       <div className="modal-baja-cuerpo">
         <p className="modal-baja-pregunta">
-          ¿Está seguro de dar de baja a <strong>{miembro.nombreCompleto}</strong>?
+          {`¿Está seguro de dar de baja a ${miembro.nombreCompleto}?`}
         </p>
         <p className="modal-baja-aviso">
           El voluntario dejará de figurar como miembro activo en las actividades y faenas comunitarias, conservando su registro histórico.
