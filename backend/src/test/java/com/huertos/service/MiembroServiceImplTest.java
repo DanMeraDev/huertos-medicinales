@@ -12,6 +12,7 @@ import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
+import com.huertos.dto.MiembroResumenResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -562,6 +563,33 @@ class MiembroServiceImplTest {
         assertThatThrownBy(() -> miembroService.cambiarEstadoPorCorreo(correo, miembroId, request))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void listarMiembrosActivosDevuelveMiembrosDeLaComunidadDelResponsable() {
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(7L);
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+
+        when(comunidadRepository.findByResponsableCorreo("responsable@comunidad.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndActivoEnComunidadTrue(3L))
+                .thenReturn(List.of(relacion));
+
+        List<MiembroResumenResponse> resultado = miembroService.listarMiembrosActivosPorCorreo("responsable@comunidad.ec");
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.get(0).id()).isEqualTo(7L);
+        assertThat(resultado.get(0).nombreCompleto()).isEqualTo("María Tránsito Amaguaña Alba");
     }
 
     @Test

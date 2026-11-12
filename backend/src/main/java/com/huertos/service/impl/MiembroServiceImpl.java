@@ -5,6 +5,7 @@ import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
+import com.huertos.dto.MiembroResumenResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -167,6 +168,17 @@ public class MiembroServiceImpl implements MiembroService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return listarMiembrosDeMiComunidad(usuario.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MiembroResumenResponse> listarMiembrosActivosPorCorreo(String correo) {
+        Comunidad comunidad = comunidadRepository.findByResponsableCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        return comunidadMiembroRepository.findByComunidadIdAndActivoEnComunidadTrue(comunidad.getId()).stream()
+                .map(relacion -> miembroMapper.toResumenResponse(relacion.getMiembro()))
+                .toList();
     }
 
     @Override

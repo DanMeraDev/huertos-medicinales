@@ -5,6 +5,7 @@ import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
+import com.huertos.dto.MiembroResumenResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import java.util.List;
 
@@ -101,4 +102,12 @@ public interface MiembroService {
      * @return Ficha interna de solo lectura del miembro
      */
     FichaInternaMiembroResponse obtenerFichaInternaPorCorreo(String correo, Long miembroId);
+
+    /**
+     * Lista los miembros activos de la comunidad del responsable autenticado.
+     *
+     * @param correo Correo electrónico del usuario responsable de la comunidad
+     * @return Resumen de cada miembro activo con su nombre completo
+     */
+    List<MiembroResumenResponse> listarMiembrosActivosPorCorreo(String correo);
 }

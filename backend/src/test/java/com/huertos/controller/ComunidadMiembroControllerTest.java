@@ -17,6 +17,7 @@ import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
+import com.huertos.dto.MiembroResumenResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.GlobalExceptionHandler;
@@ -179,6 +180,18 @@ class ComunidadMiembroControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errores.nombres").value("Los nombres solo admiten letras y espacios"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void listarMiembrosActivosRetorna200ConMiembrosDeLaComunidad() throws Exception {
+        when(miembroService.listarMiembrosActivosPorCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(List.of(new MiembroResumenResponse(7L, "María Tránsito Amaguaña Alba")));
+
+        mockMvc.perform(get("/api/comunidades/mi-comunidad/miembros/activos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(7))
+                .andExpect(jsonPath("$[0].nombreCompleto").value("María Tránsito Amaguaña Alba"));
     }
 
     @Test

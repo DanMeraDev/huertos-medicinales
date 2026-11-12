@@ -5,6 +5,7 @@ import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
+import com.huertos.dto.MiembroResumenResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.service.MiembroService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +39,13 @@ public class ComunidadMiembroController {
     @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
     public List<MiembroDetalleResponse> listarMiembros(Authentication authentication) {
         return miembroService.listarMiembrosPorCorreo(authentication.getName());
+    }
+
+    @Operation(summary = "Lista los miembros activos de la comunidad del responsable")
+    @GetMapping("/activos")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
+    public List<MiembroResumenResponse> listarMiembrosActivos(Authentication authentication) {
+        return miembroService.listarMiembrosActivosPorCorreo(authentication.getName());
     }
 
     @Operation(summary = "Registra un nuevo miembro voluntario en la comunidad o vincula uno existente")
