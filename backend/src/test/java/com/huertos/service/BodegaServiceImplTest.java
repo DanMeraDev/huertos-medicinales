@@ -42,8 +42,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class BodegaServiceImplTest {
@@ -308,7 +306,12 @@ class BodegaServiceImplTest {
         when(bajaMaterialVegetalRepository.save(any(BajaMaterialVegetal.class))).thenReturn(bajaGuardada);
         when(bodegaMapper.toBajaMaterialResponse(bajaGuardada)).thenReturn(respuestaEsperada);
 
-        BajaMaterialResponse resultado = bodegaService.registrarBajaMaterial(10L, bajaRequest);
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("responsable@correo.com");
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+
+        BajaMaterialResponse resultado = bodegaService.registrarBajaMaterial(10L, bajaRequest, auth);
 
         assertThat(resultado).isNotNull();
         assertThat(resultado.id()).isEqualTo(100L);
@@ -332,7 +335,8 @@ class BodegaServiceImplTest {
 
         when(bodegaRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(99L, bajaRequest))
+        Authentication auth = mock(Authentication.class);
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(99L, bajaRequest, auth))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("El material vegetal indicado no existe en bodega");
     }
@@ -353,7 +357,12 @@ class BodegaServiceImplTest {
 
         when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
 
-        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest))
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("responsable@correo.com");
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, auth))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessage("La cantidad a dar de baja supera el stock disponible en bodega");
     }
@@ -374,22 +383,13 @@ class BodegaServiceImplTest {
 
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("ajeno@correo.com");
-        when(auth.isAuthenticated()).thenReturn(true);
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
         when(comunidadRepository.findByResponsableCorreo("ajeno@correo.com")).thenReturn(Optional.empty());
 
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(auth);
-        SecurityContextHolder.setContext(securityContext);
+        when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
 
-        try {
-            when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
-
-            assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest))
-                    .isInstanceOf(RecursoNoEncontradoException.class)
-                    .hasMessage("No existe una comunidad asociada al usuario");
-        } finally {
-            SecurityContextHolder.clearContext();
-        }
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, auth))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No existe una comunidad asociada al usuario");
     }
 }

@@ -99,13 +99,8 @@ export function ModalBajaMaterial({ abierto, material, alCerrar, alExito }: Moda
     }
   }
 
-  function manejarEnvio(evento: FormEvent) {
-    evento.preventDefault()
-    void ejecutarBaja()
-  }
-
-  function manejarClickConfirmar(evento: MouseEvent) {
-    evento.preventDefault()
+  function manejarEnvio(evento?: FormEvent | MouseEvent) {
+    evento?.preventDefault()
     void ejecutarBaja()
   }
 
@@ -123,7 +118,7 @@ export function ModalBajaMaterial({ abierto, material, alCerrar, alExito }: Moda
         <Boton
           variante="peligro"
           type="button"
-          onClick={manejarClickConfirmar}
+          onClick={manejarEnvio}
           disabled={enviando}
         >
           {enviando ? 'Confirmando…' : 'Confirmar Baja'}

@@ -7,8 +7,6 @@ import type {
   RegistrarMaterialVegetalRequest,
 } from './types'
 
-export type { CausaFracaso, RegistrarBajaMaterialRequest, BajaMaterialResponse } from './types'
-
 export function registrarMaterialVegetal(data: RegistrarMaterialVegetalRequest): Promise<MaterialVegetalResponse> {
   return apiPost<MaterialVegetalResponse>('/bodega/material-vegetal', data)
 }
@@ -28,5 +26,3 @@ export function registrarBajaMaterial(
 ): Promise<BajaMaterialResponse> {
   return apiPost<BajaMaterialResponse>(`/bodega/material-vegetal/${id}/bajas`, data)
 }
-
-

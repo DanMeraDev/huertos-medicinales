@@ -20,7 +20,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,14 +35,11 @@ public class BodegaServiceImpl implements BodegaService {
 
     @Override
     @Transactional
-    public BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request) {
+    public BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request, Authentication authentication) {
         BodegaMaterialVegetal material = bodegaRepository.findById(bodegaMaterialId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("El material vegetal indicado no existe en bodega"));
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            validarAccesoComunidad(material.getComunidad().getId(), authentication);
-        }
+        validarAccesoComunidad(material.getComunidad().getId(), authentication);
 
         if (request.cantidadBaja().compareTo(material.getCantidadDisponible()) > 0) {
             throw new ReglaNegocioException("La cantidad a dar de baja supera el stock disponible en bodega");

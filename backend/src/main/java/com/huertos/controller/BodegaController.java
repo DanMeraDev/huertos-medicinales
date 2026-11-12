@@ -35,8 +35,9 @@ public class BodegaController {
     @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
     public BajaMaterialResponse registrarBajaMaterial(
             @PathVariable Long id,
-            @Valid @RequestBody RegistrarBajaMaterialRequest request) {
-        return bodegaService.registrarBajaMaterial(id, request);
+            @Valid @RequestBody RegistrarBajaMaterialRequest request,
+            Authentication authentication) {
+        return bodegaService.registrarBajaMaterial(id, request, authentication);
     }
 
     @Operation(summary = "Registra el ingreso de nuevo material vegetal a la bodega comunitaria")

@@ -17,9 +17,10 @@ public interface BodegaService {
      *
      * @param bodegaMaterialId identificador del lote en bodega
      * @param request datos de la baja a registrar
+     * @param authentication datos del usuario autenticado
      * @return información de la baja registrada
      */
-    BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request);
+    BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request, Authentication authentication);
 
     /**
      * Registra el ingreso de nuevo material vegetal a la bodega de la comunidad.

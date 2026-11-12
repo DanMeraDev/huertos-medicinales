@@ -239,7 +239,7 @@ class BodegaControllerTest {
                 LocalDateTime.of(2026, 11, 12, 10, 0)
         );
 
-        when(bodegaService.registrarBajaMaterial(eq(10L), any(RegistrarBajaMaterialRequest.class)))
+        when(bodegaService.registrarBajaMaterial(eq(10L), any(RegistrarBajaMaterialRequest.class), any(Authentication.class)))
                 .thenReturn(respuesta);
 
         String json = """
