@@ -6,6 +6,10 @@ app:
   jwt:
     secreto: clave-de-prueba-con-mas-de-32-caracteres
 
+huertos:
+  fotos:
+    directorio: target/fotos-prueba
+
 spring:
   jpa:
     show-sql: false
