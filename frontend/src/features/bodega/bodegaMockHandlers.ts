@@ -1,5 +1,9 @@
 import { http, HttpResponse } from 'msw'
-import type { MaterialVegetalResponse, RegistrarMaterialVegetalRequest } from './types'
+import type {
+  MaterialVegetalResponse,
+  RegistrarBajaMaterialRequest,
+  RegistrarMaterialVegetalRequest,
+} from './types'
 
 export const mockInventarioBodega: MaterialVegetalResponse[] = [
   {
@@ -77,6 +81,52 @@ export const bodegaMockHandlers = [
         unidadMedida: cuerpo.unidadMedida,
         loteOrigen: cuerpo.loteOrigen ?? '',
         fechaIngreso: cuerpo.fechaIngreso,
+      },
+      { status: 201 },
+    )
+  }),
+
+  http.post('*/api/bodega/material-vegetal/:id/bajas', async ({ params, request }) => {
+    const id = Number(params.id)
+    const cuerpo = (await request.json()) as RegistrarBajaMaterialRequest
+
+    if (!cuerpo.cantidadBaja || cuerpo.cantidadBaja <= 0) {
+      return HttpResponse.json(
+        { detail: 'La cantidad a dar de baja debe ser mayor a cero' },
+        { status: 400 },
+      )
+    }
+
+    if (!cuerpo.causaFracaso) {
+      return HttpResponse.json(
+        { detail: 'Debe seleccionar una causa de fracaso válida para el registro de la baja' },
+        { status: 400 },
+      )
+    }
+
+    if (id === 999) {
+      return HttpResponse.json(
+        { detail: 'El material vegetal indicado no existe en bodega' },
+        { status: 404 },
+      )
+    }
+
+    const itemExistente = mockInventarioBodega.find((item) => item.id === id)
+    if (itemExistente && cuerpo.cantidadBaja > itemExistente.cantidadDisponible) {
+      return HttpResponse.json(
+        { detail: 'La cantidad a dar de baja supera el stock disponible en bodega' },
+        { status: 400 },
+      )
+    }
+
+    return HttpResponse.json(
+      {
+        id: 501,
+        bodegaMaterialId: id,
+        cantidadBaja: cuerpo.cantidadBaja,
+        causaFracaso: cuerpo.causaFracaso,
+        observacion: cuerpo.observacion,
+        fechaBaja: '2026-11-12T10:00:00',
       },
       { status: 201 },
     )

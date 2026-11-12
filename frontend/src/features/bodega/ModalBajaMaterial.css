@@ -1,0 +1,51 @@
+.modal-baja-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3);
+  background-color: var(--color-fondo-alt, #f8fafc);
+  border: 1px solid var(--color-borde, #e2e8f0);
+  border-radius: var(--radio-md, 6px);
+  margin-bottom: var(--espacio-4);
+}
+
+.modal-baja-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--texto-sm, 0.875rem);
+}
+
+.modal-baja-info-etiqueta {
+  color: var(--color-texto-secundario, #64748b);
+  font-weight: var(--peso-medio, 500);
+}
+
+.modal-baja-info-valor {
+  color: var(--color-texto, #1e293b);
+  font-weight: var(--peso-seminegrita, 600);
+}
+
+.modal-baja-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.modal-baja-formulario .campo-control {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.modal-baja-contador {
+  font-size: var(--texto-xs, 0.75rem);
+  color: var(--color-texto-secundario, #64748b);
+  text-align: right;
+  margin-top: -8px;
+}
+
+.modal-baja-contador-excedido {
+  color: var(--color-peligro, #ef4444);
+  font-weight: var(--peso-seminegrita, 600);
+}
+

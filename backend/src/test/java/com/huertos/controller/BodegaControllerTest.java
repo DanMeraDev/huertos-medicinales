@@ -12,13 +12,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.huertos.config.JwtService;
 import com.huertos.config.SecurityConfig;
+import com.huertos.dto.BajaMaterialResponse;
 import com.huertos.dto.MaterialVegetalResponse;
+import com.huertos.dto.RegistrarBajaMaterialRequest;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
+import com.huertos.model.CausaFracaso;
 import com.huertos.model.TipoMaterialVegetal;
 import com.huertos.model.UnidadMedida;
 import com.huertos.service.BodegaService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -222,5 +226,105 @@ class BodegaControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponsable))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.detail").value("No tiene permisos para consultar el inventario de otra comunidad"));
+    }
+
+    @Test
+    void registrarBajaMaterialConRolResponsableComunidadDevuelve201() throws Exception {
+        BajaMaterialResponse respuesta = new BajaMaterialResponse(
+                1L,
+                10L,
+                new BigDecimal("5.00"),
+                CausaFracaso.PLAGA_ENFERMEDAD,
+                "Afectado por plaga",
+                LocalDateTime.of(2026, 11, 12, 10, 0)
+        );
+
+        when(bodegaService.registrarBajaMaterial(eq(10L), any(RegistrarBajaMaterialRequest.class), any(Authentication.class)))
+                .thenReturn(respuesta);
+
+        String json = """
+                {
+                    "cantidadBaja": 5.00,
+                    "causaFracaso": "PLAGA_ENFERMEDAD",
+                    "observacion": "Afectado por plaga"
+                }
+                """;
+
+        mockMvc.perform(post("/api/bodega/material-vegetal/10/bajas")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponsable)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.bodegaMaterialId").value(10L))
+                .andExpect(jsonPath("$.cantidadBaja").value(5.00))
+                .andExpect(jsonPath("$.causaFracaso").value("PLAGA_ENFERMEDAD"))
+                .andExpect(jsonPath("$.observacion").value("Afectado por plaga"))
+                .andExpect(jsonPath("$.fechaBaja").value("2026-11-12T10:00:00"));
+    }
+
+    @Test
+    void registrarBajaMaterialSinAutenticacionDevuelve403() throws Exception {
+        String json = """
+                {
+                    "cantidadBaja": 5.00,
+                    "causaFracaso": "PLAGA_ENFERMEDAD",
+                    "observacion": "Afectado por plaga"
+                }
+                """;
+
+        mockMvc.perform(post("/api/bodega/material-vegetal/10/bajas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void registrarBajaMaterialConRolNoAutorizadoDevuelve403() throws Exception {
+        String json = """
+                {
+                    "cantidadBaja": 5.00,
+                    "causaFracaso": "PLAGA_ENFERMEDAD"
+                }
+                """;
+
+        mockMvc.perform(post("/api/bodega/material-vegetal/10/bajas")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenMiembro)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void registrarBajaMaterialConCantidadInvalidaDevuelve400() throws Exception {
+        String json = """
+                {
+                    "cantidadBaja": -1,
+                    "causaFracaso": "PLAGA_ENFERMEDAD"
+                }
+                """;
+
+        mockMvc.perform(post("/api/bodega/material-vegetal/10/bajas")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponsable)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.cantidadBaja").value("La cantidad a dar de baja debe ser mayor a cero"));
+    }
+
+    @Test
+    void registrarBajaMaterialSinCausaFracasoDevuelve400() throws Exception {
+        String json = """
+                {
+                    "cantidadBaja": 5.00
+                }
+                """;
+
+        mockMvc.perform(post("/api/bodega/material-vegetal/10/bajas")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponsable)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.causaFracaso").value("Debe seleccionar una causa de fracaso válida para el registro de la baja"));
     }
 }

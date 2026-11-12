@@ -3,6 +3,8 @@ import { Notificacion } from '../components/Notificacion'
 import { Selector } from '../components/Selector'
 import { ApiError } from '../api/client'
 import { TablaInventarioBodega } from '../features/bodega/TablaInventarioBodega'
+import { ModalBajaMaterial } from '../features/bodega/ModalBajaMaterial'
+import type { MaterialVegetalResponse } from '../features/bodega/types'
 import { obtenerMiComunidad } from '../features/comunidades/comunidadesApi'
 import { obtenerDirectorioComunidades } from '../features/comunidades-publico/comunidadesPublicoApi'
 import './InventarioBodegaPage.css'
@@ -51,6 +53,21 @@ export function InventarioBodegaPage({
     comunidadesDisponibles ?? [],
   )
   const [errorPagina, setErrorPagina] = useState<string | null>(null)
+  const [materialParaBaja, setMaterialParaBaja] = useState<MaterialVegetalResponse | null>(null)
+  const [modalBajaAbierto, setModalBajaAbierto] = useState(false)
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null)
+  const [versionInventario, setVersionInventario] = useState(0)
+
+  function handleAbrirBaja(item: MaterialVegetalResponse) {
+    setMaterialParaBaja(item)
+    setModalBajaAbierto(true)
+    setMensajeExito(null)
+  }
+
+  function handleBajaExitosa() {
+    setMensajeExito('Se registró la baja de material vegetal correctamente.')
+    setVersionInventario((v) => v + 1)
+  }
 
   useEffect(() => {
     let montado = true
@@ -133,6 +150,7 @@ export function InventarioBodegaPage({
       </div>
 
       {errorPagina && <Notificacion tipo="error" mensaje={errorPagina} />}
+      {mensajeExito && <Notificacion tipo="exito" mensaje={mensajeExito} />}
 
       {rolDetectado === 'RESPONSABLE_COMUNIDAD' && nombreComunidad && (
         <div className="inventario-comunidad-info">
@@ -153,12 +171,26 @@ export function InventarioBodegaPage({
       )}
 
       {comunidadSeleccionadaId ? (
-        <TablaInventarioBodega comunidadId={comunidadSeleccionadaId} />
+        <TablaInventarioBodega
+          key={`${comunidadSeleccionadaId}-${versionInventario}`}
+          comunidadId={comunidadSeleccionadaId}
+          alDarDeBaja={handleAbrirBaja}
+        />
       ) : (
         <p role="status" className="inventario-sin-seleccion">
           Seleccione una comunidad para consultar su inventario de bodega
         </p>
       )}
+
+      <ModalBajaMaterial
+        abierto={modalBajaAbierto}
+        material={materialParaBaja}
+        alCerrar={() => {
+          setModalBajaAbierto(false)
+          setMaterialParaBaja(null)
+        }}
+        alExito={handleBajaExitosa}
+      />
     </div>
   )
 }

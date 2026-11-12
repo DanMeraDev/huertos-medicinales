@@ -1,6 +1,8 @@
 package com.huertos.service;
 
+import com.huertos.dto.BajaMaterialResponse;
 import com.huertos.dto.MaterialVegetalResponse;
+import com.huertos.dto.RegistrarBajaMaterialRequest;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import java.util.List;
 import org.springframework.security.core.Authentication;
@@ -9,6 +11,16 @@ import org.springframework.security.core.Authentication;
  * Servicio para la administración del material vegetal en las bodegas comunitarias.
  */
 public interface BodegaService {
+
+    /**
+     * Registra la baja de una cantidad de material vegetal en bodega con su causa de fracaso.
+     *
+     * @param bodegaMaterialId identificador del lote en bodega
+     * @param request datos de la baja a registrar
+     * @param authentication datos del usuario autenticado
+     * @return información de la baja registrada
+     */
+    BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request, Authentication authentication);
 
     /**
      * Registra el ingreso de nuevo material vegetal a la bodega de la comunidad.
