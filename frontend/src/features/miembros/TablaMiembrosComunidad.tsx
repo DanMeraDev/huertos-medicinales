@@ -5,6 +5,7 @@ import { Boton } from '../../components/Boton'
 import { Notificacion, type NotificacionProps } from '../../components/Notificacion'
 import { Tabla, type ColumnaTabla } from '../../components/Tabla'
 import { ConfirmarBajaModal } from './ConfirmarBajaModal'
+import { EditarMiembroModal } from './EditarMiembroModal'
 import {
   cambiarEstadoMiembro,
   listarMiembrosDeMiComunidad,
@@ -21,6 +22,7 @@ export function TablaMiembrosComunidad() {
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('TODOS')
   const [aviso, setAviso] = useState<NotificacionProps | null>(null)
   const [miembroParaBaja, setMiembroParaBaja] = useState<MiembroDetalleResponse | null>(null)
+  const [miembroParaEditar, setMiembroParaEditar] = useState<MiembroDetalleResponse | null>(null)
   const [enviando, setEnviando] = useState(false)
 
   const cargar = useCallback(() => {
@@ -85,6 +87,14 @@ export function TablaMiembrosComunidad() {
     }
   }
 
+  function manejarExitoEdicion(miembroActualizado: MiembroDetalleResponse) {
+    setMiembros((prev) =>
+      prev.map((m) => (m.id === miembroActualizado.id ? miembroActualizado : m)),
+    )
+    setAviso({ tipo: 'exito', mensaje: 'Datos del voluntario actualizados correctamente' })
+    setMiembroParaEditar(null)
+  }
+
   const miembrosFiltrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase()
     return miembros.filter((m) => {
@@ -133,6 +143,14 @@ export function TablaMiembrosComunidad() {
       titulo: 'Acciones',
       celda: (fila) => (
         <div className="miembro-acciones">
+          <Boton
+            variante="secundario"
+            aria-label={`Editar a ${fila.nombreCompleto}`}
+            onClick={() => setMiembroParaEditar(fila)}
+            disabled={enviando}
+          >
+            Editar
+          </Boton>
           {fila.activoEnComunidad ? (
             <Boton
               variante="peligro"
@@ -220,6 +238,13 @@ export function TablaMiembrosComunidad() {
         alCerrar={() => setMiembroParaBaja(null)}
         alConfirmar={manejarConfirmarBaja}
         enviando={enviando}
+      />
+
+      <EditarMiembroModal
+        abierto={miembroParaEditar !== null}
+        miembro={miembroParaEditar}
+        alCerrar={() => setMiembroParaEditar(null)}
+        alExito={manejarExitoEdicion}
       />
     </section>
   )
