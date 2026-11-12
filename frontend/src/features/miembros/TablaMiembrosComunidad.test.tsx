@@ -1,12 +1,21 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
+import { MemoryRouter } from 'react-router'
 import { server } from '../../test/mocks/server'
 import { TablaMiembrosComunidad } from './TablaMiembrosComunidad'
 
+function renderizarTabla() {
+  return render(
+    <MemoryRouter>
+      <TablaMiembrosComunidad />
+    </MemoryRouter>,
+  )
+}
+
 describe('TablaMiembrosComunidad', () => {
   it('renderiza la lista de miembros de la comunidad con sus datos y estados', async () => {
-    render(<TablaMiembrosComunidad />)
+    renderizarTabla()
 
     expect(await screen.findByText('María Tránsito Amaguaña Alba')).toBeInTheDocument()
     expect(screen.getByText('1710034065')).toBeInTheDocument()
@@ -21,7 +30,7 @@ describe('TablaMiembrosComunidad', () => {
 
   it('filtra los miembros por nombre o cédula', async () => {
     const user = userEvent.setup()
-    render(<TablaMiembrosComunidad />)
+    renderizarTabla()
 
     expect(await screen.findByText('María Tránsito Amaguaña Alba')).toBeInTheDocument()
 
@@ -34,7 +43,7 @@ describe('TablaMiembrosComunidad', () => {
 
   it('filtra los miembros por estado activo e inactivo', async () => {
     const user = userEvent.setup()
-    render(<TablaMiembrosComunidad />)
+    renderizarTabla()
 
     expect(await screen.findByText('María Tránsito Amaguaña Alba')).toBeInTheDocument()
 
@@ -53,7 +62,7 @@ describe('TablaMiembrosComunidad', () => {
 
   it('abre el modal de confirmación de baja y actualiza el estado tras confirmar', async () => {
     const user = userEvent.setup()
-    render(<TablaMiembrosComunidad />)
+    renderizarTabla()
 
     expect(await screen.findByText('María Tránsito Amaguaña Alba')).toBeInTheDocument()
 
@@ -74,7 +83,7 @@ describe('TablaMiembrosComunidad', () => {
 
   it('permite reactivar a un miembro inactivo directamente', async () => {
     const user = userEvent.setup()
-    render(<TablaMiembrosComunidad />)
+    renderizarTabla()
 
     expect(await screen.findByText('José Manuel Quishpe')).toBeInTheDocument()
 
@@ -96,7 +105,7 @@ describe('TablaMiembrosComunidad', () => {
     )
 
     const user = userEvent.setup()
-    render(<TablaMiembrosComunidad />)
+    renderizarTabla()
 
     expect(await screen.findByText('José Manuel Quishpe')).toBeInTheDocument()
 
