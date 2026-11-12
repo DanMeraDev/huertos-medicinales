@@ -2,6 +2,7 @@ package com.huertos.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -9,8 +10,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.huertos.dto.ActividadAncestralResponse;
+import com.huertos.dto.ActividadParaCorregirResponse;
 import com.huertos.dto.ParticipanteActividadDto;
 import com.huertos.dto.RegistrarActividadAncestralRequest;
+import com.huertos.dto.ReenviarEvidenciasRequest;
+import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.ActividadAncestralMapper;
@@ -249,5 +253,122 @@ class ActividadAncestralServiceImplTest {
 
         assertEquals("El participante ya está registrado en la actividad", ex.getMessage());
         verify(actividadAncestralRepository, never()).save(any());
+    }
+
+    @Test
+    void reenviarEvidencias_incrementaNumeroIntentoYCambiaEstadoAPendiente() {
+        ActividadAncestralMsp actividad = actividadObservada(1);
+        when(comunidadRepository.findByResponsableCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+        when(actividadAncestralRepository.save(any(ActividadAncestralMsp.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
+                "Bitácora corregida con el ritual completo",
+                "https://evidencias.gob.ec/foto-corregida.jpg",
+                "https://evidencias.gob.ec/video-corregido.mp4"
+        );
+
+        ActividadAncestralResponse respuesta = actividadAncestralService
+                .reenviarEvidencias("responsable@huertos.gob.ec", 21L, request);
+
+        assertEquals(EstadoVerificacion.PENDIENTE, respuesta.estado());
+        assertEquals(2, respuesta.numeroIntento());
+        assertEquals(EstadoVerificacion.PENDIENTE, actividad.getEstadoVerificacion());
+        assertEquals(2, actividad.getNumeroIntento());
+        assertNull(actividad.getObservacionMsp());
+        assertEquals("Bitácora corregida con el ritual completo", actividad.getDescripcionBitacora());
+        assertEquals("https://evidencias.gob.ec/foto-corregida.jpg", actividad.getEvidenciaFotoUrl());
+        assertEquals("https://evidencias.gob.ec/video-corregido.mp4", actividad.getEvidenciaVideoUrl());
+    }
+
+    @Test
+    void reenviarEvidencias_lanzaConflictoSiLaActividadNoEstaObservada() {
+        ActividadAncestralMsp actividad = actividadObservada(1);
+        actividad.setEstadoVerificacion(EstadoVerificacion.PENDIENTE);
+        when(comunidadRepository.findByResponsableCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+
+        ConflictoException ex = assertThrows(
+                ConflictoException.class,
+                () -> actividadAncestralService.reenviarEvidencias("responsable@huertos.gob.ec", 21L, requestReenvio()));
+
+        assertEquals("Solo es posible reenviar evidencias para actividades en estado OBSERVADA_CORREGIR", ex.getMessage());
+        verify(actividadAncestralRepository, never()).save(any());
+    }
+
+    @Test
+    void reenviarEvidencias_lanzaReglaNegocioSiSeSuperanLosIntentosMaximos() {
+        ActividadAncestralMsp actividad = actividadObservada(2);
+        when(comunidadRepository.findByResponsableCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+
+        ReglaNegocioException ex = assertThrows(
+                ReglaNegocioException.class,
+                () -> actividadAncestralService.reenviarEvidencias("responsable@huertos.gob.ec", 21L, requestReenvio()));
+
+        assertEquals("Se ha alcanzado el número máximo de reenvíos permitidos para esta actividad", ex.getMessage());
+        verify(actividadAncestralRepository, never()).save(any());
+    }
+
+    @Test
+    void reenviarEvidencias_lanzaNoEncontradoSiLaActividadNoPerteneceALaComunidad() {
+        ActividadAncestralMsp actividad = actividadObservada(1);
+        Comunidad otraComunidad = new Comunidad();
+        otraComunidad.setId(9L);
+        when(comunidadRepository.findByResponsableCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(Optional.of(otraComunidad));
+        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+
+        RecursoNoEncontradoException ex = assertThrows(
+                RecursoNoEncontradoException.class,
+                () -> actividadAncestralService.reenviarEvidencias("responsable@huertos.gob.ec", 21L, requestReenvio()));
+
+        assertEquals("La actividad ancestral no pertenece a su comunidad", ex.getMessage());
+        verify(actividadAncestralRepository, never()).save(any());
+    }
+
+    @Test
+    void buscarParaCorregir_devuelveLaObservacionDelTecnicoMsp() {
+        ActividadAncestralMsp actividad = actividadObservada(1);
+        when(comunidadRepository.findByResponsableCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+
+        ActividadParaCorregirResponse respuesta = actividadAncestralService
+                .buscarParaCorregir("responsable@huertos.gob.ec", 21L);
+
+        assertEquals(21L, respuesta.id());
+        assertEquals("Ritual de siembra", respuesta.tituloSaber());
+        assertEquals(EstadoVerificacion.OBSERVADA_CORREGIR, respuesta.estado());
+        assertEquals(1, respuesta.numeroIntento());
+        assertEquals("La fotografía no muestra el ritual completo", respuesta.observacionMsp());
+        assertEquals("Bitácora inicial", respuesta.descripcionBitacora());
+        assertEquals("https://evidencias.gob.ec/foto-inicial.jpg", respuesta.evidenciaFotoUrl());
+        assertNull(respuesta.evidenciaVideoUrl());
+    }
+
+    private ActividadAncestralMsp actividadObservada(int numeroIntento) {
+        ActividadAncestralMsp actividad = new ActividadAncestralMsp();
+        actividad.setId(21L);
+        actividad.setComunidad(comunidad);
+        actividad.setSaberAncestral(saber);
+        actividad.setEstadoVerificacion(EstadoVerificacion.OBSERVADA_CORREGIR);
+        actividad.setNumeroIntento(numeroIntento);
+        actividad.setDescripcionBitacora("Bitácora inicial");
+        actividad.setEvidenciaFotoUrl("https://evidencias.gob.ec/foto-inicial.jpg");
+        actividad.setObservacionMsp("La fotografía no muestra el ritual completo");
+        return actividad;
+    }
+
+    private ReenviarEvidenciasRequest requestReenvio() {
+        return new ReenviarEvidenciasRequest(
+                "Bitácora corregida con el ritual completo",
+                "https://evidencias.gob.ec/foto-corregida.jpg",
+                null
+        );
     }
 }

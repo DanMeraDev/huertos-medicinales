@@ -1,14 +1,18 @@
 package com.huertos.service.impl;
 
 import com.huertos.dto.ActividadAncestralResponse;
+import com.huertos.dto.ActividadParaCorregirResponse;
 import com.huertos.dto.ParticipanteActividadDto;
 import com.huertos.dto.RegistrarActividadAncestralRequest;
+import com.huertos.dto.ReenviarEvidenciasRequest;
+import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.ActividadAncestralMapper;
 import com.huertos.model.ActividadAncestralMsp;
 import com.huertos.model.ActividadMspParticipante;
 import com.huertos.model.Comunidad;
+import com.huertos.model.EstadoVerificacion;
 import com.huertos.model.Huerto;
 import com.huertos.model.Miembro;
 import com.huertos.model.SaberAncestral;
@@ -28,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ActividadAncestralServiceImpl implements ActividadAncestralService {
+
+    private static final int INTENTOS_MAXIMOS = 2;
 
     private final ActividadAncestralMspRepository actividadAncestralRepository;
     private final SaberAncestralRepository saberAncestralRepository;
@@ -83,5 +89,50 @@ public class ActividadAncestralServiceImpl implements ActividadAncestralService 
 
         ActividadAncestralMsp guardada = actividadAncestralRepository.save(actividad);
         return actividadAncestralMapper.toActividadAncestralResponse(guardada);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ActividadParaCorregirResponse buscarParaCorregir(String correo, Long id) {
+        ActividadAncestralMsp actividad = buscarActividadDeLaComunidad(correo, id);
+        return actividadAncestralMapper.toActividadParaCorregirResponse(actividad);
+    }
+
+    @Override
+    @Transactional
+    public ActividadAncestralResponse reenviarEvidencias(String correo, Long id, ReenviarEvidenciasRequest request) {
+        ActividadAncestralMsp actividad = buscarActividadDeLaComunidad(correo, id);
+
+        if (actividad.getEstadoVerificacion() != EstadoVerificacion.OBSERVADA_CORREGIR) {
+            throw new ConflictoException("Solo es posible reenviar evidencias para actividades en estado OBSERVADA_CORREGIR");
+        }
+
+        if (actividad.getNumeroIntento() + 1 > INTENTOS_MAXIMOS) {
+            throw new ReglaNegocioException("Se ha alcanzado el número máximo de reenvíos permitidos para esta actividad");
+        }
+
+        actividad.setDescripcionBitacora(request.descripcionBitacora());
+        actividad.setEvidenciaFotoUrl(request.evidenciaFotoUrl());
+        actividad.setEvidenciaVideoUrl(request.evidenciaVideoUrl());
+        actividad.setNumeroIntento(actividad.getNumeroIntento() + 1);
+        actividad.setEstadoVerificacion(EstadoVerificacion.PENDIENTE);
+        actividad.setObservacionMsp(null);
+
+        ActividadAncestralMsp guardada = actividadAncestralRepository.save(actividad);
+        return actividadAncestralMapper.toActividadAncestralResponse(guardada);
+    }
+
+    private ActividadAncestralMsp buscarActividadDeLaComunidad(String correo, Long id) {
+        Comunidad comunidad = comunidadRepository.findByResponsableCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        ActividadAncestralMsp actividad = actividadAncestralRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("La actividad ancestral no existe"));
+
+        if (!actividad.getComunidad().getId().equals(comunidad.getId())) {
+            throw new RecursoNoEncontradoException("La actividad ancestral no pertenece a su comunidad");
+        }
+
+        return actividad;
     }
 }

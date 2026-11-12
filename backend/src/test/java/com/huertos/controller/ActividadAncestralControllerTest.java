@@ -3,7 +3,9 @@ package com.huertos.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -11,8 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huertos.config.JwtService;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.ActividadAncestralResponse;
+import com.huertos.dto.ActividadParaCorregirResponse;
 import com.huertos.dto.ParticipanteActividadDto;
 import com.huertos.dto.RegistrarActividadAncestralRequest;
+import com.huertos.dto.ReenviarEvidenciasRequest;
+import com.huertos.exception.ConflictoException;
 import com.huertos.exception.GlobalExceptionHandler;
 import com.huertos.model.EstadoVerificacion;
 import com.huertos.model.FaseLunar;
@@ -146,6 +151,98 @@ class ActividadAncestralControllerTest {
         mockMvc.perform(post("/api/actividades-ancestrales")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestValido())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void buscarActividadParaCorregirRetorna200ConLaObservacionDelTecnico() throws Exception {
+        ActividadParaCorregirResponse response = new ActividadParaCorregirResponse(
+                21L,
+                "Ritual de siembra",
+                EstadoVerificacion.OBSERVADA_CORREGIR,
+                1,
+                "La fotografía no muestra el ritual completo",
+                "Bitácora inicial",
+                "https://evidencias.gob.ec/foto-inicial.jpg",
+                null
+        );
+
+        when(actividadAncestralService.buscarParaCorregir(eq("responsable@huertos.gob.ec"), eq(21L)))
+                .thenReturn(response);
+
+        mockMvc.perform(get("/api/actividades-ancestrales/21"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(21))
+                .andExpect(jsonPath("$.tituloSaber").value("Ritual de siembra"))
+                .andExpect(jsonPath("$.estado").value("OBSERVADA_CORREGIR"))
+                .andExpect(jsonPath("$.numeroIntento").value(1))
+                .andExpect(jsonPath("$.observacionMsp").value("La fotografía no muestra el ritual completo"))
+                .andExpect(jsonPath("$.descripcionBitacora").value("Bitácora inicial"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void reenviarEvidenciasRetorna200ConActividadPendienteEIntentoDos() throws Exception {
+        ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
+                "Bitácora corregida con el ritual completo",
+                "https://evidencias.gob.ec/foto-corregida.jpg",
+                null
+        );
+        ActividadAncestralResponse response = new ActividadAncestralResponse(
+                21L,
+                3L,
+                "Ritual de siembra",
+                EstadoVerificacion.PENDIENTE,
+                2,
+                LocalDate.of(2026, 11, 10),
+                List.of(new ParticipanteActividadDto(7L, 4))
+        );
+
+        when(actividadAncestralService.reenviarEvidencias(
+                eq("responsable@huertos.gob.ec"), eq(21L), any(ReenviarEvidenciasRequest.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(put("/api/actividades-ancestrales/21/reenviar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(21))
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"))
+                .andExpect(jsonPath("$.numeroIntento").value(2));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void reenviarEvidenciasRetorna409CuandoLaActividadNoEstaObservada() throws Exception {
+        ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
+                "Bitácora corregida con el ritual completo",
+                "https://evidencias.gob.ec/foto-corregida.jpg",
+                null
+        );
+
+        when(actividadAncestralService.reenviarEvidencias(
+                eq("responsable@huertos.gob.ec"), eq(21L), any(ReenviarEvidenciasRequest.class)))
+                .thenThrow(new ConflictoException(
+                        "Solo es posible reenviar evidencias para actividades en estado OBSERVADA_CORREGIR"));
+
+        mockMvc.perform(put("/api/actividades-ancestrales/21/reenviar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value(
+                        "Solo es posible reenviar evidencias para actividades en estado OBSERVADA_CORREGIR"));
+    }
+
+    @Test
+    @WithMockUser(username = "tecnico@msp.gob.ec", roles = "TECNICO_MSP")
+    void reenviarEvidenciasRetorna403ParaRolNoAutorizado() throws Exception {
+        mockMvc.perform(put("/api/actividades-ancestrales/21/reenviar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new ReenviarEvidenciasRequest(
+                                "Bitácora corregida con el ritual completo",
+                                "https://evidencias.gob.ec/foto-corregida.jpg",
+                                null))))
                 .andExpect(status().isForbidden());
     }
 }

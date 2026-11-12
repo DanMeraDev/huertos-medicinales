@@ -1,7 +1,9 @@
 package com.huertos.controller;
 
 import com.huertos.dto.ActividadAncestralResponse;
+import com.huertos.dto.ActividadParaCorregirResponse;
 import com.huertos.dto.RegistrarActividadAncestralRequest;
+import com.huertos.dto.ReenviarEvidenciasRequest;
 import com.huertos.service.ActividadAncestralService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,5 +37,24 @@ public class ActividadAncestralController {
             @Valid @RequestBody RegistrarActividadAncestralRequest request,
             Authentication authentication) {
         return actividadAncestralService.registrarActividadGrande(authentication.getName(), request);
+    }
+
+    @Operation(summary = "Obtiene la actividad ancestral observada con la observación del Técnico MSP para corregirla")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
+    public ActividadParaCorregirResponse buscarActividadParaCorregir(
+            @PathVariable Long id,
+            Authentication authentication) {
+        return actividadAncestralService.buscarParaCorregir(authentication.getName(), id);
+    }
+
+    @Operation(summary = "Reenvía las evidencias corregidas de una actividad ancestral observada")
+    @PutMapping("/{id}/reenviar")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
+    public ActividadAncestralResponse reenviarEvidencias(
+            @PathVariable Long id,
+            @Valid @RequestBody ReenviarEvidenciasRequest request,
+            Authentication authentication) {
+        return actividadAncestralService.reenviarEvidencias(authentication.getName(), id, request);
     }
 }
