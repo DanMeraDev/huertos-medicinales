@@ -1,6 +1,8 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.MiembroDetalleResponse;
+import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -19,6 +21,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -104,6 +107,26 @@ public class MiembroServiceImpl implements MiembroService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return registrarMiembroEnComunidad(usuario.getId(), request);
+    }
+
+    @Override
+    public MiembroEstadoResponse cambiarEstadoEnComunidad(Long responsableId, Long miembroId, CambiarEstadoMiembroRequest request) {
+        throw new UnsupportedOperationException("Pendiente de implementar");
+    }
+
+    @Override
+    public MiembroEstadoResponse cambiarEstadoPorCorreo(String correo, Long miembroId, CambiarEstadoMiembroRequest request) {
+        throw new UnsupportedOperationException("Pendiente de implementar");
+    }
+
+    @Override
+    public List<MiembroDetalleResponse> listarMiembrosDeMiComunidad(Long responsableId) {
+        throw new UnsupportedOperationException("Pendiente de implementar");
+    }
+
+    @Override
+    public List<MiembroDetalleResponse> listarMiembrosPorCorreo(String correo) {
+        throw new UnsupportedOperationException("Pendiente de implementar");
     }
 
     private void validarCedula(String cedula) {
