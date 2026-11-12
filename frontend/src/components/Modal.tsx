@@ -10,6 +10,8 @@ export interface ModalProps {
   alCancelar: () => void
   textoCancelar?: string
   className?: string
+  cerrarConEscape?: boolean
+  cerrarAlTocarFondo?: boolean
 }
 
 export function Modal({

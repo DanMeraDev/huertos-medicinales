@@ -3,6 +3,7 @@ import { MENSAJE_FORMATO_NO_ADMITIDO, MENSAJE_IMAGEN_DEMASIADO_GRANDE } from '..
 import type {
   ActualizarPlantaRequest,
   CrearPlantaRequest,
+  DarBajaPlantaRequest,
   FotografiaSubidaResponse,
   PlantaDetalleResponse,
 } from './types'
@@ -31,4 +32,8 @@ export function obtenerPlantaParaEditar(id: number) {
 
 export function actualizarPlanta(id: number, datos: ActualizarPlantaRequest) {
   return apiPut<PlantaDetalleResponse>(`/msp/plantas/${id}`, datos)
+}
+
+export function darDeBajaPlanta(_id: number, _datos: DarBajaPlantaRequest): Promise<void> {
+  return Promise.reject(new Error())
 }
