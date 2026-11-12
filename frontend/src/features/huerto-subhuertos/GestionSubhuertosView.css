@@ -1,0 +1,208 @@
+.gestion-subhuertos {
+  background-color: var(--color-fondo);
+  padding: 1.25rem 0 5rem;
+}
+
+.gestion-subhuertos__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.gestion-subhuertos__titulo {
+  margin: 0;
+  color: var(--color-texto);
+}
+
+.gestion-subhuertos__subtitulo {
+  margin: 0.25rem 0 0;
+  color: var(--color-texto-suave);
+  font-size: 0.95rem;
+}
+
+.gestion-subhuertos__accion-pc {
+  display: none;
+}
+
+.gestion-subhuertos__dashboard {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  box-shadow: var(--sombra-sm);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.gestion-subhuertos__barra-info {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+}
+
+.gestion-subhuertos__barra-pista {
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-superficie-alt);
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+}
+
+.gestion-subhuertos__barra-relleno {
+  height: 100%;
+  background: var(--color-primario);
+  transition: width 0.25s ease;
+}
+
+.gestion-subhuertos__capsulas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gestion-subhuertos__capsula {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  border: 1px solid var(--color-borde);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+.gestion-subhuertos__capsula--ocupada {
+  border-color: var(--color-primario);
+  background: rgba(94, 107, 60, 0.14);
+  font-weight: 600;
+}
+
+.gestion-subhuertos__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.gestion-subhuertos__tarjeta {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  box-shadow: var(--sombra-sm);
+  border-radius: 12px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.gestion-subhuertos__tarjeta-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.gestion-subhuertos__icono-botanico {
+  font-size: 1.5rem;
+}
+
+.gestion-subhuertos__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+  border-top: 1px solid var(--color-borde);
+  padding-top: 0.6rem;
+}
+
+.gestion-subhuertos__fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primario);
+  color: #ffffff;
+  font-size: 1.75rem;
+  line-height: 1;
+  box-shadow: var(--sombra-sm);
+  cursor: pointer;
+  z-index: 20;
+}
+
+.gestion-subhuertos__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.gestion-subhuertos__subtipos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.gestion-subhuertos__subtipo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-borde);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  cursor: pointer;
+  text-align: left;
+}
+
+.gestion-subhuertos__subtipo-btn--activo {
+  border-color: var(--color-primario);
+  background: rgba(94, 107, 60, 0.14);
+  font-weight: 600;
+}
+
+.gestion-subhuertos__subtipo-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--color-fondo);
+}
+
+.gestion-subhuertos__aviso-msp {
+  font-size: 0.85rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(217, 121, 56, 0.12);
+  border: 1px solid var(--color-acento, #d97938);
+  color: var(--color-texto);
+}
+
+@media (min-width: 1024px) {
+  .gestion-subhuertos__cabecera {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .gestion-subhuertos__accion-pc {
+    display: block;
+  }
+
+  .gestion-subhuertos__fab {
+    display: none;
+  }
+
+  .gestion-subhuertos__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .gestion-subhuertos__subtipos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
