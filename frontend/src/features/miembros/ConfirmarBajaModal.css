@@ -1,0 +1,33 @@
+.modal-baja-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm, 0.75rem);
+}
+
+.modal-baja-pregunta {
+  font-size: 1rem;
+  color: var(--color-texto, #2d3748);
+  margin: 0;
+}
+
+.modal-baja-aviso {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario, #718096);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.modal-baja-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.modal-baja-conteo {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.75rem;
+  color: var(--color-texto-secundario, #718096);
+}
