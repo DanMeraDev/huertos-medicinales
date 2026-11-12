@@ -1,5 +1,6 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.exception.ConflictoException;
@@ -7,6 +8,7 @@ import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.model.Planta;
 import com.huertos.repository.PlantaRepository;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.PlantaAdminService;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlantaAdminServiceImpl implements PlantaAdminService {
 
     private final PlantaRepository plantaRepository;
+    private final UsuarioRepository usuarioRepository;
     private final PlantaMapper plantaMapper;
     private final Clock clock;
 
@@ -36,6 +39,12 @@ public class PlantaAdminServiceImpl implements PlantaAdminService {
         planta.setCreadoEn(ahora);
         planta.setActualizadoEn(ahora);
         return plantaMapper.aDetalle(plantaRepository.save(planta));
+    }
+
+    @Override
+    @Transactional
+    public PlantaDetalleResponse actualizarPlanta(Long id, ActualizarPlantaRequest request, String correo) {
+        return null;
     }
 
     private void validarRangoAltitud(Integer altitudMinima, Integer altitudMaxima) {

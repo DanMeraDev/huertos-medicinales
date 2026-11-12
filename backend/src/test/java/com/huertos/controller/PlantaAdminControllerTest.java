@@ -4,20 +4,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huertos.config.SecurityConfig;
+import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.exception.ConflictoException;
+import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.model.CategoriaUso;
 import com.huertos.model.CicloCultivo;
 import com.huertos.model.CualidadTermica;
@@ -49,6 +53,8 @@ class PlantaAdminControllerTest {
 
     private static final String RUTA = "/api/msp/plantas/fotografia";
     private static final String RUTA_PLANTAS = "/api/msp/plantas";
+    private static final String RUTA_PLANTA = "/api/msp/plantas/{id}";
+    private static final String CORREO_TECNICO = "tecnico.msp@huertos.gob.ec";
     private static final byte[] JPEG = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0x00, 0x10, 0x4A, 0x46};
 
     @TempDir
@@ -184,6 +190,98 @@ class PlantaAdminControllerTest {
                 .andExpect(jsonPath("$.detail").value("El nombre científico ya existe en el catálogo"));
     }
 
+    @Test
+    @WithMockUser(username = CORREO_TECNICO, roles = "TECNICO_MSP")
+    void actualizaLaPlantaCon200YDevuelveSuFicha() throws Exception {
+        when(plantaAdminService.actualizarPlanta(eq(50L), any(ActualizarPlantaRequest.class), eq(CORREO_TECNICO)))
+                .thenReturn(fichaActualizada());
+
+        mockMvc.perform(put(RUTA_PLANTA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(solicitudDeActualizacion())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(50))
+                .andExpect(jsonPath("$.nombreComun").value("Hierba editada"))
+                .andExpect(jsonPath("$.nombreCientifico").value("Herba editata"))
+                .andExpect(jsonPath("$.cualidadTermica").value("CALIENTE"))
+                .andExpect(jsonPath("$.categorias", contains("EXPECTORANTE")))
+                .andExpect(jsonPath("$.fotografiaUrl").value("plantas/foto.jpg"));
+    }
+
+    @Test
+    void rechazaLaActualizacionSinToken() throws Exception {
+        mockMvc.perform(put(RUTA_PLANTA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(solicitudDeActualizacion())))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    void niegaLaActualizacionAlResponsableDeComunidad() throws Exception {
+        mockMvc.perform(put(RUTA_PLANTA, 50)
+                        .with(user("rosa@huertos.gob.ec").roles("RESPONSABLE_COMUNIDAD"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(solicitudDeActualizacion())))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    void niegaLaActualizacionAlTecnicoSis() throws Exception {
+        mockMvc.perform(put(RUTA_PLANTA, 50)
+                        .with(user("tecnico.sis@huertos.gob.ec").roles("TECNICO_SIS"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(solicitudDeActualizacion())))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    @WithMockUser(roles = "TECNICO_MSP")
+    void rechazaLaActualizacionConCamposInvalidosCon400PorCampo() throws Exception {
+        ActualizarPlantaRequest invalida = new ActualizarPlantaRequest("", null, " ", "Ficticiaceae", null,
+                null, null, -1, null, null, "", null, null, Set.of(), null);
+
+        mockMvc.perform(put(RUTA_PLANTA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalida)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.nombreComun").exists())
+                .andExpect(jsonPath("$.errores.nombreCientifico").exists())
+                .andExpect(jsonPath("$.errores.cualidadTermica").exists())
+                .andExpect(jsonPath("$.errores.altitudMinMsnm").exists())
+                .andExpect(jsonPath("$.errores.usosMedicinales").exists())
+                .andExpect(jsonPath("$.errores.categorias").exists());
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    @WithMockUser(roles = "TECNICO_MSP")
+    void respondeNoEncontradoSiLaPlantaNoExisteOFueDadaDeBaja() throws Exception {
+        when(plantaAdminService.actualizarPlanta(eq(99L), any(ActualizarPlantaRequest.class), any()))
+                .thenThrow(new RecursoNoEncontradoException("La planta no existe o fue dada de baja"));
+
+        mockMvc.perform(put(RUTA_PLANTA, 99)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(solicitudDeActualizacion())))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("La planta no existe o fue dada de baja"));
+    }
+
+    @Test
+    @WithMockUser(roles = "TECNICO_MSP")
+    void rechazaElNombreCientificoDeOtraPlantaCon409() throws Exception {
+        when(plantaAdminService.actualizarPlanta(eq(50L), any(ActualizarPlantaRequest.class), any()))
+                .thenThrow(new ConflictoException("Nombre científico ya registrado en otra planta"));
+
+        mockMvc.perform(put(RUTA_PLANTA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(solicitudDeActualizacion())))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value("Nombre científico ya registrado en otra planta"));
+    }
+
     private static MockMultipartFile archivo(byte[] contenido) {
         return new MockMultipartFile("archivo", "manzanilla.jpg", "image/jpeg", contenido);
     }
@@ -198,5 +296,17 @@ class PlantaAdminControllerTest {
         return new PlantaDetalleResponse(50L, "Hierba de prueba", null, "Herba ficticia", "Ficticiaceae",
                 CualidadTermica.FRIA, CicloCultivo.CORTO, OrigenPlanta.NATIVA, 2000, 3200, "Costa, Sierra",
                 "Alivia el dolor", null, null, Set.of(CategoriaUso.SEDANTE), "plantas/foto.jpg");
+    }
+
+    private static ActualizarPlantaRequest solicitudDeActualizacion() {
+        return new ActualizarPlantaRequest("Hierba editada", null, "Herba editata", "Ficticiaceae",
+                CualidadTermica.CALIENTE, CicloCultivo.LARGO, OrigenPlanta.ENDEMICA, 1000, 1800, "Amazonía",
+                "Calma la tos", null, null, Set.of(CategoriaUso.EXPECTORANTE), "plantas/foto.jpg");
+    }
+
+    private static PlantaDetalleResponse fichaActualizada() {
+        return new PlantaDetalleResponse(50L, "Hierba editada", null, "Herba editata", "Ficticiaceae",
+                CualidadTermica.CALIENTE, CicloCultivo.LARGO, OrigenPlanta.ENDEMICA, 1000, 1800, "Amazonía",
+                "Calma la tos", null, null, Set.of(CategoriaUso.EXPECTORANTE), "plantas/foto.jpg");
     }
 }

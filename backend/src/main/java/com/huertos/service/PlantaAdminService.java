@@ -1,5 +1,6 @@
 package com.huertos.service;
 
+import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 
@@ -17,4 +18,21 @@ public interface PlantaAdminService {
      * @throws com.huertos.exception.ConflictoException si el nombre científico ya existe en el catálogo
      */
     PlantaDetalleResponse registrarPlanta(CrearPlantaRequest request);
+
+    /**
+     * Actualiza la ficha técnica de una planta activa del catálogo y reemplaza sus categorías. Aplica la misma
+     * normalización que el registro y guarda al técnico que hace el cambio y la fecha del reloj del sistema. No
+     * cambia el estado activo, los datos de baja ni la fecha de creación. El nombre científico no puede pertenecer
+     * a otra planta sin distinguir mayúsculas, incluidas las dadas de baja; cambiar solo las mayúsculas del nombre
+     * de la misma planta está permitido.
+     *
+     * @param id identificador de la planta
+     * @param request datos nuevos de la planta
+     * @param correo correo del técnico autenticado
+     * @return la ficha técnica actualizada
+     * @throws com.huertos.exception.ReglaNegocioException si la altitud mínima es mayor que la máxima
+     * @throws com.huertos.exception.RecursoNoEncontradoException si la planta no existe o fue dada de baja
+     * @throws com.huertos.exception.ConflictoException si el nombre científico pertenece a otra planta
+     */
+    PlantaDetalleResponse actualizarPlanta(Long id, ActualizarPlantaRequest request, String correo);
 }
