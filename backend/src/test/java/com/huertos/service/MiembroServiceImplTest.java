@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -559,5 +560,59 @@ class MiembroServiceImplTest {
         assertThatThrownBy(() -> miembroService.cambiarEstadoPorCorreo(correo, miembroId, request))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void listarMiembrosDeMiComunidadRetornaLista() {
+        Long responsableId = 1L;
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(15L);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.FEMENINO);
+        miembro.setTelefono("0981234567");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+        miembro.setPuntosTotales(0);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadId(3L)).thenReturn(List.of(relacion));
+
+        List<MiembroDetalleResponse> response = miembroService.listarMiembrosDeMiComunidad(responsableId);
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).id()).isEqualTo(15L);
+        assertThat(response.get(0).nombreCompleto()).isEqualTo("María Tránsito Amaguaña Alba");
+        assertThat(response.get(0).activoEnComunidad()).isTrue();
+    }
+
+    @Test
+    void listarMiembrosPorCorreoResuelveUsuario() {
+        String correo = "responsable@huertos.gob.ec";
+        Usuario usuario = new Usuario();
+        usuario.setId(10L);
+        usuario.setCorreo(correo);
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(comunidadRepository.findByResponsableId(10L)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadId(3L)).thenReturn(List.of());
+
+        List<MiembroDetalleResponse> response = miembroService.listarMiembrosPorCorreo(correo);
+
+        assertThat(response).isEmpty();
     }
 }
