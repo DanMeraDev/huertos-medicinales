@@ -1,4 +1,4 @@
-import { apiPost } from '../../api/client'
+import { apiGet, apiPatch, apiPost } from '../../api/client'
 
 export type Genero = 'FEMENINO' | 'MASCULINO' | 'OTRO'
 export type NivelMiembro = 'APRENDIZ' | 'OFICIAL' | 'MAESTRO'
@@ -31,8 +31,34 @@ export interface MiembroDetalleResponse {
   fechaIngreso: string
 }
 
+export interface CambiarEstadoMiembroRequest {
+  activo: boolean
+  motivoBaja?: string | null
+}
+
+export interface MiembroEstadoResponse {
+  miembroId: number
+  comunidadId: number
+  nombreMiembro: string
+  activoEnComunidad: boolean
+  fechaBaja: string | null
+  motivoBaja: string | null
+  mensaje: string
+}
+
 export function registrarMiembroEnComunidad(
   datos: RegistrarMiembroRequest,
 ): Promise<MiembroDetalleResponse> {
   return apiPost<MiembroDetalleResponse>('/comunidades/mi-comunidad/miembros', datos)
+}
+
+export function listarMiembrosDeMiComunidad(): Promise<MiembroDetalleResponse[]> {
+  return apiGet<MiembroDetalleResponse[]>('/comunidades/mi-comunidad/miembros')
+}
+
+export function cambiarEstadoMiembro(
+  miembroId: number,
+  datos: CambiarEstadoMiembroRequest,
+): Promise<MiembroEstadoResponse> {
+  return apiPatch<MiembroEstadoResponse>(`/comunidades/mi-comunidad/miembros/${miembroId}/estado`, datos)
 }
