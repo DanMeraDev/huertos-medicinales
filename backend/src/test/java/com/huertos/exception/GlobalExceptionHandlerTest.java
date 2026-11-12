@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 class GlobalExceptionHandlerTest {
 
@@ -31,8 +32,44 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.detail").value("No tiene permisos para consultar el inventario de otra comunidad"));
     }
 
+    @Test
+    void formatoDeImagenNoAdmitidoDevuelve415() throws Exception {
+        mockMvc.perform(get("/formato-no-admitido"))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.detail").value("Formato no admitido. Seleccione una imagen JPG, PNG o WEBP"));
+    }
+
+    @Test
+    void imagenDemasiadoGrandeDevuelve413() throws Exception {
+        mockMvc.perform(get("/imagen-grande"))
+                .andExpect(status().isPayloadTooLarge())
+                .andExpect(jsonPath("$.detail").value("La imagen supera el límite de 5 MB. Intente reducir la resolución"));
+    }
+
+    @Test
+    void subidaQueSuperaElLimiteDeSpringDevuelve413ConElMismoMensaje() throws Exception {
+        mockMvc.perform(get("/limite-de-subida"))
+                .andExpect(status().isPayloadTooLarge())
+                .andExpect(jsonPath("$.detail").value("La imagen supera el límite de 5 MB. Intente reducir la resolución"));
+    }
+
     @RestController
     static class ControladorDePrueba {
+
+        @GetMapping("/formato-no-admitido")
+        void rechazarFormato() {
+            throw new FormatoImagenNoAdmitidoException();
+        }
+
+        @GetMapping("/imagen-grande")
+        void rechazarImagenGrande() {
+            throw new ImagenDemasiadoGrandeException();
+        }
+
+        @GetMapping("/limite-de-subida")
+        void superarLimiteDeSubida() {
+            throw new MaxUploadSizeExceededException(5 * 1024 * 1024);
+        }
 
         @GetMapping("/regla-incumplida")
         void incumplirRegla() {

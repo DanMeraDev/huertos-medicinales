@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * Convierte las excepciones en respuestas con formato ProblemDetail (RFC 9457),
@@ -68,6 +69,20 @@ public class GlobalExceptionHandler {
                 return ProblemDetail.forStatusAndDetail(
                                 HttpStatus.FORBIDDEN,
                                 ex.getMessage());
+        }
+
+        @ExceptionHandler(FormatoImagenNoAdmitidoException.class)
+        ProblemDetail manejarFormatoImagenNoAdmitido(FormatoImagenNoAdmitidoException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                                ex.getMessage());
+        }
+
+        @ExceptionHandler({ImagenDemasiadoGrandeException.class, MaxUploadSizeExceededException.class})
+        ProblemDetail manejarImagenDemasiadoGrande() {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.PAYLOAD_TOO_LARGE,
+                                ImagenDemasiadoGrandeException.MENSAJE);
         }
 
         @ExceptionHandler(AccessDeniedException.class)
