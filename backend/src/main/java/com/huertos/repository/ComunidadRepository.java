@@ -1,8 +1,10 @@
 package com.huertos.repository;
 
 import com.huertos.model.Comunidad;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface ComunidadRepository extends JpaRepository<Comunidad, Long> {
 
@@ -10,7 +12,14 @@ public interface ComunidadRepository extends JpaRepository<Comunidad, Long> {
 
     Optional<Comunidad> findByResponsableId(Long responsableId);
 
+    Optional<Comunidad> findByResponsableCorreo(String correo);
+
     boolean existsByNombreAndIdNot(String nombre, Long id);
 
     boolean existsByResponsableIdentificacion(String identificacion);
+
+    List<Comunidad> findByActivaTrueOrderByPuntosComunidadDescCreadoEnAsc();
+
+    @Query("SELECT c FROM Comunidad c WHERE c.activa = true ORDER BY c.nombre ASC")
+    List<Comunidad> findAllActivasOrdenadas();
 }

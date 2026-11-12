@@ -1,0 +1,83 @@
+.visor-fase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-6) var(--espacio-4);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+  text-align: center;
+}
+
+.visor-fase-luna {
+  position: relative;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--color-luna-sombra);
+}
+
+.visor-fase-luna::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: var(--color-luna-luz);
+  transform: translateX(var(--desplazamiento-luna, 0));
+}
+
+.visor-fase-luna--yana_killa_oscura {
+  --desplazamiento-luna: 100%;
+}
+
+.visor-fase-luna--winak_killa_creciente {
+  --desplazamiento-luna: 72%;
+}
+
+.visor-fase-luna--pura_killa_llena {
+  --desplazamiento-luna: 0%;
+}
+
+.visor-fase-luna--wanuk_killa_menguante {
+  --desplazamiento-luna: -72%;
+}
+
+.visor-fase-datos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-2);
+  max-width: 100%;
+}
+
+.visor-fase-kichwa {
+  font-size: var(--texto-3xl);
+  color: var(--color-primario);
+  font-weight: var(--peso-negrita);
+  line-height: var(--interlineado-apretado);
+}
+
+.visor-fase-espanol {
+  font-size: var(--texto-lg);
+  color: var(--color-texto);
+  font-weight: var(--peso-medio);
+}
+
+.visor-fase-rango {
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+}
+
+@media (min-width: 48rem) {
+  .visor-fase {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .visor-fase-datos {
+    align-items: flex-start;
+  }
+}
