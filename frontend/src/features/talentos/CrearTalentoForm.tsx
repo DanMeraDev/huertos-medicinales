@@ -122,8 +122,8 @@ export function CrearTalentoForm({ actividades, alExito }: CrearTalentoFormProps
       alExito?.(nuevoTalento)
     } catch (err: unknown) {
       const mensaje =
-        err instanceof ApiError && err.detail
-          ? err.detail
+        err instanceof ApiError
+          ? (err.detalle ?? err.message)
           : 'Error al registrar la medalla de comunidad'
       setMensajeError(mensaje)
     } finally {

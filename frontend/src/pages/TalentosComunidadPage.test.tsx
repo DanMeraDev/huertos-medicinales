@@ -21,7 +21,7 @@ describe('TalentosComunidadPage', () => {
     ).toBeInTheDocument()
 
     expect(await screen.findByText('Maestro del Abonaje 1')).toBeInTheDocument()
-    expect(screen.getByText(/50 rep/i)).toBeInTheDocument()
+    expect(screen.getByText('50 rep')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /definir nueva medalla o talento/i })).toBeInTheDocument()
   })
 
@@ -47,6 +47,6 @@ describe('TalentosComunidadPage', () => {
     })
 
     expect(await screen.findByText('Guardián del Riego 2')).toBeInTheDocument()
-    expect(screen.getByText(/25 rep/i)).toBeInTheDocument()
+    expect(screen.getByText('25 rep')).toBeInTheDocument()
   })
 })
