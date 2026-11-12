@@ -160,7 +160,7 @@ export function GestionSubhuertosView({
       {areaTotalHuertoM2 === null && (
         <div style={{ marginBottom: '1rem' }}>
           <Notificacion
-            tipo="advertencia"
+            tipo="error"
             mensaje="Primero completa el área del huerto en la configuración operativa (HR-CU03)."
           />
         </div>
@@ -180,7 +180,13 @@ export function GestionSubhuertosView({
           </span>
         </div>
 
-        <div className="gestion-subhuertos__barra-pista" role="progressbar" aria-valuenow={porcentajeOcupado} aria-valuemin={0} aria-valuemax={100}>
+        <div
+          className="gestion-subhuertos__barra-pista"
+          role="progressbar"
+          aria-valuenow={porcentajeOcupado}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
           <div
             className="gestion-subhuertos__barra-relleno"
             style={{ width: `${porcentajeOcupado}%` }}
@@ -312,7 +318,7 @@ export function GestionSubhuertosView({
 
           <CampoTexto
             etiqueta="Área de la zona (m²)"
-            tipo="number"
+            type="number"
             valor={areaTexto}
             alCambiar={setAreaTexto}
             placeholder={`Disponible: ${areaDisponibleM2.toFixed(2)} m²`}
