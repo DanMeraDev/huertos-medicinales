@@ -171,13 +171,27 @@ public class MiembroServiceImpl implements MiembroService {
     @Override
     @Transactional
     public MiembroDetalleResponse actualizarDatosContacto(Long responsableId, Long miembroId, ActualizarMiembroRequest request) {
-        throw new UnsupportedOperationException("No implementado aún");
+        Comunidad comunidad = comunidadRepository.findByResponsableId(responsableId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        ComunidadMiembro relacion = comunidadMiembroRepository.findByComunidadIdAndMiembroId(comunidad.getId(), miembroId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El voluntario no pertenece a la comunidad administrada"));
+
+        Miembro miembro = relacion.getMiembro();
+        miembroMapper.actualizarDesdeRequest(request, miembro);
+        Miembro miembroGuardado = miembroRepository.save(miembro);
+
+        LocalDate hoy = LocalDate.now(clock);
+        int edad = Period.between(miembroGuardado.getFechaNacimiento(), hoy).getYears();
+        return miembroMapper.toDetalleResponse(miembroGuardado, relacion, edad);
     }
 
     @Override
     @Transactional
     public MiembroDetalleResponse actualizarDatosContactoPorCorreo(String correo, Long miembroId, ActualizarMiembroRequest request) {
-        throw new UnsupportedOperationException("No implementado aún");
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
+        return actualizarDatosContacto(usuario.getId(), miembroId, request);
     }
 
     private void validarCedula(String cedula) {
