@@ -6,7 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ComunidadRepository extends JpaRepository<Comunidad, Long> {
 
+    boolean existsByNombre(String nombre);
+
+    Optional<Comunidad> findByResponsableId(Long responsableId);
+
     Optional<Comunidad> findByResponsableCorreo(String correo);
 
-    boolean existsByNombre(String nombre);
+    boolean existsByNombreAndIdNot(String nombre, Long id);
 }

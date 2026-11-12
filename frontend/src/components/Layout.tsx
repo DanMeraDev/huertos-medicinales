@@ -8,6 +8,7 @@ export interface LayoutProps {
 
 const MODULOS = [
   { nombre: 'Acceso', ruta: '/' },
+  { nombre: 'Mi Comunidad', ruta: '/mi-comunidad' },
   { nombre: 'Comunidades y Miembros', ruta: '/comunidades' },
   { nombre: 'Huerto Real', ruta: '/huerto-real' },
   { nombre: 'Catálogo de Plantas', ruta: '/catalogo-plantas' },
