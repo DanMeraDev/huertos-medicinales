@@ -1,5 +1,6 @@
 package com.huertos.service.impl;
 
+import com.huertos.config.ConstantesGamificacion;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.model.ActividadAncestralMsp;
@@ -29,8 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class GamificacionServiceImpl implements GamificacionService {
 
-    private static final int UMBRAL_OFICIAL = 50;
-    private static final int UMBRAL_MAESTRO = 150;
     private static final int PUNTOS_BASE_DEFECTO = 20;
     private static final int PUNTOS_POR_HORA = 1;
     private static final float FACTOR_PENALIZACION_INTENTO_DOS = 0.70f;
@@ -59,12 +58,21 @@ public class GamificacionServiceImpl implements GamificacionService {
     }
 
     @Override
+    @Transactional
     public NivelMiembro evaluarAscensoNivel(Long miembroId) {
         Miembro miembro = miembroRepository.findById(miembroId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Miembro no encontrado con id: " + miembroId));
 
-        evaluarAscensoNivelEntidad(miembro);
-        return miembro.getNivel();
+        NivelMiembro nivelAnterior = miembro.getNivel();
+        NivelMiembro nuevoNivel = determinarNuevoNivel(miembro.getPuntosTotales(), nivelAnterior);
+
+        if (nuevoNivel != nivelAnterior) {
+            miembro.setNivel(nuevoNivel);
+            miembroRepository.save(miembro);
+            log.info("Miembro id {} ascendió honoríficamente a nivel {}", miembro.getId(), nuevoNivel);
+        }
+
+        return nuevoNivel;
     }
 
     @Override
@@ -155,7 +163,12 @@ public class GamificacionServiceImpl implements GamificacionService {
                 : miembro;
 
         miembroPersistido.setPuntosTotales(miembroPersistido.getPuntosTotales() + puntosVoluntario);
-        evaluarAscensoNivelEntidad(miembroPersistido);
+        NivelMiembro nivelAnterior = miembroPersistido.getNivel();
+        NivelMiembro nuevoNivel = determinarNuevoNivel(miembroPersistido.getPuntosTotales(), nivelAnterior);
+        if (nuevoNivel != nivelAnterior) {
+            miembroPersistido.setNivel(nuevoNivel);
+            log.info("Miembro id {} ascendió a nivel {}", miembroPersistido.getId(), nuevoNivel);
+        }
         miembroRepository.save(miembroPersistido);
 
         if (!miembroPersistido.isActivo()) {
@@ -177,22 +190,13 @@ public class GamificacionServiceImpl implements GamificacionService {
         return insignia;
     }
 
-    private void evaluarAscensoNivelEntidad(Miembro miembro) {
-        int puntos = miembro.getPuntosTotales();
-        NivelMiembro actual = miembro.getNivel();
-
-        if (puntos >= UMBRAL_MAESTRO) {
-            if (actual != NivelMiembro.MAESTRO) {
-                miembro.setNivel(NivelMiembro.MAESTRO);
-                log.info("Miembro id {} ascendió a nivel MAESTRO", miembro.getId());
-            }
-        } else if (puntos >= UMBRAL_OFICIAL) {
-            if (actual == null || actual == NivelMiembro.APRENDIZ) {
-                miembro.setNivel(NivelMiembro.OFICIAL);
-                log.info("Miembro id {} ascendió a nivel OFICIAL", miembro.getId());
-            }
-        } else if (actual == null) {
-            miembro.setNivel(NivelMiembro.APRENDIZ);
+    private NivelMiembro determinarNuevoNivel(int puntosTotales, NivelMiembro nivelActual) {
+        if (puntosTotales >= ConstantesGamificacion.UMBRAL_MAESTRO) {
+            return NivelMiembro.MAESTRO;
         }
+        if (puntosTotales >= ConstantesGamificacion.UMBRAL_OFICIAL) {
+            return (nivelActual == NivelMiembro.MAESTRO) ? NivelMiembro.MAESTRO : NivelMiembro.OFICIAL;
+        }
+        return (nivelActual == null) ? NivelMiembro.APRENDIZ : nivelActual;
     }
 }
