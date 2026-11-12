@@ -6,6 +6,7 @@ import { InicioPage } from './pages/InicioPage'
 import { LoginPage } from './pages/LoginPage'
 import { MiComunidadPage } from './pages/MiComunidadPage'
 import { NoEncontradaPage } from './pages/NoEncontradaPage'
+import { SaberesAncestralesPage } from './pages/SaberesAncestralesPage'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
         <Route path="/calendario-lunar" element={<CalendarioLunarPage />} />
+        <Route path="/saberes-ancestrales" element={<SaberesAncestralesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
