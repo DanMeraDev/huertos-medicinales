@@ -24,6 +24,12 @@ describe('Boton', () => {
     expect(screen.getByRole('button')).toHaveClass('boton-peligro')
   })
 
+  it('suma la clase recibida sin perder la variante', () => {
+    render(<Boton className="ancho-completo">Guardar</Boton>)
+
+    expect(screen.getByRole('button')).toHaveClass('boton', 'boton-primario', 'ancho-completo')
+  })
+
   it('no avisa el clic cuando está deshabilitado', async () => {
     const alHacerClic = vi.fn()
     render(<Boton disabled onClick={alHacerClic}>Guardar</Boton>)
