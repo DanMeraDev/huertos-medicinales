@@ -37,7 +37,7 @@ class FotoPublicoControllerTest {
 
     @DynamicPropertySource
     static void propiedades(DynamicPropertyRegistry registro) {
-        registro.add("huertos.fotos.directorio", () -> directorioFotos.toString());
+        registro.add("app.fotos.directorio", () -> directorioFotos.toString());
     }
 
     @BeforeAll
