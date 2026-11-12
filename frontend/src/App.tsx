@@ -5,6 +5,7 @@ import { InicioPage } from './pages/InicioPage'
 import { LoginPage } from './pages/LoginPage'
 import { MiComunidadPage } from './pages/MiComunidadPage'
 import { NoEncontradaPage } from './pages/NoEncontradaPage'
+import { RegistrarMiembroPage } from './pages/RegistrarMiembroPage'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/catalogo-plantas" element={<CatalogoPlantasPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
+        <Route path="/comunidad/miembros/nuevo" element={<RegistrarMiembroPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
