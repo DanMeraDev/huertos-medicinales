@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { Layout } from './components/Layout'
+import { CalendarioLunarPage } from './pages/CalendarioLunarPage'
 import { CatalogoPlantasPage } from './pages/CatalogoPlantasPage'
 import { IngresoMaterialPage } from './pages/IngresoMaterialPage'
 import { InicioPage } from './pages/InicioPage'
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/catalogo-plantas" element={<CatalogoPlantasPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
+        <Route path="/calendario-lunar" element={<CalendarioLunarPage />} />
         <Route path="/bodega" element={<Navigate to="/bodega/ingreso-material" replace />} />
         <Route path="/bodega/ingreso-material" element={<IngresoMaterialPage />} />
         <Route path="*" element={<NoEncontradaPage />} />

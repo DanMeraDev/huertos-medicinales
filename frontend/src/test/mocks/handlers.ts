@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { authMockHandlers } from '../../features/auth/authMockHandlers'
 import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
+import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
 
@@ -27,6 +28,7 @@ export const handlers = [
   ...bodegaMockHandlers,
   ...plantasHandlers,
   ...authMockHandlers,
+  ...calendarioLunarMockHandlers,
 
   http.get('*/api/comunidades/mi-comunidad', () => HttpResponse.json(mockMiComunidad)),
 

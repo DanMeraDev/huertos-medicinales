@@ -14,6 +14,7 @@ const MODULOS = [
   { nombre: 'Catálogo de Plantas', ruta: '/catalogo-plantas' },
   { nombre: 'Bodega', ruta: '/bodega' },
   { nombre: 'Saberes Ancestrales', ruta: '/saberes-ancestrales' },
+  { nombre: 'Calendario Lunar', ruta: '/calendario-lunar' },
   { nombre: 'Rankings', ruta: '/ranking/comunidades' },
 ]
 
