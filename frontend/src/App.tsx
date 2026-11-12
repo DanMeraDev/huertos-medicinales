@@ -24,6 +24,7 @@ import { SubhuertosPage } from './pages/SubhuertosPage'
 import { CatalogoActividadesPage } from './pages/CatalogoActividadesPage'
 import { RegistroSiembraPage } from './pages/RegistroSiembraPage'
 import { NuevaActividadAncestralPage } from './pages/NuevaActividadAncestralPage'
+import { SubsanarEvidenciaPage } from './pages/SubsanarEvidenciaPage'
 export default function App() {
   return (
     <Layout>
@@ -52,6 +53,7 @@ export default function App() {
         <Route path="/huerto/siembras/nueva" element={<RegistroSiembraPage />} />
         <Route path="/comunidad/actividades-catalogo" element={<CatalogoActividadesPage />} />
         <Route path="/actividades-ancestrales/nueva" element={<NuevaActividadAncestralPage />} />
+        <Route path="/actividades-ancestrales/:id/subsanar" element={<SubsanarEvidenciaPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
