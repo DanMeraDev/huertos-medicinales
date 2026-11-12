@@ -9,21 +9,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.huertos.dto.BajaMaterialResponse;
 import com.huertos.dto.MaterialVegetalResponse;
+import com.huertos.dto.RegistrarBajaMaterialRequest;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import com.huertos.exception.RecursoNoEncontradoException;
+import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.BodegaMapper;
+import com.huertos.model.BajaMaterialVegetal;
 import com.huertos.model.BodegaMaterialVegetal;
+import com.huertos.model.CausaFracaso;
 import com.huertos.model.Comunidad;
 import com.huertos.model.Planta;
 import com.huertos.model.TipoMaterialVegetal;
 import com.huertos.model.UnidadMedida;
+import com.huertos.repository.BajaMaterialVegetalRepository;
 import com.huertos.repository.BodegaMaterialVegetalRepository;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.PlantaRepository;
 import com.huertos.service.impl.BodegaServiceImpl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +54,9 @@ class BodegaServiceImplTest {
 
     @Mock
     private PlantaRepository plantaRepository;
+
+    @Mock
+    private BajaMaterialVegetalRepository bajaMaterialVegetalRepository;
 
     @Mock
     private BodegaMapper bodegaMapper;
@@ -256,5 +266,130 @@ class BodegaServiceImplTest {
         assertThatThrownBy(() -> bodegaService.validarAccesoComunidad(1L, (Authentication) null))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage("No autenticado");
+    }
+
+    @Test
+    void registrarBajaMaterialExitoso() {
+        BodegaMaterialVegetal material = new BodegaMaterialVegetal();
+        material.setId(10L);
+        material.setComunidad(comunidad);
+        material.setPlanta(planta);
+        material.setTipoMaterial(TipoMaterialVegetal.SEMILLAS);
+        material.setCantidadDisponible(new BigDecimal("50.00"));
+        material.setUnidadMedida(UnidadMedida.GRAMOS);
+
+        RegistrarBajaMaterialRequest bajaRequest = new RegistrarBajaMaterialRequest(
+                new BigDecimal("15.00"),
+                CausaFracaso.PLAGA_ENFERMEDAD,
+                "Lote con plaga de pulgones"
+        );
+
+        BajaMaterialVegetal bajaGuardada = new BajaMaterialVegetal();
+        bajaGuardada.setId(100L);
+        bajaGuardada.setBodegaMaterial(material);
+        bajaGuardada.setCantidadBaja(new BigDecimal("15.00"));
+        bajaGuardada.setCausa(CausaFracaso.PLAGA_ENFERMEDAD);
+        bajaGuardada.setObservacion("Lote con plaga de pulgones");
+        bajaGuardada.setFechaBaja(LocalDateTime.now());
+
+        BajaMaterialResponse respuestaEsperada = new BajaMaterialResponse(
+                100L,
+                10L,
+                new BigDecimal("15.00"),
+                CausaFracaso.PLAGA_ENFERMEDAD,
+                "Lote con plaga de pulgones",
+                bajaGuardada.getFechaBaja()
+        );
+
+        when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
+        when(bodegaRepository.save(material)).thenReturn(material);
+        when(bajaMaterialVegetalRepository.save(any(BajaMaterialVegetal.class))).thenReturn(bajaGuardada);
+        when(bodegaMapper.toBajaMaterialResponse(bajaGuardada)).thenReturn(respuestaEsperada);
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("responsable@correo.com");
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+
+        BajaMaterialResponse resultado = bodegaService.registrarBajaMaterial(10L, bajaRequest, auth);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.id()).isEqualTo(100L);
+        assertThat(resultado.bodegaMaterialId()).isEqualTo(10L);
+        assertThat(resultado.cantidadBaja()).isEqualTo(new BigDecimal("15.00"));
+        assertThat(resultado.causaFracaso()).isEqualTo(CausaFracaso.PLAGA_ENFERMEDAD);
+        assertThat(resultado.observacion()).isEqualTo("Lote con plaga de pulgones");
+        assertThat(material.getCantidadDisponible()).isEqualByComparingTo("35.00");
+
+        verify(bodegaRepository).save(material);
+        verify(bajaMaterialVegetalRepository).save(any(BajaMaterialVegetal.class));
+    }
+
+    @Test
+    void registrarBajaMaterialLanzaExcepcionCuandoNoExisteMaterial() {
+        RegistrarBajaMaterialRequest bajaRequest = new RegistrarBajaMaterialRequest(
+                new BigDecimal("10.00"),
+                CausaFracaso.CADUCIDAD_PUDRICION,
+                null
+        );
+
+        when(bodegaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        Authentication auth = mock(Authentication.class);
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(99L, bajaRequest, auth))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("El material vegetal indicado no existe en bodega");
+    }
+
+    @Test
+    void registrarBajaMaterialLanzaExcepcionCuandoSuperaStockDisponible() {
+        BodegaMaterialVegetal material = new BodegaMaterialVegetal();
+        material.setId(10L);
+        material.setComunidad(comunidad);
+        material.setPlanta(planta);
+        material.setCantidadDisponible(new BigDecimal("10.00"));
+
+        RegistrarBajaMaterialRequest bajaRequest = new RegistrarBajaMaterialRequest(
+                new BigDecimal("15.00"),
+                CausaFracaso.SEQUIA_FALTA_RIEGO,
+                null
+        );
+
+        when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("responsable@correo.com");
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, auth))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("La cantidad a dar de baja supera el stock disponible en bodega");
+    }
+
+    @Test
+    void registrarBajaMaterialValidaComunidadDeResponsable() {
+        BodegaMaterialVegetal material = new BodegaMaterialVegetal();
+        material.setId(10L);
+        material.setComunidad(comunidad);
+        material.setPlanta(planta);
+        material.setCantidadDisponible(new BigDecimal("50.00"));
+
+        RegistrarBajaMaterialRequest bajaRequest = new RegistrarBajaMaterialRequest(
+                new BigDecimal("5.00"),
+                CausaFracaso.DANIO_EXTERNO,
+                null
+        );
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("ajeno@correo.com");
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        when(comunidadRepository.findByResponsableCorreo("ajeno@correo.com")).thenReturn(Optional.empty());
+
+        when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
+
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, auth))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No existe una comunidad asociada al usuario");
     }
 }

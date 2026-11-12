@@ -1,5 +1,11 @@
 import { apiGet, apiPost, type PaginaResponse } from '../../api/client'
-import type { MaterialVegetalResponse, PlantaResumen, RegistrarMaterialVegetalRequest } from './types'
+import type {
+  BajaMaterialResponse,
+  MaterialVegetalResponse,
+  PlantaResumen,
+  RegistrarBajaMaterialRequest,
+  RegistrarMaterialVegetalRequest,
+} from './types'
 
 export function registrarMaterialVegetal(data: RegistrarMaterialVegetalRequest): Promise<MaterialVegetalResponse> {
   return apiPost<MaterialVegetalResponse>('/bodega/material-vegetal', data)
@@ -14,3 +20,9 @@ export function obtenerInventarioPorComunidad(comunidadId: number): Promise<Mate
   return apiGet<MaterialVegetalResponse[]>(`/bodega/comunidades/${comunidadId}/material-vegetal`)
 }
 
+export function registrarBajaMaterial(
+  id: number,
+  data: RegistrarBajaMaterialRequest,
+): Promise<BajaMaterialResponse> {
+  return apiPost<BajaMaterialResponse>(`/bodega/material-vegetal/${id}/bajas`, data)
+}

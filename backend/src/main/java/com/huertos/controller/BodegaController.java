@@ -1,6 +1,8 @@
 package com.huertos.controller;
 
+import com.huertos.dto.BajaMaterialResponse;
 import com.huertos.dto.MaterialVegetalResponse;
+import com.huertos.dto.RegistrarBajaMaterialRequest;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import com.huertos.service.BodegaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +28,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class BodegaController {
 
     private final BodegaService bodegaService;
+
+    @Operation(summary = "Registra la baja de material vegetal con causa de fracaso")
+    @PostMapping("/material-vegetal/{id}/bajas")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
+    public BajaMaterialResponse registrarBajaMaterial(
+            @PathVariable Long id,
+            @Valid @RequestBody RegistrarBajaMaterialRequest request,
+            Authentication authentication) {
+        return bodegaService.registrarBajaMaterial(id, request, authentication);
+    }
 
     @Operation(summary = "Registra el ingreso de nuevo material vegetal a la bodega comunitaria")
     @PostMapping("/material-vegetal")
