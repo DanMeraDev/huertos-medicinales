@@ -9,3 +9,8 @@ export async function obtenerPlantasActivas(): Promise<PlantaResumen[]> {
   const respuesta = await apiGet<PaginaResponse<PlantaResumen>>('/publico/plantas?page=0&size=100')
   return respuesta.contenido
 }
+
+export function obtenerInventarioPorComunidad(comunidadId: number): Promise<MaterialVegetalResponse[]> {
+  return apiGet<MaterialVegetalResponse[]>(`/bodega/comunidades/${comunidadId}/material-vegetal`)
+}
+

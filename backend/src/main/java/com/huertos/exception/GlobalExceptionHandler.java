@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -64,6 +65,13 @@ public class GlobalExceptionHandler {
 
         @ExceptionHandler(CuentaInactivaException.class)
         ProblemDetail manejarCuentaInactiva(CuentaInactivaException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.FORBIDDEN,
+                                ex.getMessage());
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        ProblemDetail manejarAccesoDenegado(AccessDeniedException ex) {
                 return ProblemDetail.forStatusAndDetail(
                                 HttpStatus.FORBIDDEN,
                                 ex.getMessage());

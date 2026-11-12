@@ -1,0 +1,151 @@
+.tabla-inventario-contenedor {
+  width: 100%;
+  max-width: 100%;
+}
+
+.tabla-inventario-filtros {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-4);
+  width: 100%;
+}
+
+.tabla-inventario-filtros .campo {
+  flex: 1;
+  width: 100%;
+}
+
+.tabla-inventario-filtros .campo-control {
+  min-height: 44px;
+  width: 100%;
+}
+
+.tabla-inventario-escritorio {
+  display: none;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabla-inventario-movil {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  width: 100%;
+}
+
+.tarjeta-inventario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: var(--espacio-4);
+}
+
+.tarjeta-inventario-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+}
+
+.tarjeta-inventario-titulo {
+  margin: 0;
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
+}
+
+.tarjeta-inventario-cientifico {
+  display: block;
+  font-size: var(--texto-sm);
+  font-style: italic;
+  color: var(--color-texto-secundario);
+}
+
+.tarjeta-inventario-tipo {
+  display: inline-block;
+  padding: var(--espacio-1) var(--espacio-2);
+  background-color: var(--color-primary-light, #F0F7E6);
+  color: var(--color-primario);
+  border-radius: var(--radio-sm);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  white-space: nowrap;
+}
+
+.tarjeta-inventario-detalles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacio-2);
+  margin: var(--espacio-2) 0;
+  font-size: var(--texto-sm);
+}
+
+.tarjeta-inventario-dato {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.tarjeta-inventario-etiqueta {
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
+}
+
+.tarjeta-inventario-valor {
+  font-weight: var(--peso-medio);
+  color: var(--color-texto);
+}
+
+.tarjeta-inventario-acciones {
+  margin-top: var(--espacio-2);
+}
+
+.tarjeta-inventario-acciones .boton {
+  width: 100%;
+  min-height: 44px;
+}
+
+.inventario-planta-comun {
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
+}
+
+.inventario-planta-cientifico {
+  font-size: var(--texto-sm);
+  font-style: italic;
+  color: var(--color-texto-secundario);
+}
+
+.tabla-inventario-vacio {
+  padding: var(--espacio-6) var(--espacio-4);
+  text-align: center;
+  color: var(--color-texto-secundario);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho, 1px) solid var(--color-borde);
+  border-radius: var(--radio-md);
+  font-size: var(--texto-base);
+}
+
+.tabla-inventario-cargando {
+  padding: var(--espacio-6) var(--espacio-4);
+  text-align: center;
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-base);
+}
+
+@media (min-width: 640px) {
+  .tabla-inventario-filtros {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .tabla-inventario-movil {
+    display: none;
+  }
+
+  .tabla-inventario-escritorio {
+    display: block;
+  }
+}
