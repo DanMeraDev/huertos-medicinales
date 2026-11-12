@@ -1,6 +1,7 @@
 package com.huertos.mapper;
 
 import com.huertos.dto.ActividadAncestralResponse;
+import com.huertos.dto.ActividadParaCorregirResponse;
 import com.huertos.dto.ParticipanteActividadDto;
 import com.huertos.model.ActividadAncestralMsp;
 import com.huertos.model.ActividadMspParticipante;
@@ -14,6 +15,10 @@ public interface ActividadAncestralMapper {
     @Mapping(target = "tituloSaber", source = "saberAncestral.titulo")
     @Mapping(target = "estado", source = "estadoVerificacion")
     ActividadAncestralResponse toActividadAncestralResponse(ActividadAncestralMsp entidad);
+
+    @Mapping(target = "tituloSaber", source = "saberAncestral.titulo")
+    @Mapping(target = "estado", source = "estadoVerificacion")
+    ActividadParaCorregirResponse toActividadParaCorregirResponse(ActividadAncestralMsp entidad);
 
     @Mapping(target = "miembroId", source = "miembro.id")
     ParticipanteActividadDto toParticipanteDto(ActividadMspParticipante participante);

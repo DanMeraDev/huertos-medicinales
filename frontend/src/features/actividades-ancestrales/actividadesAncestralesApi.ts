@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPostFormData } from '../../api/client'
+import { apiGet, apiPost, apiPostFormData, apiPut } from '../../api/client'
 
 export type FaseLunar =
   | 'YANA_KILLA_OSCURA'
@@ -48,6 +48,23 @@ export interface ActividadAncestralResponse {
   participantes: ParticipanteActividad[]
 }
 
+export interface ActividadParaCorregirResponse {
+  id: number
+  tituloSaber: string
+  estado: EstadoVerificacion
+  numeroIntento: number
+  observacionMsp: string | null
+  descripcionBitacora: string
+  evidenciaFotoUrl: string
+  evidenciaVideoUrl: string | null
+}
+
+export interface ReenviarEvidenciasRequest {
+  descripcionBitacora: string
+  evidenciaFotoUrl: string
+  evidenciaVideoUrl: string | null
+}
+
 export interface FotografiaSubidaResponse {
   fotografiaUrl: string
 }
@@ -68,4 +85,15 @@ export function registrarActividadAncestral(
   datos: RegistrarActividadAncestralRequest,
 ): Promise<ActividadAncestralResponse> {
   return apiPost<ActividadAncestralResponse>('/actividades-ancestrales', datos)
+}
+
+export function buscarActividadParaCorregir(id: number): Promise<ActividadParaCorregirResponse> {
+  return apiGet<ActividadParaCorregirResponse>(`/actividades-ancestrales/${id}`)
+}
+
+export function reenviarEvidencias(
+  id: number,
+  datos: ReenviarEvidenciasRequest,
+): Promise<ActividadAncestralResponse> {
+  return apiPut<ActividadAncestralResponse>(`/actividades-ancestrales/${id}/reenviar`, datos)
 }
