@@ -198,13 +198,23 @@ public class MiembroServiceImpl implements MiembroService {
     @Override
     @Transactional(readOnly = true)
     public FichaInternaMiembroResponse obtenerFichaInterna(Long responsableId, Long miembroId) {
-        return null;
+        Comunidad comunidad = comunidadRepository.findByResponsableId(responsableId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        ComunidadMiembro relacion = comunidadMiembroRepository.findByComunidadIdAndMiembroId(comunidad.getId(), miembroId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró la ficha del voluntario en tu comunidad"));
+
+        LocalDate hoy = LocalDate.now(clock);
+        int edad = Period.between(relacion.getMiembro().getFechaNacimiento(), hoy).getYears();
+        return miembroMapper.toFichaInternaResponse(relacion.getMiembro(), relacion, edad);
     }
 
     @Override
     @Transactional(readOnly = true)
     public FichaInternaMiembroResponse obtenerFichaInternaPorCorreo(String correo, Long miembroId) {
-        return null;
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
+        return obtenerFichaInterna(usuario.getId(), miembroId);
     }
 
     private void validarCedula(String cedula) {
