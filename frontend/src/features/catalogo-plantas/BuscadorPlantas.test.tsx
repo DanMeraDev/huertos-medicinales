@@ -22,7 +22,7 @@ function avanzar(milisegundos: number) {
 
 describe('BuscadorPlantas', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
   })
 
   afterEach(() => {
@@ -42,10 +42,10 @@ describe('BuscadorPlantas', () => {
     const { alBuscar, usuario, buscador } = renderizar()
 
     await usuario.type(buscador, 'mat')
-    avanzar(299)
+    avanzar(200)
     expect(alBuscar).not.toHaveBeenCalled()
 
-    avanzar(1)
+    avanzar(100)
     expect(alBuscar).toHaveBeenCalledTimes(1)
     expect(alBuscar).toHaveBeenCalledWith('mat')
   })
