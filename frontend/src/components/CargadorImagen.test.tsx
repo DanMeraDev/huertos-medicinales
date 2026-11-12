@@ -213,15 +213,15 @@ describe('CargadorImagen', () => {
     render(<CargadorImagen etiqueta={ETIQUETA} archivo={null} alCambiar={vi.fn()} />)
     entradaArchivo().addEventListener('click', abrirSelector)
 
-    await usuario.click(zona())
-    expect(abrirSelector).toHaveBeenCalledTimes(1)
-
     await usuario.tab()
     expect(zona()).toHaveFocus()
     await usuario.keyboard('{Enter}')
-    expect(abrirSelector).toHaveBeenCalledTimes(2)
+    expect(abrirSelector).toHaveBeenCalledTimes(1)
 
     await usuario.keyboard(' ')
+    expect(abrirSelector).toHaveBeenCalledTimes(2)
+
+    await usuario.click(zona())
     expect(abrirSelector).toHaveBeenCalledTimes(3)
   })
 

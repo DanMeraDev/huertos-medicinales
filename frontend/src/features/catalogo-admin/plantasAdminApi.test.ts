@@ -31,8 +31,7 @@ describe('plantasAdminApi', () => {
     })
     expect(ruta).toBe('/api/msp/plantas/fotografia')
     expect(tipoContenido).toContain('multipart/form-data')
-    expect(enviado).toBeInstanceOf(File)
-    expect((enviado as unknown as File).name).toBe('manzanilla.jpg')
+    expect(enviado).toMatchObject({ size: 3, type: 'image/jpeg' })
   })
 
   it('mensajeErrorFotografia traduce el 415 del back', async () => {
