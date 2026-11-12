@@ -9,4 +9,6 @@ public interface TalentoComunidadRepository extends JpaRepository<TalentoComunid
     List<TalentoComunidad> findByActividadComunidadIdAndActivoTrue(Long actividadComunidadId);
 
     List<TalentoComunidad> findByComunidadIdAndActivoTrue(Long comunidadId);
+
+    boolean existsByComunidadIdAndNombreInsigniaAndActivoTrue(Long comunidadId, String nombreInsignia);
 }
