@@ -16,6 +16,7 @@ import com.huertos.repository.BodegaMaterialVegetalRepository;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.PlantaRepository;
 import com.huertos.service.BodegaService;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -118,5 +119,20 @@ public class BodegaServiceImpl implements BodegaService {
         if (!comunidadAsignadaId.equals(comunidadId)) {
             throw new AccessDeniedException("No tiene permisos para consultar el inventario de otra comunidad");
         }
+    }
+
+    @Override
+    @Transactional
+    public void descontarStockPorSiembra(Long bodegaMaterialId, BigDecimal cantidadSembrada) {
+        BodegaMaterialVegetal material = bodegaRepository.findByIdAndActivoTrue(bodegaMaterialId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El material vegetal especificado no existe en la bodega de la comunidad"));
+
+        if (cantidadSembrada.compareTo(material.getCantidadDisponible()) > 0) {
+            throw new ReglaNegocioException("Stock insuficiente en bodega para realizar la siembra. Disponible: "
+                    + material.getCantidadDisponible() + ", Solicitado: " + cantidadSembrada);
+        }
+
+        material.setCantidadDisponible(material.getCantidadDisponible().subtract(cantidadSembrada));
+        bodegaRepository.save(material);
     }
 }

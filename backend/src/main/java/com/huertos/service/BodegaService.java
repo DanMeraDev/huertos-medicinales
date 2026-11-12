@@ -4,6 +4,7 @@ import com.huertos.dto.BajaMaterialResponse;
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.dto.RegistrarBajaMaterialRequest;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.security.core.Authentication;
 
@@ -63,4 +64,12 @@ public interface BodegaService {
      * @param esTecnico indica si el usuario posee rol técnico supervisor
      */
     void validarAccesoComunidad(Long comunidadId, String correo, boolean esTecnico);
+
+    /**
+     * Descuenta existencias de material vegetal de la bodega tras un registro de siembra.
+     *
+     * @param bodegaMaterialId identificador del material vegetal en bodega
+     * @param cantidadSembrada cantidad de material a descontar del inventario
+     */
+    void descontarStockPorSiembra(Long bodegaMaterialId, BigDecimal cantidadSembrada);
 }
