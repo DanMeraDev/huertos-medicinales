@@ -1,6 +1,8 @@
 package com.huertos.controller;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -8,10 +10,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.PaginaResponse;
+import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
+import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.model.CategoriaUso;
+import com.huertos.model.CicloCultivo;
 import com.huertos.model.CualidadTermica;
+import com.huertos.model.OrigenPlanta;
 import com.huertos.service.PlantaService;
 import java.util.List;
 import java.util.Set;
@@ -94,5 +100,48 @@ class PlantaPublicoControllerTest {
         mockMvc.perform(get("/api/publico/plantas/buscar").param("criterio", "a"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("El criterio de búsqueda debe tener entre 2 y 100 caracteres"));
+    }
+
+    @Test
+    void devuelveLaFichaTecnicaSinTokenConLosEnumsComoTexto() throws Exception {
+        when(plantaService.obtenerDetalle(7L)).thenReturn(new PlantaDetalleResponse(7L, "Cola de caballo",
+                "Caballo chupa", "Equisetum giganteum", "Equisetaceae", CualidadTermica.FRIA, CicloCultivo.LARGO,
+                OrigenPlanta.NATIVA, 0, 3500, "Sierra, Amazonía", "Para problemas de riñón",
+                "Hervir el tallo 15 minutos", null, Set.of(CategoriaUso.DIURETICA), "plantas/cola-de-caballo.jpg"));
+
+        mockMvc.perform(get("/api/publico/plantas/7"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(7))
+                .andExpect(jsonPath("$.nombreComun").value("Cola de caballo"))
+                .andExpect(jsonPath("$.nombreKichwa").value("Caballo chupa"))
+                .andExpect(jsonPath("$.nombreCientifico").value("Equisetum giganteum"))
+                .andExpect(jsonPath("$.familiaBotanica").value("Equisetaceae"))
+                .andExpect(jsonPath("$.cualidadTermica").value("FRIA"))
+                .andExpect(jsonPath("$.cicloCultivo").value("LARGO"))
+                .andExpect(jsonPath("$.origen").value("NATIVA"))
+                .andExpect(jsonPath("$.altitudMinMsnm").value(0))
+                .andExpect(jsonPath("$.altitudMaxMsnm").value(3500))
+                .andExpect(jsonPath("$.regionesDistribucion").value("Sierra, Amazonía"))
+                .andExpect(jsonPath("$.usosMedicinales").value("Para problemas de riñón"))
+                .andExpect(jsonPath("$.preparacionDosificacion").value("Hervir el tallo 15 minutos"))
+                .andExpect(jsonPath("$.contraindicaciones").value(nullValue()))
+                .andExpect(jsonPath("$.categorias", contains("DIURETICA")))
+                .andExpect(jsonPath("$.fotografiaUrl").value("plantas/cola-de-caballo.jpg"));
+    }
+
+    @Test
+    void unaFichaNoDisponibleRespondeNoEncontradoConElMensaje() throws Exception {
+        when(plantaService.obtenerDetalle(99L))
+                .thenThrow(new RecursoNoEncontradoException("La ficha solicitada no está disponible"));
+
+        mockMvc.perform(get("/api/publico/plantas/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("La ficha solicitada no está disponible"));
+    }
+
+    @Test
+    void unIdNoNumericoRespondeSolicitudIncorrecta() throws Exception {
+        mockMvc.perform(get("/api/publico/plantas/abc"))
+                .andExpect(status().isBadRequest());
     }
 }

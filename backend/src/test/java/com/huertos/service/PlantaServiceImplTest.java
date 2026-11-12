@@ -5,18 +5,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.huertos.dto.PaginaResponse;
+import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
+import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.model.CategoriaUso;
+import com.huertos.model.CicloCultivo;
 import com.huertos.model.CualidadTermica;
+import com.huertos.model.OrigenPlanta;
 import com.huertos.model.Planta;
 import com.huertos.repository.PlantaRepository;
 import com.huertos.service.impl.PlantaServiceImpl;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -183,6 +189,66 @@ class PlantaServiceImplTest {
                         CualidadTermica.CALIENTE, Set.of(CategoriaUso.SEDANTE), "plantas/manzanilla.jpg"),
                 new PlantaResumenResponse(6L, "Matico", null, "Aristeguietia glutinosa",
                         CualidadTermica.CALIENTE, Set.of(CategoriaUso.CICATRIZANTE), "plantas/matico.jpg"));
+    }
+
+    @Test
+    void devuelveLaFichaTecnicaConTodosLosCamposDeUnaPlantaActiva() {
+        Planta colaDeCaballo = planta(7L, "Cola de caballo", "Equisetum giganteum",
+                Set.of(CategoriaUso.DIURETICA), "plantas/cola-de-caballo.jpg");
+        colaDeCaballo.setNombreKichwa("Caballo chupa");
+        colaDeCaballo.setFamiliaBotanica("Equisetaceae");
+        colaDeCaballo.setCualidadTermica(CualidadTermica.FRIA);
+        colaDeCaballo.setCicloCultivo(CicloCultivo.LARGO);
+        colaDeCaballo.setOrigen(OrigenPlanta.NATIVA);
+        colaDeCaballo.setAltitudMinMsnm(0);
+        colaDeCaballo.setAltitudMaxMsnm(3500);
+        colaDeCaballo.setRegionesDistribucion("Sierra, Amazonía");
+        colaDeCaballo.setUsosMedicinales("Para problemas de riñón");
+        colaDeCaballo.setPreparacionDosificacion("Hervir el tallo 15 minutos");
+        colaDeCaballo.setContraindicaciones("No usar en embarazo");
+        when(plantaRepository.findByIdAndActivaTrue(7L)).thenReturn(Optional.of(colaDeCaballo));
+
+        PlantaDetalleResponse ficha = servicio.obtenerDetalle(7L);
+
+        assertThat(ficha).isEqualTo(new PlantaDetalleResponse(7L, "Cola de caballo", "Caballo chupa",
+                "Equisetum giganteum", "Equisetaceae", CualidadTermica.FRIA, CicloCultivo.LARGO,
+                OrigenPlanta.NATIVA, 0, 3500, "Sierra, Amazonía", "Para problemas de riñón",
+                "Hervir el tallo 15 minutos", "No usar en embarazo", Set.of(CategoriaUso.DIURETICA),
+                "plantas/cola-de-caballo.jpg"));
+    }
+
+    @Test
+    void devuelveComoNuloLosCamposQueLaPlantaNoTiene() {
+        when(plantaRepository.findByIdAndActivaTrue(1L)).thenReturn(Optional.of(
+                planta(1L, "Manzanilla", "Matricaria chamomilla", Set.of(), null)));
+
+        PlantaDetalleResponse ficha = servicio.obtenerDetalle(1L);
+
+        assertThat(ficha.nombreKichwa()).isNull();
+        assertThat(ficha.cicloCultivo()).isNull();
+        assertThat(ficha.altitudMinMsnm()).isNull();
+        assertThat(ficha.contraindicaciones()).isNull();
+        assertThat(ficha.fotografiaUrl()).isNull();
+    }
+
+    @Test
+    void consultaLaFichaSoloEntreLasPlantasActivas() {
+        when(plantaRepository.findByIdAndActivaTrue(3L)).thenReturn(Optional.of(
+                planta(3L, "Toronjil", "Melissa officinalis", Set.of(CategoriaUso.SEDANTE), null)));
+
+        servicio.obtenerDetalle(3L);
+
+        verify(plantaRepository).findByIdAndActivaTrue(3L);
+        verifyNoMoreInteractions(plantaRepository);
+    }
+
+    @Test
+    void unaPlantaInexistenteOInactivaLanzaRecursoNoEncontrado() {
+        when(plantaRepository.findByIdAndActivaTrue(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> servicio.obtenerDetalle(99L))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("La ficha solicitada no está disponible");
     }
 
     private Planta planta(Long id, String nombreComun, String nombreCientifico, Set<CategoriaUso> categorias,
