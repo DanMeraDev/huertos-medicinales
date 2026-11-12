@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { server } from '../../test/mocks/server'
-import { mensajeErrorFotografia, subirFotografiaPlanta } from './plantasAdminApi'
+import { mensajeErrorFotografia, registrarPlanta, subirFotografiaPlanta } from './plantasAdminApi'
+import type { CrearPlantaRequest } from './types'
 
 async function errorDeSubida(): Promise<unknown> {
   try {
@@ -68,5 +69,38 @@ describe('plantasAdminApi', () => {
     expect(mensajeErrorFotografia(new TypeError('Failed to fetch'))).toBe(
       'No se pudo subir la fotografía. Intente nuevamente',
     )
+  })
+
+  it('registrarPlanta envía la planta como JSON y devuelve su ficha', async () => {
+    let ruta = ''
+    let cuerpo: unknown = null
+    server.use(
+      http.post('*/api/msp/plantas', async ({ request }) => {
+        ruta = new URL(request.url).pathname
+        cuerpo = await request.json()
+        return HttpResponse.json({ id: 99, ...(cuerpo as CrearPlantaRequest) }, { status: 201 })
+      }),
+    )
+    const datos: CrearPlantaRequest = {
+      nombreComun: 'Hierba de prueba',
+      nombreKichwa: null,
+      nombreCientifico: 'Herba ficticia',
+      familiaBotanica: 'Ficticiaceae',
+      cualidadTermica: 'FRIA',
+      cicloCultivo: 'CORTO',
+      origen: null,
+      altitudMinMsnm: 2000,
+      altitudMaxMsnm: 3200,
+      regionesDistribucion: 'Costa, Sierra',
+      usosMedicinales: 'Alivia el dolor',
+      preparacionDosificacion: null,
+      contraindicaciones: null,
+      categorias: ['SEDANTE'],
+      fotografiaUrl: null,
+    }
+
+    await expect(registrarPlanta(datos)).resolves.toEqual({ id: 99, ...datos })
+    expect(ruta).toBe('/api/msp/plantas')
+    expect(cuerpo).toEqual(datos)
   })
 })

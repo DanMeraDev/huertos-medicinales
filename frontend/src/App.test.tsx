@@ -63,4 +63,21 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'Huertos Medicinales Comunitarios' })).toBeInTheDocument()
     expect(await screen.findByText('11.4.8-MariaDB')).toBeInTheDocument()
   })
+
+  it('muestra el registro de plantas en /admin/plantas/nueva', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      writable: true,
+      value: (consulta: string) => ({
+        matches: false,
+        media: consulta,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }),
+    })
+    renderizarEn('/admin/plantas/nueva')
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Registrar planta' })).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Paso 1 de 3' })).toBeInTheDocument()
+  })
 })

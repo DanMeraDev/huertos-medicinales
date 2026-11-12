@@ -7,6 +7,7 @@ import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
 import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { miembrosHandlers } from '../../features/miembros/miembrosMockHandlers'
 import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
+import { catalogoAdminHandlers } from '../../features/catalogo-admin/catalogoAdminMockHandlers'
 import { solicitudesMockHandlers } from '../../features/solicitudes/solicitudesMockHandlers'
 import { saberesMockHandlers } from '../../features/saberes-ancestrales/saberesMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
@@ -51,6 +52,7 @@ export const handlers = [
   ),
   ...bodegaMockHandlers,
   ...plantasHandlers,
+  ...catalogoAdminHandlers,
   ...authMockHandlers,
   ...rankingMockHandlers,
   ...calendarioLunarMockHandlers,

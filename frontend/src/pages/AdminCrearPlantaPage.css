@@ -1,0 +1,9 @@
+.admin-crear-planta-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.admin-crear-planta-pagina h1 {
+  font-size: var(--texto-2xl);
+}
