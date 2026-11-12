@@ -17,7 +17,7 @@ public class PlantaServiceImpl implements PlantaService {
 
     private static final int TAMANIO_MINIMO = 1;
     private static final int TAMANIO_MAXIMO = 100;
-    private static final Sort POR_NOMBRE_COMUN = Sort.by(Sort.Direction.ASC, "nombreComun");
+    private static final Sort POR_NOMBRE_COMUN = Sort.by(Sort.Direction.ASC, "nombreComun", "id");
 
     private final PlantaRepository plantaRepository;
     private final PlantaMapper plantaMapper;

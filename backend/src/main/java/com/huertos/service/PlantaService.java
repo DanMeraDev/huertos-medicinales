@@ -6,7 +6,7 @@ import com.huertos.dto.PlantaResumenResponse;
 public interface PlantaService {
 
     /**
-     * Lista las plantas activas del catálogo público ordenadas por nombre común ascendente.
+     * Lista las plantas activas del catálogo público ordenadas por nombre común ascendente y, a igual nombre, por id.
      * Una página negativa se consulta como la página 0 y el tamaño se limita a 100 plantas.
      *
      * @param pagina número de página, empezando en 0

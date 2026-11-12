@@ -34,7 +34,7 @@ import org.springframework.data.domain.Sort;
 @ExtendWith(MockitoExtension.class)
 class PlantaServiceImplTest {
 
-    private static final Sort POR_NOMBRE_COMUN = Sort.by(Sort.Direction.ASC, "nombreComun");
+    private static final Sort POR_NOMBRE_COMUN = Sort.by(Sort.Direction.ASC, "nombreComun", "id");
 
     @Mock
     private PlantaRepository plantaRepository;

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PlantaRepository extends JpaRepository<Planta, Long> {
+
     Optional<Planta> findByIdAndActivaTrue(Long id);
     Page<Planta> findAllByActivaTrue(Pageable pageable);
 }
