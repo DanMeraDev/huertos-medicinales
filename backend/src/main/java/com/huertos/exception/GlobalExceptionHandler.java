@@ -54,4 +54,18 @@ public class GlobalExceptionHandler {
                                 HttpStatus.BAD_REQUEST,
                                 ex.getMessage());
         }
+
+        @ExceptionHandler(CredencialesInvalidasException.class)
+        ProblemDetail manejarCredencialesInvalidas(CredencialesInvalidasException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.UNAUTHORIZED,
+                                ex.getMessage());
+        }
+
+        @ExceptionHandler(CuentaInactivaException.class)
+        ProblemDetail manejarCuentaInactiva(CuentaInactivaException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.FORBIDDEN,
+                                ex.getMessage());
+        }
 }
