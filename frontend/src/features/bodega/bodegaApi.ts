@@ -9,3 +9,7 @@ export function obtenerPlantasActivas(): Promise<PlantaResumen[]> {
   return apiGet<PlantaResumen[]>('/plantas')
 }
 
+export function obtenerInventarioPorComunidad(comunidadId: number): Promise<MaterialVegetalResponse[]> {
+  return apiGet<MaterialVegetalResponse[]>(`/bodega/comunidades/${comunidadId}/material-vegetal`)
+}
+

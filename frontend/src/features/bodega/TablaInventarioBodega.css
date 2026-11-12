@@ -1,0 +1,68 @@
+.bodega-inventario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.bodega-inventario__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bodega-inventario__titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-texto-principal, #1b3d2f);
+  margin: 0;
+}
+
+.bodega-inventario__filtros {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .bodega-inventario__filtros {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+.bodega-inventario__tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  background-color: var(--color-superficie, #ffffff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.bodega-inventario__planta {
+  display: flex;
+  flex-direction: column;
+}
+
+.bodega-inventario__planta-comun {
+  font-weight: 600;
+}
+
+.bodega-inventario__planta-cientifico {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-texto-secundario, #4a6758);
+}
+
+.bodega-inventario__mensaje-vacio {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-texto-secundario, #4a6758);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.bodega-inventario__boton-accion {
+  min-height: 44px;
+}
+
