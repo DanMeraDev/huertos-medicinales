@@ -18,6 +18,8 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -67,6 +69,17 @@ class PlantaServiceImplTest {
 
         verify(plantaRepository).findAllByActivaTrue(paginacion.capture());
         assertThat(paginacion.getValue().getPageSize()).isEqualTo(100);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -5})
+    void unTamanioMenorAUnoSeConsultaConTamanioUno(int tamanio) {
+        when(plantaRepository.findAllByActivaTrue(any())).thenReturn(Page.empty());
+
+        servicio.listarPlantasPublicas(0, tamanio);
+
+        verify(plantaRepository).findAllByActivaTrue(paginacion.capture());
+        assertThat(paginacion.getValue().getPageSize()).isEqualTo(1);
     }
 
     @Test
