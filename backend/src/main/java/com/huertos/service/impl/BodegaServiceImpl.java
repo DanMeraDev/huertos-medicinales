@@ -27,9 +27,6 @@ public class BodegaServiceImpl implements BodegaService {
     @Override
     @Transactional
     public MaterialVegetalResponse registrarIngresoMaterial(Long comunidadId, RegistrarMaterialVegetalRequest request) {
-        if (comunidadId == null) {
-            throw new RecursoNoEncontradoException("No se especificó la comunidad para el ingreso de material");
-        }
         Comunidad comunidad = comunidadRepository.findById(comunidadId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("La comunidad indicada no existe"));
 
@@ -58,4 +55,3 @@ public class BodegaServiceImpl implements BodegaService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe una comunidad asociada al usuario"));
     }
 }
-
