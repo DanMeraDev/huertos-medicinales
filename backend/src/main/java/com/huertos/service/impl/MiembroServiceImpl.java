@@ -1,5 +1,6 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
@@ -165,6 +166,18 @@ public class MiembroServiceImpl implements MiembroService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return listarMiembrosDeMiComunidad(usuario.getId());
+    }
+
+    @Override
+    @Transactional
+    public MiembroDetalleResponse actualizarDatosContacto(Long responsableId, Long miembroId, ActualizarMiembroRequest request) {
+        throw new UnsupportedOperationException("No implementado aún");
+    }
+
+    @Override
+    @Transactional
+    public MiembroDetalleResponse actualizarDatosContactoPorCorreo(String correo, Long miembroId, ActualizarMiembroRequest request) {
+        throw new UnsupportedOperationException("No implementado aún");
     }
 
     private void validarCedula(String cedula) {
