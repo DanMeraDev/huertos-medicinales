@@ -1,7 +1,13 @@
 package com.huertos.service;
 
 import com.huertos.dto.CrearSolicitudComunidadRequest;
+import com.huertos.dto.RechazarSolicitudRequest;
+import com.huertos.dto.ResolucionSolicitudResponse;
 import com.huertos.dto.SolicitudComunidadResponse;
+import com.huertos.dto.SolicitudDetalleCompletoResponse;
+import com.huertos.dto.SolicitudResumenResponse;
+import com.huertos.model.EstadoSolicitud;
+import java.util.List;
 
 public interface SolicitudComunidadService {
 
@@ -13,4 +19,34 @@ public interface SolicitudComunidadService {
      *         o una comunidad registrada
      */
     SolicitudComunidadResponse registrarSolicitud(CrearSolicitudComunidadRequest request);
+
+    /**
+     * Lista las solicitudes en el estado indicado, de la más antigua a la más reciente.
+     */
+    List<SolicitudResumenResponse> listarPorEstado(EstadoSolicitud estado);
+
+    /**
+     * Obtiene la ficha completa de una solicitud.
+     *
+     * @throws com.huertos.exception.RecursoNoEncontradoException si la solicitud no existe
+     */
+    SolicitudDetalleCompletoResponse obtenerPorId(Long id);
+
+    /**
+     * Aprueba una solicitud pendiente en una sola transacción: crea la cuenta del responsable con una
+     * contraseña temporal aleatoria (US-CU03), la comunidad con su huerto base (US-CU06) y registra al técnico
+     * que la revisó. Si alguna parte falla, no se guarda nada.
+     *
+     * @throws com.huertos.exception.RecursoNoEncontradoException si la solicitud o el técnico no existen
+     * @throws com.huertos.exception.ConflictoException si la solicitud ya fue resuelta
+     */
+    ResolucionSolicitudResponse aprobarSolicitud(Long id, String correoTecnico);
+
+    /**
+     * Rechaza una solicitud pendiente guardando el motivo y el técnico que la revisó.
+     *
+     * @throws com.huertos.exception.RecursoNoEncontradoException si la solicitud o el técnico no existen
+     * @throws com.huertos.exception.ConflictoException si la solicitud ya fue resuelta
+     */
+    ResolucionSolicitudResponse rechazarSolicitud(Long id, RechazarSolicitudRequest request, String correoTecnico);
 }

@@ -1,0 +1,12 @@
+.solicitudes-pagina {
+  width: 100%;
+  padding: var(--espacio-4);
+}
+
+@media (min-width: 640px) {
+  .solicitudes-pagina {
+    max-width: var(--ancho-maximo);
+    margin: 0 auto;
+    padding: var(--espacio-6);
+  }
+}
