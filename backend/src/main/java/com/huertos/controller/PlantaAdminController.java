@@ -1,5 +1,6 @@
 package com.huertos.controller;
 
+import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
 import com.huertos.dto.FotografiaSubidaResponse;
 import com.huertos.dto.PlantaDetalleResponse;
@@ -13,7 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,5 +50,12 @@ public class PlantaAdminController {
                 .buildAndExpand(ficha.id())
                 .toUri();
         return ResponseEntity.created(ubicacion).body(ficha);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualiza la ficha técnica de una planta activa del catálogo y devuelve la ficha actualizada")
+    public PlantaDetalleResponse actualizarPlanta(@PathVariable Long id,
+            @Valid @RequestBody ActualizarPlantaRequest request, Authentication authentication) {
+        return plantaAdminService.actualizarPlanta(id, request, authentication.getName());
     }
 }

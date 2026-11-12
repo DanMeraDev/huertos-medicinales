@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import App from './App'
+import { plantaEditableHandler } from './features/catalogo-admin/catalogoAdminMockHandlers'
+import { server } from './test/mocks/server'
 
 function renderizarEn(ruta: string) {
   render(
@@ -79,5 +81,23 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'Registrar planta' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'Paso 1 de 3' })).toBeInTheDocument()
+  })
+
+  it('muestra la edición de la ficha en /admin/plantas/:id/editar', async () => {
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      writable: true,
+      value: (consulta: string) => ({
+        matches: false,
+        media: consulta,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }),
+    })
+    server.use(plantaEditableHandler)
+    renderizarEn('/admin/plantas/7/editar')
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Editar ficha técnica' })).toBeInTheDocument()
+    expect(await screen.findByLabelText('Nombre común')).toHaveValue('Hierba editable')
   })
 })

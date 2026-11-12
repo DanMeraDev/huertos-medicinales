@@ -38,6 +38,8 @@ export interface CrearPlantaRequest {
   fotografiaUrl: string | null
 }
 
+export type ActualizarPlantaRequest = CrearPlantaRequest
+
 export interface PlantaDetalleResponse extends CrearPlantaRequest {
   id: number
 }

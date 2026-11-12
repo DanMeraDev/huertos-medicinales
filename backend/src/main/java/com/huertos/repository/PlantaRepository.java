@@ -18,6 +18,8 @@ public interface PlantaRepository extends JpaRepository<Planta, Long>, JpaSpecif
 
     boolean existsByNombreCientificoIgnoreCase(String nombreCientifico);
 
+    boolean existsByNombreCientificoIgnoreCaseAndIdNot(String nombreCientifico, Long id);
+
     @Query("""
             SELECT p FROM Planta p
             WHERE p.activa = true

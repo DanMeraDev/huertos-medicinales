@@ -3,7 +3,10 @@ import { Link, useParams } from 'react-router'
 import { ApiError } from '../api/client'
 import '../components/Boton.css'
 import { Notificacion } from '../components/Notificacion'
+import { esTecnicoMsp } from '../features/catalogo-admin/sesionTecnicoMsp'
 import { FichaTecnicaView } from '../features/catalogo-plantas/FichaTecnicaView'
+import { leerIdPlanta } from '../features/catalogo-plantas/leerIdPlanta'
+import { MensajeDeNavegacion } from '../features/catalogo-plantas/MensajeDeNavegacion'
 import { obtenerDetallePlanta } from '../features/catalogo-plantas/plantasApi'
 import type { PlantaDetalle } from '../features/catalogo-plantas/types'
 import './DetallePlantaPage.css'
@@ -12,12 +15,6 @@ const FICHA_NO_DISPONIBLE = 'La ficha solicitada no está disponible'
 const ERROR_GENERICO = 'No se pudo cargar la ficha. Intente nuevamente más tarde'
 
 type Resultado = { id: number; planta: PlantaDetalle } | { id: number; error: string }
-
-function leerId(parametro: string | undefined) {
-  if (parametro === undefined || !/^[1-9]\d*$/.test(parametro)) return null
-  const id = Number(parametro)
-  return Number.isSafeInteger(id) ? id : null
-}
 
 function ErrorFicha({ mensaje }: { mensaje: string }) {
   return (
@@ -30,8 +27,32 @@ function ErrorFicha({ mensaje }: { mensaje: string }) {
   )
 }
 
+function AccionesTecnico({ id }: { id: number }) {
+  if (!esTecnicoMsp()) return null
+  return (
+    <div className="detalle-planta-acciones">
+      <Link to={`/admin/plantas/${id}/editar`} className="boton boton-primario detalle-planta-accion">
+        Editar ficha
+      </Link>
+    </div>
+  )
+}
+
+function ContenidoDetalle({ id, resultado }: { id: number | null; resultado: Resultado | null }) {
+  if (id === null) return <ErrorFicha mensaje={FICHA_NO_DISPONIBLE} />
+  const actual = resultado?.id === id ? resultado : null
+  if (actual === null) return <p className="detalle-planta-cargando">Cargando ficha…</p>
+  if ('error' in actual) return <ErrorFicha mensaje={actual.error} />
+  return (
+    <div className="detalle-planta">
+      <AccionesTecnico id={id} />
+      <FichaTecnicaView planta={actual.planta} />
+    </div>
+  )
+}
+
 export function DetallePlantaPage() {
-  const id = leerId(useParams().id)
+  const id = leerIdPlanta(useParams().id)
   const [resultado, setResultado] = useState<Resultado | null>(null)
 
   useEffect(() => {
@@ -51,10 +72,10 @@ export function DetallePlantaPage() {
     }
   }, [id])
 
-  if (id === null) return <ErrorFicha mensaje={FICHA_NO_DISPONIBLE} />
-
-  const actual = resultado?.id === id ? resultado : null
-  if (actual === null) return <p className="detalle-planta-cargando">Cargando ficha…</p>
-  if ('error' in actual) return <ErrorFicha mensaje={actual.error} />
-  return <FichaTecnicaView planta={actual.planta} />
+  return (
+    <>
+      <MensajeDeNavegacion />
+      <ContenidoDetalle id={id} resultado={resultado} />
+    </>
+  )
 }

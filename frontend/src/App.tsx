@@ -4,6 +4,7 @@ import { CambiarClavePage } from './pages/CambiarClavePage'
 import { CrearUsuarioPage } from './pages/CrearUsuarioPage'
 import { CalendarioLunarPage } from './pages/CalendarioLunarPage'
 import { AdminCrearPlantaPage } from './pages/AdminCrearPlantaPage'
+import { AdminEditarPlantaPage } from './pages/AdminEditarPlantaPage'
 import { CatalogoPlantasPage } from './pages/CatalogoPlantasPage'
 import { ConfiguracionHuertoPage } from './pages/ConfiguracionHuertoPage'
 import { DetallePlantaPage } from './pages/DetallePlantaPage'
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/catalogo-plantas" element={<CatalogoPlantasPage />} />
         <Route path="/catalogo-plantas/:id" element={<DetallePlantaPage />} />
         <Route path="/admin/plantas/nueva" element={<AdminCrearPlantaPage />} />
+        <Route path="/admin/plantas/:id/editar" element={<AdminEditarPlantaPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/cambiar-clave" element={<CambiarClavePage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />

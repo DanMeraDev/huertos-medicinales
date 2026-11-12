@@ -1,12 +1,15 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.exception.ConflictoException;
+import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.model.Planta;
 import com.huertos.repository.PlantaRepository;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.PlantaAdminService;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlantaAdminServiceImpl implements PlantaAdminService {
 
     private final PlantaRepository plantaRepository;
+    private final UsuarioRepository usuarioRepository;
     private final PlantaMapper plantaMapper;
     private final Clock clock;
 
@@ -26,15 +30,32 @@ public class PlantaAdminServiceImpl implements PlantaAdminService {
     @Transactional
     public PlantaDetalleResponse registrarPlanta(CrearPlantaRequest request) {
         validarRangoAltitud(request.altitudMinMsnm(), request.altitudMaxMsnm());
-        CrearPlantaRequest normalizada = normalizar(request);
-        if (plantaRepository.existsByNombreCientificoIgnoreCase(normalizada.nombreCientifico())) {
+        Planta planta = plantaMapper.aEntidad(request);
+        normalizar(planta);
+        if (plantaRepository.existsByNombreCientificoIgnoreCase(planta.getNombreCientifico())) {
             throw new ConflictoException("El nombre científico ya existe en el catálogo");
         }
-        Planta planta = plantaMapper.aEntidad(normalizada);
         LocalDateTime ahora = LocalDateTime.now(clock);
         planta.setActiva(true);
         planta.setCreadoEn(ahora);
         planta.setActualizadoEn(ahora);
+        return plantaMapper.aDetalle(plantaRepository.save(planta));
+    }
+
+    @Override
+    @Transactional
+    public PlantaDetalleResponse actualizarPlanta(Long id, ActualizarPlantaRequest request, String correo) {
+        validarRangoAltitud(request.altitudMinMsnm(), request.altitudMaxMsnm());
+        Planta planta = plantaRepository.findByIdAndActivaTrue(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("La planta no existe o fue dada de baja"));
+        if (plantaRepository.existsByNombreCientificoIgnoreCaseAndIdNot(request.nombreCientifico().strip(), id)) {
+            throw new ConflictoException("Nombre científico ya registrado en otra planta");
+        }
+        plantaMapper.actualizarEntidad(request, planta);
+        normalizar(planta);
+        planta.setActualizadoPor(usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario")));
+        planta.setActualizadoEn(LocalDateTime.now(clock));
         return plantaMapper.aDetalle(plantaRepository.save(planta));
     }
 
@@ -44,23 +65,16 @@ public class PlantaAdminServiceImpl implements PlantaAdminService {
         }
     }
 
-    private CrearPlantaRequest normalizar(CrearPlantaRequest request) {
-        return new CrearPlantaRequest(
-                request.nombreComun().strip(),
-                textoOpcional(request.nombreKichwa()),
-                request.nombreCientifico().strip(),
-                request.familiaBotanica().strip(),
-                request.cualidadTermica(),
-                request.cicloCultivo(),
-                request.origen(),
-                request.altitudMinMsnm(),
-                request.altitudMaxMsnm(),
-                textoOpcional(request.regionesDistribucion()),
-                request.usosMedicinales().strip(),
-                textoOpcional(request.preparacionDosificacion()),
-                textoOpcional(request.contraindicaciones()),
-                request.categorias(),
-                textoOpcional(request.fotografiaUrl()));
+    private void normalizar(Planta planta) {
+        planta.setNombreComun(planta.getNombreComun().strip());
+        planta.setNombreKichwa(textoOpcional(planta.getNombreKichwa()));
+        planta.setNombreCientifico(planta.getNombreCientifico().strip());
+        planta.setFamiliaBotanica(planta.getFamiliaBotanica().strip());
+        planta.setRegionesDistribucion(textoOpcional(planta.getRegionesDistribucion()));
+        planta.setUsosMedicinales(planta.getUsosMedicinales().strip());
+        planta.setPreparacionDosificacion(textoOpcional(planta.getPreparacionDosificacion()));
+        planta.setContraindicaciones(textoOpcional(planta.getContraindicaciones()));
+        planta.setFotografiaUrl(textoOpcional(planta.getFotografiaUrl()));
     }
 
     private String textoOpcional(String texto) {
