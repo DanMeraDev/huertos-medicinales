@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
@@ -568,6 +569,73 @@ class ComunidadMiembroControllerTest {
         mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/15")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void obtenerFichaInternaRetorna200ConDatosDeMiembro() throws Exception {
+        FichaInternaMiembroResponse response = new FichaInternaMiembroResponse(
+                15L,
+                3L,
+                "Huerto Comunitario Allpa Viva",
+                "1710034065",
+                "María Tránsito",
+                "Amaguaña Alba",
+                "María Tránsito Amaguaña Alba",
+                LocalDate.of(2010, 3, 25),
+                16,
+                Genero.FEMENINO,
+                "0998877665",
+                NivelMiembro.APRENDIZ,
+                45,
+                true,
+                LocalDate.of(2026, 11, 10),
+                null,
+                null
+        );
+
+        when(miembroService.obtenerFichaInternaPorCorreo("responsable@huertos.gob.ec", 15L)).thenReturn(response);
+
+        mockMvc.perform(get("/api/comunidades/mi-comunidad/miembros/15"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(15))
+                .andExpect(jsonPath("$.comunidadId").value(3))
+                .andExpect(jsonPath("$.nombreComunidad").value("Huerto Comunitario Allpa Viva"))
+                .andExpect(jsonPath("$.cedula").value("1710034065"))
+                .andExpect(jsonPath("$.nombres").value("María Tránsito"))
+                .andExpect(jsonPath("$.apellidos").value("Amaguaña Alba"))
+                .andExpect(jsonPath("$.nombreCompleto").value("María Tránsito Amaguaña Alba"))
+                .andExpect(jsonPath("$.edad").value(16))
+                .andExpect(jsonPath("$.genero").value("FEMENINO"))
+                .andExpect(jsonPath("$.telefono").value("0998877665"))
+                .andExpect(jsonPath("$.nivel").value("APRENDIZ"))
+                .andExpect(jsonPath("$.puntosTotales").value(45))
+                .andExpect(jsonPath("$.activoEnComunidad").value(true))
+                .andExpect(jsonPath("$.fechaIngreso").value("2026-11-10"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void obtenerFichaInternaRetorna404CuandoMiembroNoExisteEnComunidad() throws Exception {
+        when(miembroService.obtenerFichaInternaPorCorreo("responsable@huertos.gob.ec", 99L))
+                .thenThrow(new RecursoNoEncontradoException("No se encontró la ficha del voluntario en tu comunidad"));
+
+        mockMvc.perform(get("/api/comunidades/mi-comunidad/miembros/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("No se encontró la ficha del voluntario en tu comunidad"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@huertos.gob.ec", roles = "ADMINISTRADOR")
+    void obtenerFichaInternaRetorna403CuandoUsuarioNoTieneRolResponsable() throws Exception {
+        mockMvc.perform(get("/api/comunidades/mi-comunidad/miembros/15"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void obtenerFichaInternaRetorna403CuandoNoEstaAutenticado() throws Exception {
+        mockMvc.perform(get("/api/comunidades/mi-comunidad/miembros/15"))
                 .andExpect(status().isForbidden());
     }
 }
