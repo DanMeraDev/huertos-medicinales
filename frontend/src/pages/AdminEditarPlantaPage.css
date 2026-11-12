@@ -1,0 +1,13 @@
+.admin-editar-planta-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.admin-editar-planta-pagina h1 {
+  font-size: var(--texto-2xl);
+}
+
+.admin-editar-planta-cargando {
+  color: var(--color-texto-secundario);
+}

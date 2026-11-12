@@ -1,0 +1,29 @@
+.mensaje-navegacion {
+  position: fixed;
+  top: var(--espacio-4);
+  left: var(--espacio-4);
+  right: var(--espacio-4);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  border-radius: var(--radio-md);
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+}
+
+.mensaje-navegacion .notificacion {
+  flex: 1;
+}
+
+.mensaje-navegacion-cerrar {
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  background: none;
+  font-size: var(--texto-xl);
+  color: var(--color-texto);
+  cursor: pointer;
+}

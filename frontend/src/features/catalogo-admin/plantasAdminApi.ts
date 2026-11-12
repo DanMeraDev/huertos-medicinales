@@ -1,4 +1,4 @@
-import { ApiError, apiPost, apiPostFormData } from '../../api/client'
+import { ApiError, apiGet, apiPost, apiPostFormData, apiPut } from '../../api/client'
 import { MENSAJE_FORMATO_NO_ADMITIDO, MENSAJE_IMAGEN_DEMASIADO_GRANDE } from '../../components/CargadorImagen'
 import type {
   ActualizarPlantaRequest,
@@ -25,10 +25,10 @@ export function registrarPlanta(datos: CrearPlantaRequest) {
   return apiPost<PlantaDetalleResponse>('/msp/plantas', datos)
 }
 
-export function obtenerPlantaParaEditar(_id: number): Promise<PlantaDetalleResponse> {
-  return Promise.reject(new Error())
+export function obtenerPlantaParaEditar(id: number) {
+  return apiGet<PlantaDetalleResponse>(`/publico/plantas/${id}`)
 }
 
-export function actualizarPlanta(_id: number, _datos: ActualizarPlantaRequest): Promise<PlantaDetalleResponse> {
-  return Promise.reject(new Error())
+export function actualizarPlanta(id: number, datos: ActualizarPlantaRequest) {
+  return apiPut<PlantaDetalleResponse>(`/msp/plantas/${id}`, datos)
 }

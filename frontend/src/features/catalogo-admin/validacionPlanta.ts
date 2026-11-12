@@ -118,6 +118,30 @@ export function construirSolicitud(
   }
 }
 
-export function datosDesdePlanta(_planta: PlantaDetalleResponse): DatosPlanta {
-  return DATOS_INICIALES
+function textoDeNumero(numero: number | null) {
+  return numero === null ? '' : String(numero)
+}
+
+function regionesDesdeTexto(texto: string | null): Region[] {
+  const partes = (texto ?? '').split(',').map((parte) => parte.trim())
+  return OPCIONES_REGION.map((opcion) => opcion.valor).filter((region) => partes.includes(region))
+}
+
+export function datosDesdePlanta(planta: PlantaDetalleResponse): DatosPlanta {
+  return {
+    nombreComun: planta.nombreComun,
+    nombreKichwa: planta.nombreKichwa ?? '',
+    nombreCientifico: planta.nombreCientifico,
+    familiaBotanica: planta.familiaBotanica,
+    cualidadTermica: planta.cualidadTermica,
+    cicloCultivo: planta.cicloCultivo ?? '',
+    origen: planta.origen ?? '',
+    altitudMinMsnm: textoDeNumero(planta.altitudMinMsnm),
+    altitudMaxMsnm: textoDeNumero(planta.altitudMaxMsnm),
+    regionesDistribucion: regionesDesdeTexto(planta.regionesDistribucion),
+    usosMedicinales: planta.usosMedicinales,
+    preparacionDosificacion: planta.preparacionDosificacion ?? '',
+    contraindicaciones: planta.contraindicaciones ?? '',
+    categorias: enOrdenDeOpciones(OPCIONES_CATEGORIA, planta.categorias),
+  }
 }

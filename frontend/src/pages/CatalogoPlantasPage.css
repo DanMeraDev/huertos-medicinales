@@ -28,36 +28,6 @@
   text-decoration: none;
 }
 
-.catalogo-pagina-aviso {
-  position: fixed;
-  top: var(--espacio-4);
-  left: var(--espacio-4);
-  right: var(--espacio-4);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-2);
-  max-width: var(--ancho-lectura);
-  margin: 0 auto;
-  border-radius: var(--radio-md);
-  background-color: var(--color-superficie);
-  box-shadow: var(--sombra-sm);
-}
-
-.catalogo-pagina-aviso .notificacion {
-  flex: 1;
-}
-
-.catalogo-pagina-aviso-cerrar {
-  min-width: 44px;
-  min-height: 44px;
-  border: none;
-  background: none;
-  font-size: var(--texto-xl);
-  color: var(--color-texto);
-  cursor: pointer;
-}
-
 .catalogo-pagina-cuerpo {
   display: grid;
   grid-template-areas: 'contenido';
