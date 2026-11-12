@@ -26,5 +26,6 @@ export interface MaterialVegetalResponse {
 export interface PlantaResumen {
   id: number
   nombreComun: string
+  nombreCientifico?: string
 }
 

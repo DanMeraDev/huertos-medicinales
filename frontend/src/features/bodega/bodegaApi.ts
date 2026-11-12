@@ -6,7 +6,7 @@ export function registrarMaterialVegetal(data: RegistrarMaterialVegetalRequest):
 }
 
 export async function obtenerPlantasActivas(): Promise<PlantaResumen[]> {
-  const respuesta = await apiGet<PaginaResponse<PlantaResumen>>('/publico/plantas')
+  const respuesta = await apiGet<PaginaResponse<PlantaResumen>>('/publico/plantas?page=0&size=100')
   return respuesta.contenido
 }
 
