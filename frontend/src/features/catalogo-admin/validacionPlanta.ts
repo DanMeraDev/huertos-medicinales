@@ -1,5 +1,12 @@
 import { enOrdenDeOpciones, OPCIONES_CATEGORIA, OPCIONES_REGION, type Region } from './opcionesPlanta'
-import type { CategoriaUso, CicloCultivo, CrearPlantaRequest, CualidadTermica, OrigenPlanta } from './types'
+import type {
+  CategoriaUso,
+  CicloCultivo,
+  CrearPlantaRequest,
+  CualidadTermica,
+  OrigenPlanta,
+  PlantaDetalleResponse,
+} from './types'
 
 export interface DatosPlanta {
   nombreComun: string
@@ -109,4 +116,8 @@ export function construirSolicitud(
     categorias: enOrdenDeOpciones(OPCIONES_CATEGORIA, datos.categorias),
     fotografiaUrl,
   }
+}
+
+export function datosDesdePlanta(_planta: PlantaDetalleResponse): DatosPlanta {
+  return DATOS_INICIALES
 }

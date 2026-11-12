@@ -1,7 +1,14 @@
 import { http, HttpResponse } from 'msw'
 import { server } from '../../test/mocks/server'
-import { mensajeErrorFotografia, registrarPlanta, subirFotografiaPlanta } from './plantasAdminApi'
-import type { CrearPlantaRequest } from './types'
+import { plantaEditableHandler, plantaEditableMock } from './catalogoAdminMockHandlers'
+import {
+  actualizarPlanta,
+  mensajeErrorFotografia,
+  obtenerPlantaParaEditar,
+  registrarPlanta,
+  subirFotografiaPlanta,
+} from './plantasAdminApi'
+import type { ActualizarPlantaRequest, CrearPlantaRequest } from './types'
 
 async function errorDeSubida(): Promise<unknown> {
   try {
@@ -102,5 +109,40 @@ describe('plantasAdminApi', () => {
     await expect(registrarPlanta(datos)).resolves.toEqual({ id: 99, ...datos })
     expect(ruta).toBe('/api/msp/plantas')
     expect(cuerpo).toEqual(datos)
+  })
+
+  it('obtenerPlantaParaEditar trae la ficha pública de la planta', async () => {
+    let ruta = ''
+    server.use(
+      http.get('*/api/publico/plantas/:id', ({ request }) => {
+        ruta = new URL(request.url).pathname
+        return undefined
+      }),
+      plantaEditableHandler,
+    )
+
+    await expect(obtenerPlantaParaEditar(7)).resolves.toEqual(plantaEditableMock)
+    expect(ruta).toBe('/api/publico/plantas/7')
+  })
+
+  it('actualizarPlanta envía la planta con PUT y devuelve su ficha', async () => {
+    let ruta = ''
+    let metodo = ''
+    let cuerpo: unknown = null
+    server.use(
+      http.put('*/api/msp/plantas/:id', async ({ request }) => {
+        ruta = new URL(request.url).pathname
+        metodo = request.method
+        cuerpo = await request.clone().json()
+        return undefined
+      }),
+    )
+    const { id, ...datos } = plantaEditableMock
+    const solicitud: ActualizarPlantaRequest = { ...datos, nombreComun: 'Hierba editada' }
+
+    await expect(actualizarPlanta(id, solicitud)).resolves.toEqual({ id: 7, ...solicitud })
+    expect(ruta).toBe('/api/msp/plantas/7')
+    expect(metodo).toBe('PUT')
+    expect(cuerpo).toEqual(solicitud)
   })
 })

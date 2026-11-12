@@ -30,6 +30,25 @@ function renderizarEn(ruta: string) {
   )
 }
 
+function renderizarConEstado(estado: unknown) {
+  render(
+    <MemoryRouter initialEntries={[{ pathname: '/catalogo-plantas/17', state: estado }]}>
+      <Routes>
+        <Route path="/catalogo-plantas/:id" element={<DetallePlantaPage />} />
+      </Routes>
+    </MemoryRouter>,
+  )
+}
+
+function base64Url(datos: object) {
+  return btoa(JSON.stringify(datos)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function iniciarSesionComo(rol: string) {
+  const payload = { sub: 'usuario@huertos.gob.ec', rol, exp: Math.floor(Date.now() / 1000) + 3600 }
+  localStorage.setItem('token', `${base64Url({ alg: 'HS256' })}.${base64Url(payload)}.firma`)
+}
+
 function contarPeticionesDeDetalle() {
   const contador = { peticiones: 0 }
   server.use(
@@ -109,5 +128,67 @@ describe('DetallePlantaPage', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'Achicoria' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { level: 1, name: 'Cola de caballo' })).not.toBeInTheDocument()
+  })
+
+  describe('acceso a la edición de la ficha', () => {
+    afterEach(() => localStorage.clear())
+
+    it('muestra Editar ficha al técnico MSP con el enlace a la edición', async () => {
+      iniciarSesionComo('TECNICO_MSP')
+      renderizarEn('/catalogo-plantas/17')
+
+      expect(await screen.findByRole('link', { name: 'Editar ficha' })).toHaveAttribute(
+        'href',
+        '/admin/plantas/17/editar',
+      )
+      expect(screen.getByRole('link', { name: 'Editar ficha' })).toHaveClass('boton', 'boton-primario')
+    })
+
+    it('no muestra Editar ficha sin sesión', async () => {
+      renderizarEn('/catalogo-plantas/17')
+
+      expect(await screen.findByRole('heading', { level: 1, name: 'Cola de caballo' })).toBeInTheDocument()
+      expect(screen.queryByRole('link', { name: 'Editar ficha' })).not.toBeInTheDocument()
+    })
+
+    it('no muestra Editar ficha al responsable de comunidad', async () => {
+      iniciarSesionComo('RESPONSABLE_COMUNIDAD')
+      renderizarEn('/catalogo-plantas/17')
+
+      expect(await screen.findByRole('heading', { level: 1, name: 'Cola de caballo' })).toBeInTheDocument()
+      expect(screen.queryByRole('link', { name: 'Editar ficha' })).not.toBeInTheDocument()
+    })
+  })
+
+  describe('mensaje de ficha actualizada', () => {
+    afterEach(() => vi.useRealTimers())
+
+    it('muestra el mensaje recibido al volver de la edición y se cierra con el botón', async () => {
+      renderizarConEstado({ mensajeExito: 'Ficha técnica actualizada exitosamente' })
+
+      expect(screen.getByRole('status')).toHaveTextContent('Ficha técnica actualizada exitosamente')
+      expect(await screen.findByRole('heading', { level: 1, name: 'Cola de caballo' })).toBeInTheDocument()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Cerrar notificación' }))
+
+      expect(screen.queryByText('Ficha técnica actualizada exitosamente')).not.toBeInTheDocument()
+    })
+
+    it('oculta el mensaje solo después de unos segundos', () => {
+      vi.useFakeTimers()
+      renderizarConEstado({ mensajeExito: 'Ficha técnica actualizada exitosamente' })
+      expect(screen.getByText('Ficha técnica actualizada exitosamente')).toBeInTheDocument()
+
+      act(() => vi.advanceTimersByTime(5000))
+
+      expect(screen.queryByText('Ficha técnica actualizada exitosamente')).not.toBeInTheDocument()
+    })
+
+    it('sin mensaje en la navegación no muestra la notificación', async () => {
+      renderizarEn('/catalogo-plantas/17')
+
+      expect(await screen.findByRole('heading', { level: 1, name: 'Cola de caballo' })).toBeInTheDocument()
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
   })
 })
