@@ -1,6 +1,7 @@
 package com.huertos.service;
 
 import com.huertos.dto.PaginaResponse;
+import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
 import java.util.List;
 
@@ -27,4 +28,13 @@ public interface PlantaService {
      *         ni al final, tiene menos de 2 o más de 100 caracteres
      */
     List<PlantaResumenResponse> buscarPorNombre(String criterio);
+
+    /**
+     * Obtiene la ficha técnica completa de una planta activa del catálogo público.
+     *
+     * @param id identificador de la planta
+     * @return la ficha técnica de la planta
+     * @throws com.huertos.exception.RecursoNoEncontradoException si la planta no existe o fue dada de baja
+     */
+    PlantaDetalleResponse obtenerDetalle(Long id);
 }
