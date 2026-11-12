@@ -2,6 +2,7 @@ package com.huertos.service.impl;
 
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
@@ -192,6 +193,28 @@ public class MiembroServiceImpl implements MiembroService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return actualizarDatosContacto(usuario.getId(), miembroId, request);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FichaInternaMiembroResponse obtenerFichaInterna(Long responsableId, Long miembroId) {
+        Comunidad comunidad = comunidadRepository.findByResponsableId(responsableId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        ComunidadMiembro relacion = comunidadMiembroRepository.findByComunidadIdAndMiembroId(comunidad.getId(), miembroId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró la ficha del voluntario en tu comunidad"));
+
+        LocalDate hoy = LocalDate.now(clock);
+        int edad = Period.between(relacion.getMiembro().getFechaNacimiento(), hoy).getYears();
+        return miembroMapper.toFichaInternaResponse(relacion.getMiembro(), relacion, edad);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FichaInternaMiembroResponse obtenerFichaInternaPorCorreo(String correo, Long miembroId) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
+        return obtenerFichaInterna(usuario.getId(), miembroId);
     }
 
     private void validarCedula(String cedula) {

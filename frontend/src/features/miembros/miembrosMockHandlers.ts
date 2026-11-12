@@ -4,6 +4,7 @@ import type {
   MiembroDetalleResponse,
   CambiarEstadoMiembroRequest,
   ActualizarMiembroRequest,
+  FichaInternaMiembroResponse,
 } from './miembrosApi'
 
 export const mockMiembroDetalle: MiembroDetalleResponse = {
@@ -21,6 +22,26 @@ export const mockMiembroDetalle: MiembroDetalleResponse = {
   puntosTotales: 0,
   activoEnComunidad: true,
   fechaIngreso: '2026-11-12',
+}
+
+export const mockFichaMiembro: FichaInternaMiembroResponse = {
+  id: 15,
+  comunidadId: 3,
+  nombreComunidad: 'Huerto Comunitario Allpa Viva',
+  cedula: '1710034065',
+  nombres: 'María Tránsito',
+  apellidos: 'Amaguaña Alba',
+  nombreCompleto: 'María Tránsito Amaguaña Alba',
+  fechaNacimiento: '2010-03-25',
+  edad: 16,
+  genero: 'FEMENINO',
+  telefono: '0981234567',
+  nivel: 'APRENDIZ',
+  puntosTotales: 45,
+  activoEnComunidad: true,
+  fechaIngreso: '2026-11-10',
+  fechaBaja: null,
+  motivoBaja: null,
 }
 
 export const mockMiembrosLista: MiembroDetalleResponse[] = [
@@ -46,6 +67,37 @@ export const mockMiembrosLista: MiembroDetalleResponse[] = [
 export const miembrosHandlers = [
   http.get('*/api/comunidades/mi-comunidad/miembros', () => {
     return HttpResponse.json(mockMiembrosLista)
+  }),
+  http.get('*/api/comunidades/mi-comunidad/miembros/:miembroId', ({ params }) => {
+    const { miembroId } = params
+    if (miembroId === '99') {
+      return HttpResponse.json(
+        { detail: 'No se encontró la ficha del voluntario en tu comunidad' },
+        { status: 404 },
+      )
+    }
+    const idNum = Number(miembroId)
+    if (idNum === 16) {
+      return HttpResponse.json({
+        ...mockFichaMiembro,
+        id: 16,
+        cedula: '1710034073',
+        nombres: 'José Manuel',
+        apellidos: 'Quishpe',
+        nombreCompleto: 'José Manuel Quishpe',
+        fechaNacimiento: '1995-08-14',
+        edad: 31,
+        genero: 'MASCULINO',
+        telefono: '0998765432',
+        nivel: 'OFICIAL',
+        puntosTotales: 150,
+        activoEnComunidad: false,
+        fechaIngreso: '2026-10-01',
+        fechaBaja: '2026-11-12',
+        motivoBaja: 'Cambio de residencia',
+      })
+    }
+    return HttpResponse.json(mockFichaMiembro)
   }),
   http.post('*/api/comunidades/mi-comunidad/miembros', async ({ request }) => {
     const datos = (await request.json()) as RegistrarMiembroRequest

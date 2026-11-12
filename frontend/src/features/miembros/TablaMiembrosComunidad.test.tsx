@@ -133,4 +133,19 @@ describe('TablaMiembrosComunidad', () => {
 
     expect(await screen.findByRole('heading', { name: /editar datos de voluntario/i })).toBeInTheDocument()
   })
+
+  it('abre el modal de ficha de miembro al hacer clic en Ver ficha completa', async () => {
+    const user = userEvent.setup()
+    renderizarTabla()
+
+    expect(await screen.findByText('María Tránsito Amaguaña Alba')).toBeInTheDocument()
+
+    const botonVerFicha = screen.getByRole('button', {
+      name: /ver ficha completa de maría tránsito amaguaña alba/i,
+    })
+    await user.click(botonVerFicha)
+
+    expect(await screen.findByRole('dialog', { name: /ficha del miembro/i })).toBeInTheDocument()
+    expect(await screen.findByText(/puntos acumulados/i)).toBeInTheDocument()
+  })
 })

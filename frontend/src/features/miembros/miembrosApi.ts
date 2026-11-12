@@ -74,3 +74,30 @@ export function actualizarDatosMiembro(
 ): Promise<MiembroDetalleResponse> {
   return apiPut<MiembroDetalleResponse>(`/comunidades/mi-comunidad/miembros/${miembroId}`, datos)
 }
+
+export interface FichaInternaMiembroResponse {
+  id: number
+  comunidadId: number
+  nombreComunidad: string
+  cedula: string
+  nombres: string
+  apellidos: string
+  nombreCompleto: string
+  fechaNacimiento: string
+  edad: number
+  genero: Genero
+  telefono: string
+  nivel: NivelMiembro
+  puntosTotales: number
+  activoEnComunidad: boolean
+  fechaIngreso: string
+  fechaBaja: string | null
+  motivoBaja: string | null
+}
+
+export function obtenerFichaMiembro(
+  miembroId: number,
+): Promise<FichaInternaMiembroResponse> {
+  return apiGet<FichaInternaMiembroResponse>(`/comunidades/mi-comunidad/miembros/${miembroId}`)
+}
+

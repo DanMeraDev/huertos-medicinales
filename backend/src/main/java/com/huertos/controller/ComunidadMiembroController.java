@@ -2,6 +2,7 @@ package com.huertos.controller;
 
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
@@ -67,5 +68,14 @@ public class ComunidadMiembroController {
             @Valid @RequestBody ActualizarMiembroRequest request,
             Authentication authentication) {
         return miembroService.actualizarDatosContactoPorCorreo(authentication.getName(), miembroId, request);
+    }
+
+    @Operation(summary = "Obtiene la ficha interna de un miembro de la comunidad")
+    @GetMapping("/{miembroId}")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
+    public FichaInternaMiembroResponse obtenerFichaInterna(
+            @PathVariable Long miembroId,
+            Authentication authentication) {
+        return miembroService.obtenerFichaInternaPorCorreo(authentication.getName(), miembroId);
     }
 }
