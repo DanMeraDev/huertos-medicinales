@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { Layout } from './components/Layout'
+import { CambiarClavePage } from './pages/CambiarClavePage'
 import { CrearUsuarioPage } from './pages/CrearUsuarioPage'
 import { CalendarioLunarPage } from './pages/CalendarioLunarPage'
 import { CatalogoPlantasPage } from './pages/CatalogoPlantasPage'
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/comunidades" element={<DirectorioComunidadesPage />} />
         <Route path="/catalogo-plantas" element={<CatalogoPlantasPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/cambiar-clave" element={<CambiarClavePage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
         <Route path="/usuarios/nuevo" element={<CrearUsuarioPage />} />
         <Route path="/solicitar-comunidad" element={<SolicitarComunidadPage />} />

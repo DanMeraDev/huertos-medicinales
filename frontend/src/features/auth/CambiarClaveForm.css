@@ -1,0 +1,31 @@
+.cambiar-clave {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-6) var(--espacio-4);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+}
+
+.cambiar-clave-titulo {
+  margin: 0;
+  font-size: var(--texto-xl);
+  color: var(--color-primario);
+}
+
+.cambiar-clave .campo-control {
+  min-height: 44px;
+}
+
+.cambiar-clave-boton {
+  width: 100%;
+  padding: var(--espacio-3) var(--espacio-4);
+}
+
+@media (min-width: 640px) {
+  .cambiar-clave {
+    padding: var(--espacio-8) var(--espacio-6);
+  }
+}
