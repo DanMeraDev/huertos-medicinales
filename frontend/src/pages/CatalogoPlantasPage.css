@@ -17,6 +17,7 @@
 .catalogo-pagina-cuerpo {
   display: grid;
   grid-template-areas: 'contenido';
+  padding-bottom: var(--espacio-16);
 }
 
 .catalogo-pagina-contenido {
@@ -34,5 +35,7 @@
   .catalogo-pagina-cuerpo {
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: 'lateral contenido';
+    column-gap: var(--espacio-6);
+    padding-bottom: 0;
   }
 }

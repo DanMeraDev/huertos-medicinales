@@ -91,3 +91,7 @@ export interface FiltrosPlanta {
   categoria?: CategoriaUso
   ciclo?: CicloCultivo
 }
+
+export function contarFiltrosActivos(filtros: FiltrosPlanta) {
+  return Object.values(filtros).filter((valor) => valor !== undefined).length
+}

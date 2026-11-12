@@ -8,4 +8,10 @@ export const buscarPlantas = (criterio: string) => apiGet<PlantaResumen[]>(`/pub
 
 export const obtenerDetallePlanta = (id: number) => apiGet<PlantaDetalle>(`/publico/plantas/${id}`)
 
-export const filtrarPlantas = (_filtros: FiltrosPlanta, _criterio?: string) => Promise.resolve<PlantaResumen[]>([])
+export const filtrarPlantas = (filtros: FiltrosPlanta, criterio?: string) => {
+  const parametros = new URLSearchParams()
+  Object.entries({ ...filtros, criterio }).forEach(([clave, valor]) => {
+    if (valor !== undefined && valor !== '') parametros.append(clave, String(valor))
+  })
+  return apiGet<PlantaResumen[]>(`/publico/plantas/filtrar?${parametros}`)
+}
