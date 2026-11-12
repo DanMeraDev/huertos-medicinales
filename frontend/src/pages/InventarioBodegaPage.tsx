@@ -1,29 +1,54 @@
-import { useState } from 'react'
-import { TablaInventarioBodega, type ComunidadSupervisada } from '../features/bodega/TablaInventarioBodega'
-
-const COMUNIDADES_DEFAULT: ComunidadSupervisada[] = [
-  { id: 1, nombre: 'Comunidad San Pedro' },
-  { id: 2, nombre: 'Comunidad Santa Clara' },
-]
+import { useEffect, useState } from 'react'
+import { ApiError } from '../api/client'
+import { Notificacion } from '../components/Notificacion'
+import { obtenerContextoBodega } from '../features/bodega/bodegaApi'
+import { TablaInventarioBodega } from '../features/bodega/TablaInventarioBodega'
+import type { ContextoBodegaResponse } from '../features/bodega/types'
 
 export function InventarioBodegaPage() {
-  const rol = typeof window !== 'undefined' ? localStorage.getItem('rol') : null
-  const comunidadGuardada = typeof window !== 'undefined' ? localStorage.getItem('comunidadId') : null
+  const [contexto, setContexto] = useState<ContextoBodegaResponse | null>(null)
+  const [comunidadId, setComunidadId] = useState<number | null>(null)
+  const [mensajeError, setMensajeError] = useState<string | null>(null)
 
-  const esTecnicoMsp = rol === 'TECNICO_MSP'
-  const comunidadInicial = comunidadGuardada ? Number(comunidadGuardada) : 1
+  useEffect(() => {
+    let montado = true
+    obtenerContextoBodega()
+      .then((datos) => {
+        if (montado) {
+          setContexto(datos)
+          setComunidadId(datos.comunidades[0]?.id ?? null)
+        }
+      })
+      .catch((error: unknown) => {
+        if (montado) {
+          setMensajeError(
+            error instanceof ApiError
+              ? (error.detalle ?? error.message)
+              : 'No se pudo obtener la información de la bodega',
+          )
+        }
+      })
+    return () => {
+      montado = false
+    }
+  }, [])
 
-  const [comunidadId, setComunidadId] = useState(comunidadInicial)
+  if (mensajeError) {
+    return <Notificacion tipo="error" mensaje={mensajeError} />
+  }
+
+  if (!contexto || comunidadId === null) {
+    return <p>Cargando…</p>
+  }
 
   return (
     <div className="pagina-inventario-bodega">
       <TablaInventarioBodega
         comunidadId={comunidadId}
-        esTecnicoMsp={esTecnicoMsp}
-        comunidadesSupervisadas={COMUNIDADES_DEFAULT}
+        esTecnicoMsp={contexto.rol === 'TECNICO_MSP'}
+        comunidadesSupervisadas={contexto.comunidades}
         alCambiarComunidad={setComunidadId}
       />
     </div>
   )
 }
-

@@ -6,18 +6,13 @@ import { Notificacion } from '../../components/Notificacion'
 import { Selector, type OpcionSelector } from '../../components/Selector'
 import { Tabla, type ColumnaTabla } from '../../components/Tabla'
 import { obtenerInventarioPorComunidad } from './bodegaApi'
-import type { MaterialVegetalResponse } from './types'
+import type { ComunidadResumen, MaterialVegetalResponse } from './types'
 import './TablaInventarioBodega.css'
-
-export interface ComunidadSupervisada {
-  id: number
-  nombre: string
-}
 
 export interface TablaInventarioBodegaProps {
   comunidadId: number
   esTecnicoMsp?: boolean
-  comunidadesSupervisadas?: ComunidadSupervisada[]
+  comunidadesSupervisadas?: ComunidadResumen[]
   alCambiarComunidad?: (comunidadId: number) => void
   alRegistrarBaja?: (material: MaterialVegetalResponse) => void
 }

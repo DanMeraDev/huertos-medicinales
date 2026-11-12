@@ -29,3 +29,12 @@ export interface PlantaResumen {
   nombreCientifico?: string
 }
 
+export interface ComunidadResumen {
+  id: number
+  nombre: string
+}
+
+export interface ContextoBodegaResponse {
+  rol: 'RESPONSABLE_COMUNIDAD' | 'TECNICO_MSP'
+  comunidades: ComunidadResumen[]
+}

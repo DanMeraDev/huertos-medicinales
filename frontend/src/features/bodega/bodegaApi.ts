@@ -1,5 +1,5 @@
 import { apiGet, apiPost, type PaginaResponse } from '../../api/client'
-import type { MaterialVegetalResponse, PlantaResumen, RegistrarMaterialVegetalRequest } from './types'
+import type { ContextoBodegaResponse, MaterialVegetalResponse, PlantaResumen, RegistrarMaterialVegetalRequest } from './types'
 
 export function registrarMaterialVegetal(data: RegistrarMaterialVegetalRequest): Promise<MaterialVegetalResponse> {
   return apiPost<MaterialVegetalResponse>('/bodega/material-vegetal', data)
@@ -12,4 +12,8 @@ export async function obtenerPlantasActivas(): Promise<PlantaResumen[]> {
 
 export function obtenerInventarioPorComunidad(comunidadId: number): Promise<MaterialVegetalResponse[]> {
   return apiGet<MaterialVegetalResponse[]>(`/bodega/comunidades/${comunidadId}/material-vegetal`)
+}
+
+export function obtenerContextoBodega(): Promise<ContextoBodegaResponse> {
+  return apiGet<ContextoBodegaResponse>('/bodega/contexto')
 }
