@@ -4,6 +4,7 @@ import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
 import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
+import type { DirectorioComunidadResponse } from '../../features/comunidades-publico/comunidadesPublicoApi'
 
 export const mockMiComunidad: ComunidadDetalleResponse = {
   id: 3,
@@ -20,6 +21,23 @@ export const mockMiComunidad: ComunidadDetalleResponse = {
   activa: true,
   creadoEn: '2026-10-15T09:30:00Z',
 }
+
+export const mockDirectorioComunidades: DirectorioComunidadResponse[] = [
+  {
+    id: 3,
+    nombre: 'Huerto Comunitario Allpa Viva',
+    nombreResponsable: 'Segundo Tránsito Amaguaña',
+    telefonoContacto: '0991234567',
+    correoContacto: 'comunidad.allpa@huertos.gob.ec',
+    totalMiembros: 14,
+    provincia: 'Pichincha',
+    parroquia: 'Calderon',
+    direccion: 'Calle de las Rosas y Pasaje Los Pinos, lote 14',
+    latitud: -0.0987123,
+    longitud: -78.4321456,
+    altitudMsnm: 2650,
+  },
+]
 
 export const handlers = [
   http.get('*/api/ping', () =>
@@ -39,4 +57,6 @@ export const handlers = [
       ...datos,
     })
   }),
+
+  http.get('*/api/publico/comunidades', () => HttpResponse.json(mockDirectorioComunidades)),
 ]

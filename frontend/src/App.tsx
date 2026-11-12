@@ -4,6 +4,7 @@ import { CalendarioLunarPage } from './pages/CalendarioLunarPage'
 import { CatalogoPlantasPage } from './pages/CatalogoPlantasPage'
 import { IngresoMaterialPage } from './pages/IngresoMaterialPage'
 import { InicioPage } from './pages/InicioPage'
+import { DirectorioComunidadesPage } from './pages/DirectorioComunidadesPage'
 import { LoginPage } from './pages/LoginPage'
 import { MiComunidadPage } from './pages/MiComunidadPage'
 import { NoEncontradaPage } from './pages/NoEncontradaPage'
@@ -13,6 +14,7 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<InicioPage />} />
+        <Route path="/comunidades" element={<DirectorioComunidadesPage />} />
         <Route path="/catalogo-plantas" element={<CatalogoPlantasPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
