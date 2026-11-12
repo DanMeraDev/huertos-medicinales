@@ -1,0 +1,30 @@
+.talentos-pagina-contenedor {
+  width: 100%;
+  padding: var(--espacio-4);
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .talentos-pagina-contenedor {
+    max-width: var(--ancho-maximo);
+    margin: 0 auto;
+    padding: var(--espacio-8) var(--espacio-6);
+  }
+}
+
+.talentos-pagina-cabecera {
+  margin-bottom: var(--espacio-6);
+}
+
+.talentos-pagina-titulo {
+  margin: 0 0 var(--espacio-2);
+  font-size: var(--texto-2xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-texto);
+}
+
+.talentos-pagina-subtitulo {
+  margin: 0;
+  font-size: var(--texto-base);
+  color: var(--color-texto-suave);
+}
