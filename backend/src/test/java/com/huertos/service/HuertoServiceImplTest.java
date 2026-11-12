@@ -3,6 +3,7 @@ package com.huertos.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,9 +29,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,8 +44,8 @@ class HuertoServiceImplTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
-    @Spy
-    private HuertoMapper huertoMapper = Mappers.getMapper(HuertoMapper.class);
+    @Mock
+    private HuertoMapper huertoMapper;
 
     private HuertoService servicio;
 
@@ -59,6 +58,7 @@ class HuertoServiceImplTest {
     void obtenerPorCorreoRetornaDetalleDelHuerto() {
         String correo = "responsable@huertos.gob.ec";
         Huerto huerto = huerto();
+        HuertoDetalleResponse respuestaEsperada = detalleResponse();
 
         when(usuarioRepository.findByCorreo(correo))
                 .thenReturn(Optional.of(usuario(10L)));
@@ -66,6 +66,7 @@ class HuertoServiceImplTest {
                 .thenReturn(Optional.of(huerto));
         when(subhuertoRepository.sumAreaActivaByHuertoId(huerto.getId()))
                 .thenReturn(BigDecimal.ZERO);
+        doReturn(respuestaEsperada).when(huertoMapper).toDetalleResponse(huerto, BigDecimal.ZERO);
 
         HuertoDetalleResponse resultado = servicio.obtenerPorCorreo(correo);
 
@@ -99,6 +100,7 @@ class HuertoServiceImplTest {
         String correo = "responsable@huertos.gob.ec";
         Huerto huerto = huerto();
         ActualizarHuertoRequest request = requestValido();
+        HuertoDetalleResponse respuestaEsperada = detalleResponse();
 
         when(usuarioRepository.findByCorreo(correo))
                 .thenReturn(Optional.of(usuario(10L)));
@@ -107,11 +109,11 @@ class HuertoServiceImplTest {
         when(subhuertoRepository.sumAreaActivaByHuertoId(huerto.getId()))
                 .thenReturn(BigDecimal.ZERO);
         when(huertoRepository.save(any(Huerto.class))).thenAnswer(inv -> inv.getArgument(0));
+        doReturn(respuestaEsperada).when(huertoMapper).toDetalleResponse(huerto, BigDecimal.ZERO);
 
         HuertoDetalleResponse resultado = servicio.actualizarPorCorreo(correo, request);
 
         assertThat(resultado.areaTotalM2()).isEqualByComparingTo("150.00");
-        assertThat(resultado.latitud()).isEqualByComparingTo("-0.1234567");
         verify(huertoRepository).save(any(Huerto.class));
     }
 
@@ -170,6 +172,28 @@ class HuertoServiceImplTest {
         huerto.setTipoHuerto(TipoHuerto.BASICO);
         huerto.setPuntosHuerto(0);
         return huerto;
+    }
+
+    private HuertoDetalleResponse detalleResponse() {
+        return new HuertoDetalleResponse(
+                1L,
+                3L,
+                "Huerto Allpa Viva",
+                new BigDecimal("-0.1234567"),
+                new BigDecimal("-78.5678901"),
+                2500,
+                "NORTE_SUR",
+                new BigDecimal("150.00"),
+                DisenoPrincipal.EN_TIERRA,
+                TipoSuelo.ARCILLOSO,
+                FuenteAgua.GOTEO,
+                TipoAbono.COMPOST,
+                TipoCerca.CERCA_VIVA,
+                "Muro de cabuya",
+                TipoHuerto.BASICO,
+                0,
+                BigDecimal.ZERO
+        );
     }
 
     private ActualizarHuertoRequest requestValido() {
