@@ -1,0 +1,47 @@
+.modal-lopdp-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  color: var(--color-texto);
+  font-size: var(--texto-sm);
+  line-height: var(--interlineado-normal);
+}
+
+.modal-lopdp-introduccion {
+  font-weight: var(--peso-medio);
+}
+
+.modal-lopdp-lista {
+  margin: 0;
+  padding-left: var(--espacio-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.modal-lopdp-lista strong {
+  color: var(--color-primario);
+}
+
+.modal-lopdp-check-etiqueta {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-2);
+  padding: var(--espacio-3);
+  background-color: var(--color-fondo);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+}
+
+.modal-lopdp-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  accent-color: var(--color-primario);
+  cursor: pointer;
+  flex-shrink: 0;
+}

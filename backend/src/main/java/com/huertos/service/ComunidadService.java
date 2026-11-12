@@ -3,8 +3,10 @@ package com.huertos.service;
 import com.huertos.dto.ActualizarComunidadRequest;
 import com.huertos.dto.ComunidadDetalleResponse;
 import com.huertos.dto.ComunidadResponse;
+import com.huertos.dto.DirectorioComunidadResponse;
 import com.huertos.model.SolicitudComunidad;
 import com.huertos.model.Usuario;
+import java.util.List;
 
 public interface ComunidadService {
 
@@ -59,4 +61,12 @@ public interface ComunidadService {
      * @throws com.huertos.exception.ConflictoException si el nombre ya está registrado por otra comunidad
      */
     ComunidadDetalleResponse actualizarPorCorreo(String correo, ActualizarComunidadRequest request);
+
+    /**
+     * Obtiene el directorio público consolidado de comunidades activas con su responsable,
+     * cantidad de miembros activos y datos territoriales del huerto base.
+     *
+     * @return lista de comunidades activas para consulta pública
+     */
+    List<DirectorioComunidadResponse> obtenerDirectorioPublico();
 }
