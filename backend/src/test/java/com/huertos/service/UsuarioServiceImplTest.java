@@ -8,6 +8,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.huertos.dto.CambiarClaveRequest;
+import com.huertos.dto.CambioClaveResponse;
 import com.huertos.dto.CrearUsuarioRequest;
 import com.huertos.dto.UsuarioDetalleResponse;
 import com.huertos.exception.ConflictoException;
@@ -23,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +39,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class UsuarioServiceImplTest {
 
     private static final String CLAVE = "PasswordSegura2026";
+    private static final String NUEVA_CLAVE = "NuevaClaveSegura2027";
+    private static final String CORREO = "rosa.chimbolema@huertos.gob.ec";
     private static final Clock RELOJ = Clock.fixed(Instant.parse("2026-11-11T15:00:00Z"), ZoneOffset.UTC);
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -108,6 +113,57 @@ class UsuarioServiceImplTest {
                 .isInstanceOf(ConflictoException.class)
                 .hasMessage("Ya existe un usuario registrado con el correo electrónico ingresado");
         verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void cambiaLaClaveYQuitaElCambioPendiente() {
+        Usuario usuario = usuarioConClave(CLAVE);
+        when(usuarioRepository.findByCorreo(CORREO)).thenReturn(Optional.of(usuario));
+
+        CambioClaveResponse respuesta = servicio.cambiarClave(CORREO,
+                new CambiarClaveRequest(CLAVE, NUEVA_CLAVE, NUEVA_CLAVE));
+
+        assertThat(respuesta.mensaje()).isEqualTo("Contraseña actualizada exitosamente");
+        assertThat(respuesta.requiereCambioClave()).isFalse();
+        assertThat(passwordEncoder.matches(NUEVA_CLAVE, usuario.getPasswordHash())).isTrue();
+        assertThat(usuario.isRequiereCambioClave()).isFalse();
+    }
+
+    @Test
+    void rechazaUnaConfirmacionDistintaDeLaNuevaClave() {
+        assertThatThrownBy(() -> servicio.cambiarClave(CORREO,
+                new CambiarClaveRequest(CLAVE, NUEVA_CLAVE, "OtraClaveSegura2026")))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("La nueva contraseña y su confirmación no coinciden");
+    }
+
+    @Test
+    void rechazaUnaClaveActualIncorrecta() {
+        Usuario usuario = usuarioConClave(CLAVE);
+        when(usuarioRepository.findByCorreo(CORREO)).thenReturn(Optional.of(usuario));
+
+        assertThatThrownBy(() -> servicio.cambiarClave(CORREO,
+                new CambiarClaveRequest("ClaveEquivocada2026", NUEVA_CLAVE, NUEVA_CLAVE)))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("La contraseña actual ingresada es incorrecta");
+        assertThat(passwordEncoder.matches(CLAVE, usuario.getPasswordHash())).isTrue();
+    }
+
+    @Test
+    void rechazaUnaNuevaClaveIgualALaActual() {
+        when(usuarioRepository.findByCorreo(CORREO)).thenReturn(Optional.of(usuarioConClave(CLAVE)));
+
+        assertThatThrownBy(() -> servicio.cambiarClave(CORREO, new CambiarClaveRequest(CLAVE, CLAVE, CLAVE)))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("La nueva contraseña no puede ser idéntica a la contraseña actual");
+    }
+
+    private Usuario usuarioConClave(String clave) {
+        Usuario usuario = new Usuario();
+        usuario.setCorreo(CORREO);
+        usuario.setPasswordHash(passwordEncoder.encode(clave));
+        usuario.setRequiereCambioClave(true);
+        return usuario;
     }
 
     private CrearUsuarioRequest solicitud(LocalDate fechaNacimiento) {

@@ -1,13 +1,17 @@
 package com.huertos.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.huertos.config.SecurityConfig;
+import com.huertos.dto.CambiarClaveRequest;
+import com.huertos.dto.CambioClaveResponse;
 import com.huertos.dto.CrearUsuarioRequest;
 import com.huertos.dto.UsuarioDetalleResponse;
 import com.huertos.model.Genero;
@@ -35,6 +39,12 @@ class UsuarioControllerTest {
             {"nombreCompleto":"Rosa Elena Chimbolema","identificacion":"1710034065",
              "fechaNacimiento":"1990-05-14","genero":"FEMENINO","correo":"rosa.chimbolema@huertos.gob.ec",
              "telefono":"0987654321","rol":"TECNICO_MSP","password":"PasswordSegura2026"}
+            """;
+
+    private static final String CAMBIAR_CLAVE = "/api/usuarios/cambiar-clave";
+    private static final String CAMBIO_VALIDO = """
+            {"passwordActual":"PasswordSegura2026","nuevaPassword":"NuevaClaveSegura2027",
+             "confirmarPassword":"NuevaClaveSegura2027"}
             """;
 
     @Autowired
@@ -95,6 +105,33 @@ class UsuarioControllerTest {
     void rechazaAQuienNoEsTecnicoSisConUn403(String rol) throws Exception {
         mockMvc.perform(crear(rol, CUERPO_VALIDO))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void elUsuarioAutenticadoCambiaSuClaveYRecibe200() throws Exception {
+        when(usuarioService.cambiarClave(eq("rosa@huertos.gob.ec"), any(CambiarClaveRequest.class)))
+                .thenReturn(new CambioClaveResponse("Contraseña actualizada exitosamente", false));
+
+        mockMvc.perform(put(CAMBIAR_CLAVE).with(user("rosa@huertos.gob.ec").roles("RESPONSABLE_COMUNIDAD"))
+                        .contentType(MediaType.APPLICATION_JSON).content(CAMBIO_VALIDO))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mensaje").value("Contraseña actualizada exitosamente"))
+                .andExpect(jsonPath("$.requiereCambioClave").value(false));
+    }
+
+    @Test
+    void rechazaElCambioDeClaveSinSesion() throws Exception {
+        mockMvc.perform(put(CAMBIAR_CLAVE).contentType(MediaType.APPLICATION_JSON).content(CAMBIO_VALIDO))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void rechazaUnaNuevaClaveDebilConUn400() throws Exception {
+        mockMvc.perform(put(CAMBIAR_CLAVE).with(user("rosa@huertos.gob.ec").roles("TECNICO_MSP"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CAMBIO_VALIDO.replace("NuevaClaveSegura2027", "corta")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.nuevaPassword").exists());
     }
 
     private MockHttpServletRequestBuilder crear(String rol, String cuerpo) {
