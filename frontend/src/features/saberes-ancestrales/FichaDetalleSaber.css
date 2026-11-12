@@ -1,0 +1,45 @@
+.ficha-saber {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.ficha-saber-paso {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto-secundario);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ficha-saber-kichwa {
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-sm);
+}
+
+.ficha-saber-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
+.ficha-saber section h3 {
+  font-size: var(--texto-base);
+  color: var(--color-primario);
+  font-weight: var(--peso-seminegrita);
+  margin-bottom: var(--espacio-1);
+}
+
+.ficha-saber section p {
+  font-size: var(--texto-base);
+  line-height: var(--interlineado-normal);
+}
+
+.ficha-saber-premio {
+  background-color: var(--color-primary-light);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-4);
+  display: grid;
+  gap: var(--espacio-2);
+  justify-items: start;
+}
