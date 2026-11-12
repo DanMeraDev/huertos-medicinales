@@ -3,6 +3,7 @@ package com.huertos.service.impl;
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
+import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.repository.PlantaRepository;
@@ -45,8 +46,11 @@ public class PlantaServiceImpl implements PlantaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PlantaDetalleResponse obtenerDetalle(Long id) {
-        return null;
+        return plantaRepository.findByIdAndActivaTrue(id)
+                .map(plantaMapper::aDetalle)
+                .orElseThrow(() -> new RecursoNoEncontradoException("La ficha solicitada no está disponible"));
     }
 
     private String validarCriterio(String criterio) {
