@@ -1,8 +1,11 @@
 package com.huertos.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +24,7 @@ import com.huertos.repository.PlantaRepository;
 import com.huertos.service.impl.BodegaServiceImpl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +32,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @ExtendWith(MockitoExtension.class)
 class BodegaServiceImplTest {
@@ -151,5 +158,103 @@ class BodegaServiceImplTest {
         assertThatThrownBy(() -> bodegaService.obtenerComunidadIdPorCorreo("ajeno@correo.com"))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No existe una comunidad asociada al usuario");
+    }
+
+    @Test
+    void listarMaterialPorComunidadRetornaListaMapeada() {
+        BodegaMaterialVegetal entidad = new BodegaMaterialVegetal();
+        entidad.setId(1L);
+        entidad.setComunidad(comunidad);
+        entidad.setPlanta(planta);
+        entidad.setTipoMaterial(TipoMaterialVegetal.SEMILLAS);
+        entidad.setCantidadDisponible(new BigDecimal("10.00"));
+        entidad.setUnidadMedida(UnidadMedida.GRAMOS);
+
+        MaterialVegetalResponse respuesta = new MaterialVegetalResponse(
+                1L,
+                1L,
+                10L,
+                "Manzanilla",
+                "Matricaria chamomilla",
+                TipoMaterialVegetal.SEMILLAS,
+                new BigDecimal("10.00"),
+                UnidadMedida.GRAMOS,
+                "Lote-1",
+                LocalDate.of(2026, 11, 10)
+        );
+
+        when(bodegaRepository.findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(1L))
+                .thenReturn(List.of(entidad));
+        when(bodegaMapper.toListMaterialVegetalResponse(List.of(entidad)))
+                .thenReturn(List.of(respuesta));
+
+        List<MaterialVegetalResponse> resultado = bodegaService.listarMaterialPorComunidad(1L);
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.getFirst().nombreComunPlanta()).isEqualTo("Manzanilla");
+        verify(bodegaRepository).findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(1L);
+    }
+
+    @Test
+    void listarMaterialPorComunidadRetornaListaVaciaCuandoNoHayRegistros() {
+        when(bodegaRepository.findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(1L))
+                .thenReturn(List.of());
+        when(bodegaMapper.toListMaterialVegetalResponse(List.of()))
+                .thenReturn(List.of());
+
+        List<MaterialVegetalResponse> resultado = bodegaService.listarMaterialPorComunidad(1L);
+
+        assertThat(resultado).isEmpty();
+    }
+
+    @Test
+    void validarAccesoComunidadPermiteAccesoATecnicoMsp() {
+        assertThatCode(() -> bodegaService.validarAccesoComunidad(99L, "tecnico@msp.gob.ec", true))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void validarAccesoComunidadPermiteAccesoAResponsableDeSuComunidad() {
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+
+        assertThatCode(() -> bodegaService.validarAccesoComunidad(1L, "responsable@correo.com", false))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void validarAccesoComunidadLanzaExcepcionParaResponsableDeOtraComunidad() {
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+
+        assertThatThrownBy(() -> bodegaService.validarAccesoComunidad(2L, "responsable@correo.com", false))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("No tiene permisos para consultar el inventario de otra comunidad");
+    }
+
+    @Test
+    void validarAccesoComunidadConAuthenticationTecnicoPermiteAcceso() {
+        Authentication auth = mock(Authentication.class);
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_TECNICO_MSP"))).when(auth).getAuthorities();
+
+        assertThatCode(() -> bodegaService.validarAccesoComunidad(99L, auth))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void validarAccesoComunidadConAuthenticationResponsableValidaComunidad() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("responsable@correo.com");
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+
+        assertThatThrownBy(() -> bodegaService.validarAccesoComunidad(2L, auth))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("No tiene permisos para consultar el inventario de otra comunidad");
+    }
+
+    @Test
+    void validarAccesoComunidadConAuthenticationNullLanzaExcepcion() {
+        assertThatThrownBy(() -> bodegaService.validarAccesoComunidad(1L, (Authentication) null))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage("No autenticado");
     }
 }
