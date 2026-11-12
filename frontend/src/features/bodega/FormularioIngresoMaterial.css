@@ -1,0 +1,49 @@
+.formulario-ingreso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: var(--espacio-4);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+}
+
+.formulario-ingreso-titulo {
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-texto);
+  margin: 0 0 var(--espacio-2) 0;
+}
+
+.formulario-ingreso-descripcion {
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+  margin: 0 0 var(--espacio-3) 0;
+}
+
+.formulario-ingreso-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-2);
+}
+
+.formulario-ingreso-acciones .boton {
+  min-height: 44px;
+  width: 100%;
+}
+
+.formulario-ingreso .campo-control {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .formulario-ingreso {
+    padding: var(--espacio-6);
+  }
+}
