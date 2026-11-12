@@ -18,7 +18,7 @@ import { RankingComunidadesPage } from './pages/RankingComunidadesPage'
 import { RegistrarMiembroPage } from './pages/RegistrarMiembroPage'
 import { SaberesAncestralesPage } from './pages/SaberesAncestralesPage'
 import { SubhuertosPage } from './pages/SubhuertosPage'
-
+import { CatalogoActividadesPage } from './pages/CatalogoActividadesPage'
 export default function App() {
   return (
     <Layout>
@@ -41,6 +41,7 @@ export default function App() {
         <Route path="/bodega/inventario" element={<InventarioBodegaPage />} />
         <Route path="/saberes-ancestrales" element={<SaberesAncestralesPage />} />
         <Route path="/huerto/subhuertos" element={<SubhuertosPage />} />
+        <Route path="/comunidad/actividades-catalogo" element={<CatalogoActividadesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
