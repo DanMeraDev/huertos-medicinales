@@ -10,6 +10,7 @@ import { DirectorioComunidadesPage } from './pages/DirectorioComunidadesPage'
 import { LoginPage } from './pages/LoginPage'
 import { MiComunidadPage } from './pages/MiComunidadPage'
 import { NoEncontradaPage } from './pages/NoEncontradaPage'
+import { SolicitarComunidadPage } from './pages/SolicitarComunidadPage'
 import { RankingComunidadesPage } from './pages/RankingComunidadesPage'
 import { RegistrarMiembroPage } from './pages/RegistrarMiembroPage'
 import { SaberesAncestralesPage } from './pages/SaberesAncestralesPage'
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
         <Route path="/usuarios/nuevo" element={<CrearUsuarioPage />} />
+        <Route path="/solicitar-comunidad" element={<SolicitarComunidadPage />} />
         <Route path="/ranking/comunidades" element={<RankingComunidadesPage />} />
         <Route path="/comunidad/miembros/nuevo" element={<RegistrarMiembroPage />} />
         <Route path="/calendario-lunar" element={<CalendarioLunarPage />} />

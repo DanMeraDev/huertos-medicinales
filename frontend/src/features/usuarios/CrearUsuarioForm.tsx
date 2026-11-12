@@ -6,7 +6,7 @@ import { KintiGuia } from '../../components/KintiGuia'
 import { Notificacion, type NotificacionProps } from '../../components/Notificacion'
 import { Selector } from '../../components/Selector'
 import { crearUsuario, type CrearUsuarioRequest, type Genero, type Rol } from './usuariosApi'
-import { esCedulaValida, esContrasenaSegura, esMayorDeEdad } from './validacionesUsuario'
+import { esCedulaValida, esContrasenaSegura, esMayorDeEdad } from '../../components/validaciones'
 import './CrearUsuarioForm.css'
 
 type Campos = Omit<CrearUsuarioRequest, 'genero' | 'rol'> & { genero: Genero | ''; rol: Rol | '' }
