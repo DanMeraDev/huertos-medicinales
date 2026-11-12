@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
@@ -614,5 +615,177 @@ class MiembroServiceImplTest {
         List<MiembroDetalleResponse> response = miembroService.listarMiembrosPorCorreo(correo);
 
         assertThat(response).isEmpty();
+    }
+
+    @Test
+    void actualizarDatosContactoActualizaGeneroYTelefonoCorrectamente() {
+        Long responsableId = 10L;
+        Long miembroId = 15L;
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.MASCULINO);
+        miembro.setTelefono("0981234567");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+        miembro.setPuntosTotales(50);
+        miembro.setActivo(true);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+        when(miembroRepository.save(any(Miembro.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        MiembroDetalleResponse response = miembroService.actualizarDatosContacto(responsableId, miembroId, request);
+
+        assertThat(response.id()).isEqualTo(miembroId);
+        assertThat(response.genero()).isEqualTo(Genero.FEMENINO);
+        assertThat(response.telefono()).isEqualTo("0998877665");
+        assertThat(response.cedula()).isEqualTo("1710034065");
+        assertThat(response.nombreCompleto()).isEqualTo("María Tránsito Amaguaña Alba");
+        assertThat(response.nivel()).isEqualTo(NivelMiembro.APRENDIZ);
+        assertThat(response.puntosTotales()).isEqualTo(50);
+
+        ArgumentCaptor<Miembro> captor = ArgumentCaptor.forClass(Miembro.class);
+        verify(miembroRepository).save(captor.capture());
+        assertThat(captor.getValue().getGenero()).isEqualTo(Genero.FEMENINO);
+        assertThat(captor.getValue().getTelefono()).isEqualTo("0998877665");
+        assertThat(captor.getValue().getCedula()).isEqualTo("1710034065");
+    }
+
+    @Test
+    void actualizarDatosContactoPermiteGeneroOtro() {
+        Long responsableId = 10L;
+        Long miembroId = 15L;
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.OTRO, "0991122334");
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.FEMENINO);
+        miembro.setTelefono("0981234567");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+        when(miembroRepository.save(any(Miembro.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        MiembroDetalleResponse response = miembroService.actualizarDatosContacto(responsableId, miembroId, request);
+
+        assertThat(response.genero()).isEqualTo(Genero.OTRO);
+        assertThat(response.telefono()).isEqualTo("0991122334");
+    }
+
+    @Test
+    void actualizarDatosContactoLanzaRecursoNoEncontradoSiMiembroNoPerteneceAComunidad() {
+        Long responsableId = 10L;
+        Long miembroId = 99L;
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.actualizarDatosContacto(responsableId, miembroId, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("El voluntario no pertenece a la comunidad administrada");
+
+        verify(miembroRepository, never()).save(any());
+    }
+
+    @Test
+    void actualizarDatosContactoLanzaRecursoNoEncontradoSiResponsableNoTieneComunidad() {
+        Long responsableId = 10L;
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.actualizarDatosContacto(responsableId, 15L, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró ninguna comunidad asociada al responsable autenticado");
+
+        verify(miembroRepository, never()).save(any());
+    }
+
+    @Test
+    void actualizarDatosContactoPorCorreoResuelveUsuarioYDelega() {
+        String correo = "responsable@huertos.gob.ec";
+        Long miembroId = 15L;
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        Usuario usuario = new Usuario();
+        usuario.setId(10L);
+        usuario.setCorreo(correo);
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.MASCULINO);
+        miembro.setTelefono("0981234567");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(comunidadRepository.findByResponsableId(10L)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+        when(miembroRepository.save(any(Miembro.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        MiembroDetalleResponse response = miembroService.actualizarDatosContactoPorCorreo(correo, miembroId, request);
+
+        assertThat(response.id()).isEqualTo(miembroId);
+        assertThat(response.genero()).isEqualTo(Genero.FEMENINO);
+        assertThat(response.telefono()).isEqualTo("0998877665");
+    }
+
+    @Test
+    void actualizarDatosContactoPorCorreoLanzaRecursoNoEncontradoSiUsuarioNoExiste() {
+        String correo = "desconocido@huertos.gob.ec";
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.actualizarDatosContactoPorCorreo(correo, 15L, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró el usuario");
     }
 }

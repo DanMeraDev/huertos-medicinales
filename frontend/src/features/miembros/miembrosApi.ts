@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from '../../api/client'
+import { apiGet, apiPatch, apiPost, apiPut } from '../../api/client'
 
 export type Genero = 'FEMENINO' | 'MASCULINO' | 'OTRO'
 export type NivelMiembro = 'APRENDIZ' | 'OFICIAL' | 'MAESTRO'
@@ -61,4 +61,16 @@ export function cambiarEstadoMiembro(
   datos: CambiarEstadoMiembroRequest,
 ): Promise<MiembroEstadoResponse> {
   return apiPatch<MiembroEstadoResponse>(`/comunidades/mi-comunidad/miembros/${miembroId}/estado`, datos)
+}
+
+export interface ActualizarMiembroRequest {
+  genero: Genero
+  telefono: string
+}
+
+export function actualizarDatosMiembro(
+  miembroId: number,
+  datos: ActualizarMiembroRequest,
+): Promise<MiembroDetalleResponse> {
+  return apiPut<MiembroDetalleResponse>(`/comunidades/mi-comunidad/miembros/${miembroId}`, datos)
 }

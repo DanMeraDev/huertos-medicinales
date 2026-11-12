@@ -121,4 +121,16 @@ describe('TablaMiembrosComunidad', () => {
 
     expect(await screen.findByText('El voluntario ya se encuentra en el estado solicitado')).toBeInTheDocument()
   })
+
+  it('abre el modal de edición de datos de voluntario al hacer clic en Editar', async () => {
+    const user = userEvent.setup()
+    renderizarTabla()
+
+    expect(await screen.findByText('María Tránsito Amaguaña Alba')).toBeInTheDocument()
+
+    const botonEditar = screen.getByRole('button', { name: /editar a maría tránsito amaguaña alba/i })
+    await user.click(botonEditar)
+
+    expect(await screen.findByRole('heading', { name: /editar datos de voluntario/i })).toBeInTheDocument()
+  })
 })

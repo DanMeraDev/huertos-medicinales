@@ -6,11 +6,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huertos.config.SecurityConfig;
+import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
@@ -439,6 +441,133 @@ class ComunidadMiembroControllerTest {
     @Test
     void listarMiembrosRetorna403CuandoNoEstaAutenticado() throws Exception {
         mockMvc.perform(get("/api/comunidades/mi-comunidad/miembros"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarDatosContactoRetorna200ConDatosValidos() throws Exception {
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+        MiembroDetalleResponse response = new MiembroDetalleResponse(
+                15L,
+                3L,
+                "1710034065",
+                "María Tránsito Amaguaña Alba",
+                "María Tránsito",
+                "Amaguaña Alba",
+                LocalDate.of(2010, 3, 25),
+                16,
+                Genero.FEMENINO,
+                "0998877665",
+                NivelMiembro.APRENDIZ,
+                50,
+                true,
+                LocalDate.of(2026, 11, 10)
+        );
+
+        when(miembroService.actualizarDatosContactoPorCorreo(eq("responsable@huertos.gob.ec"), eq(15L), any(ActualizarMiembroRequest.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/15")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(15))
+                .andExpect(jsonPath("$.genero").value("FEMENINO"))
+                .andExpect(jsonPath("$.telefono").value("0998877665"))
+                .andExpect(jsonPath("$.nombreCompleto").value("María Tránsito Amaguaña Alba"))
+                .andExpect(jsonPath("$.nivel").value("APRENDIZ"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarDatosContactoRetorna200ConGeneroOtro() throws Exception {
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.OTRO, "0991122334");
+        MiembroDetalleResponse response = new MiembroDetalleResponse(
+                15L,
+                3L,
+                "1710034065",
+                "María Tránsito Amaguaña Alba",
+                "María Tránsito",
+                "Amaguaña Alba",
+                LocalDate.of(2010, 3, 25),
+                16,
+                Genero.OTRO,
+                "0991122334",
+                NivelMiembro.APRENDIZ,
+                50,
+                true,
+                LocalDate.of(2026, 11, 10)
+        );
+
+        when(miembroService.actualizarDatosContactoPorCorreo(eq("responsable@huertos.gob.ec"), eq(15L), any(ActualizarMiembroRequest.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/15")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.genero").value("OTRO"))
+                .andExpect(jsonPath("$.telefono").value("0991122334"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarDatosContactoRetorna400CuandoGeneroEsNulo() throws Exception {
+        String payload = "{\"genero\":null,\"telefono\":\"0998877665\"}";
+
+        mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/15")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.genero").value("El género es obligatorio"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarDatosContactoRetorna400CuandoTelefonoEsInvalido() throws Exception {
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0881234567");
+
+        mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/15")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.telefono").value("El teléfono debe iniciar con 09 y tener 10 dígitos"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarDatosContactoRetorna404CuandoMiembroNoPerteneceAComunidad() throws Exception {
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        when(miembroService.actualizarDatosContactoPorCorreo(eq("responsable@huertos.gob.ec"), eq(99L), any(ActualizarMiembroRequest.class)))
+                .thenThrow(new RecursoNoEncontradoException("El voluntario no pertenece a la comunidad administrada"));
+
+        mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("El voluntario no pertenece a la comunidad administrada"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin@huertos.gob.ec", roles = "ADMINISTRADOR")
+    void actualizarDatosContactoRetorna403CuandoUsuarioNoTieneRolResponsable() throws Exception {
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/15")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void actualizarDatosContactoRetorna403CuandoNoEstaAutenticado() throws Exception {
+        ActualizarMiembroRequest request = new ActualizarMiembroRequest(Genero.FEMENINO, "0998877665");
+
+        mockMvc.perform(put("/api/comunidades/mi-comunidad/miembros/15")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
     }
 }

@@ -1,5 +1,6 @@
 package com.huertos.service;
 
+import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
@@ -61,4 +62,24 @@ public interface MiembroService {
      * @return Listado de miembros de la comunidad
      */
     List<MiembroDetalleResponse> listarMiembrosPorCorreo(String correo);
+
+    /**
+     * Actualiza los datos de contacto y caracterización (género y teléfono) de un miembro de la comunidad.
+     *
+     * @param responsableId ID del usuario responsable de la comunidad
+     * @param miembroId ID del miembro a actualizar
+     * @param request Datos actualizados de contacto y género
+     * @return Ficha detallada del miembro con los datos actualizados
+     */
+    MiembroDetalleResponse actualizarDatosContacto(Long responsableId, Long miembroId, ActualizarMiembroRequest request);
+
+    /**
+     * Actualiza los datos de contacto y caracterización de un miembro a partir del correo del responsable.
+     *
+     * @param correo Correo electrónico del usuario responsable de la comunidad
+     * @param miembroId ID del miembro a actualizar
+     * @param request Datos actualizados de contacto y género
+     * @return Ficha detallada del miembro con los datos actualizados
+     */
+    MiembroDetalleResponse actualizarDatosContactoPorCorreo(String correo, Long miembroId, ActualizarMiembroRequest request);
 }
