@@ -1,6 +1,7 @@
 package com.huertos.mapper;
 
 import com.huertos.dto.MiembroDetalleResponse;
+import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.model.ComunidadMiembro;
 import com.huertos.model.Miembro;
@@ -31,4 +32,13 @@ public interface MiembroMapper {
     @Mapping(target = "activoEnComunidad", source = "relacion.activoEnComunidad")
     @Mapping(target = "fechaIngreso", source = "relacion.fechaIngreso")
     MiembroDetalleResponse toDetalleResponse(Miembro miembro, ComunidadMiembro relacion, int edad);
+
+    @Mapping(target = "miembroId", source = "relacion.miembro.id")
+    @Mapping(target = "comunidadId", source = "relacion.comunidad.id")
+    @Mapping(target = "nombreMiembro", expression = "java(relacion.getMiembro().getNombres() + \" \" + relacion.getMiembro().getApellidos())")
+    @Mapping(target = "activoEnComunidad", source = "relacion.activoEnComunidad")
+    @Mapping(target = "fechaBaja", source = "relacion.fechaBaja")
+    @Mapping(target = "motivoBaja", source = "relacion.motivoBaja")
+    @Mapping(target = "mensaje", source = "mensaje")
+    MiembroEstadoResponse toEstadoResponse(ComunidadMiembro relacion, String mensaje);
 }
