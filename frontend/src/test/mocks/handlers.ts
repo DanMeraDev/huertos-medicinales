@@ -70,5 +70,62 @@ export const handlers = [
   ...usuariosMockHandlers,
   ...solicitudesPublicoMockHandlers,
 
+  http.get('*/api/comunidad/huerto', () =>
+    HttpResponse.json({
+      id: 10,
+      comunidadId: 3,
+      nombreHuerto: 'Huerto Comunitario Allpa Viva',
+      latitud: -0.0987123,
+      longitud: -78.4321456,
+      altitudMsnm: 2650,
+      areaTotalM2: 120.0,
+      tipoHuerto: 'BASICO',
+      disenoPrincipal: 'CIRCULAR',
+      puntosHuerto: 50,
+      activo: true,
+    }),
+  ),
+
+  http.get('*/api/comunidad/subhuertos', () =>
+    HttpResponse.json([
+      {
+        id: 1,
+        huertoId: 10,
+        nombreZona: 'Surcos Norte',
+        subtipo: 'SURCOS_WACHU',
+        areaM2: 30.0,
+        activo: true,
+      },
+    ]),
+  ),
+
+  http.post('*/api/comunidad/siembras', async ({ request }) => {
+    const payload = (await request.json()) as {
+      subhuertoId: number
+      bodegaMaterialId: number
+      cantidadSembrada: number
+      fechaSiembra: string
+      faseLunarSiembra: string
+      aceptaRiesgoAltitud: boolean
+    }
+    return HttpResponse.json(
+      {
+        id: 1,
+        subhuertoId: payload.subhuertoId,
+        nombreSubhuerto: 'Surcos Norte',
+        bodegaMaterialId: payload.bodegaMaterialId,
+        plantaId: 1,
+        nombreComunPlanta: 'Manzanilla',
+        cualidadTermica: 'CALIENTE',
+        cantidadSembrada: payload.cantidadSembrada,
+        fechaSiembra: payload.fechaSiembra,
+        faseLunarSiembra: payload.faseLunarSiembra,
+        tuvoAlertaAltitud: payload.aceptaRiesgoAltitud,
+        estadoCultivo: 'SEMBRADO',
+      },
+      { status: 201 },
+    )
+  }),
+
   http.get('*/api/publico/comunidades', () => HttpResponse.json(mockDirectorioComunidades)),
 ]
