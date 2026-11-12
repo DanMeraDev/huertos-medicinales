@@ -1,5 +1,6 @@
 package com.huertos.controller;
 
+import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -55,5 +57,15 @@ public class ComunidadMiembroController {
             @Valid @RequestBody CambiarEstadoMiembroRequest request,
             Authentication authentication) {
         return miembroService.cambiarEstadoPorCorreo(authentication.getName(), miembroId, request);
+    }
+
+    @Operation(summary = "Actualiza los datos personales y de contacto de un miembro de la comunidad")
+    @PutMapping("/{miembroId}")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
+    public MiembroDetalleResponse actualizarDatosContacto(
+            @PathVariable Long miembroId,
+            @Valid @RequestBody ActualizarMiembroRequest request,
+            Authentication authentication) {
+        return miembroService.actualizarDatosContactoPorCorreo(authentication.getName(), miembroId, request);
     }
 }
