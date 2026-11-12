@@ -1,0 +1,11 @@
+.consulta-calendario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+  margin-top: var(--espacio-6);
+}
+
+.consulta-calendario-aviso {
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-sm);
+}
