@@ -42,7 +42,7 @@ describe('plantasApi', () => {
       ['region', 'Amazonía'],
       ['criterio', 'té & ruda'],
     ])
-    expect(busquedaRecibida).toContain('region=Amaz%C3%B3nia')
+    expect(busquedaRecibida).toContain('region=Amazon%C3%ADa')
   })
 
   it('filtrarPlantas omite la región y el criterio vacíos', async () => {

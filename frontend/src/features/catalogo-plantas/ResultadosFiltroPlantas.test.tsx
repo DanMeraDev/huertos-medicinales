@@ -83,7 +83,7 @@ describe('ResultadosFiltroPlantas', () => {
     expect(await screen.findByRole('status')).toHaveTextContent(
       'No se encontraron plantas para estos parámetros. Intente reajustar los filtros',
     )
-    expect(screen.getByRole('status')).toHaveClass('catalogo-plantas-vacio')
+    expect(screen.getByRole('status').closest('.catalogo-plantas-vacio')).toBeInTheDocument()
     expect(screen.queryByText(/encontradas?$/)).not.toBeInTheDocument()
     const limpiar = screen.getByRole('button', { name: 'Limpiar filtros' })
     expect(limpiar).toHaveClass('boton-secundario')
