@@ -6,4 +6,4 @@ export const obtenerPlantasPublicas = (pagina: number, tamano: number) =>
 
 export const buscarPlantas = (criterio: string) => apiGet<PlantaResumen[]>(`/publico/plantas/buscar?criterio=${encodeURIComponent(criterio)}`)
 
-export const obtenerDetallePlanta = (_id: number): Promise<PlantaDetalle> => Promise.reject(new Error('Sin implementar'))
+export const obtenerDetallePlanta = (id: number) => apiGet<PlantaDetalle>(`/publico/plantas/${id}`)
