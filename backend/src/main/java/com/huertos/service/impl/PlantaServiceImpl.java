@@ -1,12 +1,15 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.FiltrosPlantaRequest;
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
+import com.huertos.model.Planta;
 import com.huertos.repository.PlantaRepository;
+import com.huertos.repository.PlantaSpecification;
 import com.huertos.service.PlantaService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,8 @@ public class PlantaServiceImpl implements PlantaService {
     private static final int TAMANIO_MAXIMO = 100;
     private static final int LONGITUD_MINIMA_CRITERIO = 2;
     private static final int LONGITUD_MAXIMA_CRITERIO = 100;
+    private static final int ALTITUD_MINIMA = 0;
+    private static final int ALTITUD_MAXIMA = 6000;
     private static final Sort POR_NOMBRE_COMUN = Sort.by(Sort.Direction.ASC, "nombreComun", "id");
 
     private final PlantaRepository plantaRepository;
@@ -40,9 +45,17 @@ public class PlantaServiceImpl implements PlantaService {
     @Transactional(readOnly = true)
     public List<PlantaResumenResponse> buscarPorNombre(String criterio) {
         String criterioRecortado = validarCriterio(criterio);
-        return plantaRepository.buscarActivasPorNombre(criterioRecortado).stream()
-                .map(plantaMapper::aResumen)
-                .toList();
+        return aResumenes(plantaRepository.buscarActivasPorNombre(criterioRecortado));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PlantaResumenResponse> filtrarPlantas(FiltrosPlantaRequest filtros) {
+        validarAltitud(filtros.altitud());
+        if (filtros.criterio() != null) {
+            validarCriterio(filtros.criterio());
+        }
+        return aResumenes(plantaRepository.findAll(PlantaSpecification.filtrar(filtros), POR_NOMBRE_COMUN));
     }
 
     @Override
@@ -51,6 +64,18 @@ public class PlantaServiceImpl implements PlantaService {
         return plantaRepository.findByIdAndActivaTrue(id)
                 .map(plantaMapper::aDetalle)
                 .orElseThrow(() -> new RecursoNoEncontradoException("La ficha solicitada no está disponible"));
+    }
+
+    private List<PlantaResumenResponse> aResumenes(List<Planta> plantas) {
+        return plantas.stream()
+                .map(plantaMapper::aResumen)
+                .toList();
+    }
+
+    private void validarAltitud(Integer altitud) {
+        if (altitud != null && (altitud < ALTITUD_MINIMA || altitud > ALTITUD_MAXIMA)) {
+            throw new ReglaNegocioException("La altitud debe estar entre 0 y 6000 msnm");
+        }
     }
 
     private String validarCriterio(String criterio) {
