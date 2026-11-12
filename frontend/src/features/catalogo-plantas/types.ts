@@ -18,12 +18,35 @@ export type CategoriaUso =
 
 export type CualidadTermica = 'CALIENTE' | 'FRIA'
 
+export type CicloCultivo = 'CORTO' | 'LARGO'
+
+export type OrigenPlanta = 'NATIVA' | 'ENDEMICA' | 'INTRODUCIDA'
+
 export interface PlantaResumen {
   id: number
   nombreComun: string
   nombreKichwa: string | null
   nombreCientifico: string
   cualidadTermica: CualidadTermica
+  categorias: CategoriaUso[]
+  fotografiaUrl: string | null
+}
+
+export interface PlantaDetalle {
+  id: number
+  nombreComun: string
+  nombreKichwa: string | null
+  nombreCientifico: string
+  familiaBotanica: string
+  cualidadTermica: CualidadTermica
+  cicloCultivo: CicloCultivo | null
+  origen: OrigenPlanta | null
+  altitudMinMsnm: number | null
+  altitudMaxMsnm: number | null
+  regionesDistribucion: string | null
+  usosMedicinales: string
+  preparacionDosificacion: string | null
+  contraindicaciones: string | null
   categorias: CategoriaUso[]
   fotografiaUrl: string | null
 }
@@ -48,4 +71,15 @@ export const ETIQUETAS_CATEGORIA: Record<CategoriaUso, string> = {
   ESTIMULANTE: 'Estimulante',
   EXPECTORANTE: 'Expectorante',
   SEDANTE: 'Sedante',
+}
+
+export const ETIQUETAS_CICLO: Record<CicloCultivo, string> = {
+  CORTO: 'Corto',
+  LARGO: 'Largo',
+}
+
+export const ETIQUETAS_ORIGEN: Record<OrigenPlanta, string> = {
+  NATIVA: 'Nativa',
+  ENDEMICA: 'Endémica',
+  INTRODUCIDA: 'Introducida',
 }

@@ -1,0 +1,14 @@
+.detalle-planta-cargando {
+  color: var(--color-texto-secundario);
+}
+
+.detalle-planta-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+}
+
+.detalle-planta-volver {
+  text-decoration: none;
+}

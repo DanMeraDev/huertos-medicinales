@@ -5,6 +5,7 @@ import { CrearUsuarioPage } from './pages/CrearUsuarioPage'
 import { CalendarioLunarPage } from './pages/CalendarioLunarPage'
 import { CatalogoPlantasPage } from './pages/CatalogoPlantasPage'
 import { ConfiguracionHuertoPage } from './pages/ConfiguracionHuertoPage'
+import { DetallePlantaPage } from './pages/DetallePlantaPage'
 import { IngresoMaterialPage } from './pages/IngresoMaterialPage'
 import { InicioPage } from './pages/InicioPage'
 import { InventarioBodegaPage } from './pages/InventarioBodegaPage'
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/" element={<InicioPage />} />
         <Route path="/comunidades" element={<DirectorioComunidadesPage />} />
         <Route path="/catalogo-plantas" element={<CatalogoPlantasPage />} />
+        <Route path="/catalogo-plantas/:id" element={<DetallePlantaPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/cambiar-clave" element={<CambiarClavePage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />

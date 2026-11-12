@@ -1,0 +1,235 @@
+.ficha-tecnica {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+}
+
+.ficha-tecnica h2 {
+  font-size: var(--texto-lg);
+  line-height: var(--interlineado-apretado);
+}
+
+.ficha-tecnica-foto {
+  position: relative;
+}
+
+.ficha-tecnica-insignia {
+  position: absolute;
+  top: var(--espacio-3);
+  right: var(--espacio-3);
+}
+
+.ficha-tecnica-encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.ficha-tecnica-titulo {
+  font-size: var(--texto-2xl);
+  line-height: var(--interlineado-apretado);
+}
+
+.ficha-tecnica-kichwa,
+.ficha-tecnica-cientifico {
+  color: var(--color-texto-secundario);
+}
+
+.ficha-tecnica-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+}
+
+.ficha-tecnica-texto-largo {
+  white-space: pre-line;
+}
+
+.ficha-tecnica-contraindicaciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: var(--espacio-4);
+  border: var(--borde-ancho) solid var(--color-advertencia);
+  border-left-width: 4px;
+  border-radius: var(--radio-md);
+  background-color: var(--color-superficie-alt);
+}
+
+.ficha-tecnica-parametros {
+  display: flex;
+  gap: var(--espacio-3);
+}
+
+.ficha-tecnica-parametro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.ficha-tecnica-parametro dt {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto-secundario);
+  text-transform: uppercase;
+}
+
+.ficha-tecnica-parametro dd {
+  margin: 0;
+  font-weight: var(--peso-medio);
+}
+
+.ficha-tecnica-parametros-fila {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--espacio-1);
+}
+
+.ficha-tecnica-parametros-fila .ficha-tecnica-parametro {
+  flex: 0 0 auto;
+  min-width: 9rem;
+  padding: var(--espacio-3);
+  border-radius: var(--radio-md);
+  background-color: var(--color-superficie-alt);
+  scroll-snap-align: start;
+}
+
+.ficha-tecnica-movil .ficha-tecnica-portada {
+  position: relative;
+  margin: calc(-1 * var(--espacio-6)) calc(-1 * var(--espacio-6)) 0;
+}
+
+.ficha-tecnica-movil .ficha-tecnica-foto .planta-foto {
+  height: 240px;
+  aspect-ratio: auto;
+}
+
+.ficha-tecnica-volver-circular {
+  position: absolute;
+  top: var(--espacio-3);
+  left: var(--espacio-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radio-full);
+  font-size: var(--texto-2xl);
+  color: var(--color-texto);
+  text-decoration: none;
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra-md);
+}
+
+.ficha-tecnica-volver-circular:focus-visible {
+  outline: var(--borde-ancho) solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+.ficha-tecnica-volver-inferior {
+  position: sticky;
+  bottom: var(--espacio-4);
+  text-align: center;
+  text-decoration: none;
+  box-shadow: var(--sombra-lg);
+}
+
+.ficha-tecnica-escritorio {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+}
+
+.ficha-tecnica-barra {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.ficha-tecnica-volver {
+  text-decoration: none;
+}
+
+.ficha-tecnica-migas {
+  display: flex;
+  gap: var(--espacio-2);
+  list-style: none;
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+}
+
+.ficha-tecnica-migas a {
+  color: var(--color-primario);
+}
+
+.ficha-tecnica-separador {
+  margin-right: var(--espacio-2);
+}
+
+.ficha-tecnica-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  align-items: start;
+  gap: var(--espacio-8);
+}
+
+.ficha-tecnica-columna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+}
+
+.ficha-tecnica-escritorio .ficha-tecnica-foto {
+  overflow: hidden;
+  border-radius: var(--radio-lg);
+}
+
+.ficha-tecnica-escritorio .ficha-tecnica-foto .planta-foto {
+  transition: transform 300ms ease;
+}
+
+.ficha-tecnica-escritorio .ficha-tecnica-foto:hover .planta-foto {
+  transform: scale(1.05);
+}
+
+.ficha-tecnica-escritorio .ficha-tecnica-insignia {
+  top: var(--espacio-4);
+  right: var(--espacio-4);
+}
+
+.ficha-tecnica-escritorio .ficha-tecnica-insignia .insignia {
+  padding: var(--espacio-2) var(--espacio-4);
+  font-size: var(--texto-base);
+}
+
+.ficha-tecnica-cultivo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5);
+}
+
+.ficha-tecnica-parametros-cuadricula {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+}
+
+.ficha-tecnica-escritorio .ficha-tecnica-titulo {
+  font-size: var(--texto-4xl);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ficha-tecnica-escritorio .ficha-tecnica-foto .planta-foto {
+    transition: none;
+  }
+
+  .ficha-tecnica-escritorio .ficha-tecnica-foto:hover .planta-foto {
+    transform: none;
+  }
+}
