@@ -1,5 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { server } from '../../test/mocks/server'
 import { FormularioIngresoMaterial } from './FormularioIngresoMaterial'
 import type { PlantaResumen } from './types'
 
@@ -20,6 +22,25 @@ describe('FormularioIngresoMaterial', () => {
     expect(screen.getByLabelText(/lote u origen/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/fecha de ingreso/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Registrar Ingreso' })).toBeInTheDocument()
+  })
+
+  it('carga el catálogo de plantas desde la API pública si no se pasan plantasDisponibles', async () => {
+    render(<FormularioIngresoMaterial />)
+
+    expect(await screen.findByRole('option', { name: 'Manzanilla' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Menta' })).toBeInTheDocument()
+  })
+
+  it('muestra notificación de error cuando falla la carga del catálogo de plantas', async () => {
+    server.use(
+      http.get('*/api/publico/plantas', () => {
+        return HttpResponse.json({ detail: 'Error en servicio de catálogo' }, { status: 500 })
+      }),
+    )
+
+    render(<FormularioIngresoMaterial />)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Error en servicio de catálogo')
   })
 
   it('valida que la cantidad sea obligatoria y mayor a cero', async () => {
@@ -78,4 +99,3 @@ describe('FormularioIngresoMaterial', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('La planta seleccionada no existe en el catálogo')
   })
 })
-
