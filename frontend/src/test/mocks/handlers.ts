@@ -7,6 +7,7 @@ import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
 import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { miembrosHandlers } from '../../features/miembros/miembrosMockHandlers'
 import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
+import { saberesMockHandlers } from '../../features/saberes-ancestrales/saberesMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
 import type { DirectorioComunidadResponse } from '../../features/comunidades-publico/comunidadesPublicoApi'
 
@@ -53,6 +54,7 @@ export const handlers = [
   ...rankingMockHandlers,
   ...calendarioLunarMockHandlers,
   ...miembrosHandlers,
+  ...saberesMockHandlers,
 
   http.get('*/api/comunidades/mi-comunidad', () => HttpResponse.json(mockMiComunidad)),
 
