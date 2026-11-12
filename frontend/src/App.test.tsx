@@ -25,6 +25,12 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'Página no encontrada' })).toBeInTheDocument()
   })
 
+  it('muestra la página de mi comunidad en /mi-comunidad', async () => {
+    renderizarEn('/mi-comunidad')
+
+    expect(await screen.findByRole('heading', { name: 'Mi Comunidad' })).toBeInTheDocument()
+  })
+
   it('vuelve al inicio desde la página no encontrada', async () => {
     renderizarEn('/ruta-inexistente')
 
