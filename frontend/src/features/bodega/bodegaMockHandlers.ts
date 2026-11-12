@@ -46,5 +46,44 @@ export const bodegaMockHandlers = [
       { status: 201 },
     )
   }),
+
+  http.get('*/api/bodega/comunidades/:comunidadId/material-vegetal', ({ params }) => {
+    const comunidadId = Number(params.comunidadId)
+    if (comunidadId === 88) {
+      return HttpResponse.json(
+        { detail: 'No tiene permisos para consultar el inventario de otra comunidad' },
+        { status: 403 },
+      )
+    }
+    if (comunidadId === 99) {
+      return HttpResponse.json([])
+    }
+    return HttpResponse.json([
+      {
+        id: 1,
+        comunidadId,
+        plantaId: 1,
+        nombreComunPlanta: 'Manzanilla',
+        nombreCientificoPlanta: 'Matricaria chamomilla',
+        tipoMaterial: 'SEMILLAS',
+        cantidadDisponible: 250,
+        unidadMedida: 'GRAMOS',
+        loteOrigen: 'Lote A1',
+        fechaIngreso: '2025-05-10',
+      },
+      {
+        id: 2,
+        comunidadId,
+        plantaId: 2,
+        nombreComunPlanta: 'Menta',
+        nombreCientificoPlanta: 'Mentha spicata',
+        tipoMaterial: 'ESQUEJES',
+        cantidadDisponible: 15,
+        unidadMedida: 'UNIDADES',
+        loteOrigen: 'Donación vivero local',
+        fechaIngreso: '2025-05-11',
+      },
+    ])
+  }),
 ]
 
