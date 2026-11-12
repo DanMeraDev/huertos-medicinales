@@ -88,19 +88,27 @@ public class GamificacionServiceImpl implements GamificacionService {
             return;
         }
 
+        adjudicarInsigniasAParticipantes(actividad, saber);
+    }
+
+    private void adjudicarInsigniasAParticipantes(ActividadAncestralMsp actividad, SaberAncestral saber) {
         for (ActividadMspParticipante participante : actividad.getParticipantes()) {
             Miembro miembro = participante.getMiembro();
-            if (miembro == null || miembro.getId() == null) {
-                continue;
+            if (miembro != null && miembro.getId() != null) {
+                adjudicarInsigniaAMiembroSiNoLaPosee(miembro, actividad.getComunidad(), saber);
             }
+        }
+    }
 
-            boolean yaPosee = miembroInsigniaRepository.existsByMiembroIdAndSaberAncestralId(
-                    miembro.getId(), saber.getId());
+    private void adjudicarInsigniaAMiembroSiNoLaPosee(Miembro miembro, Comunidad comunidad, SaberAncestral saber) {
+        boolean yaPosee = miembroInsigniaRepository.existsByMiembroIdAndSaberAncestralId(
+                miembro.getId(), saber.getId());
 
-            if (!yaPosee) {
-                MiembroInsignia insignia = construirInsigniaOficial(miembro, actividad.getComunidad(), saber);
-                miembroInsigniaRepository.save(insignia);
-            }
+        if (!yaPosee) {
+            MiembroInsignia insignia = construirInsigniaOficial(miembro, comunidad, saber);
+            miembroInsigniaRepository.save(insignia);
+            log.info("Insignia oficial '{}' otorgada al miembro id {} por saber ancestral id {}",
+                    saber.getNombreInsigniaOficial(), miembro.getId(), saber.getId());
         }
     }
 
