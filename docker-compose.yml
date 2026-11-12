@@ -29,6 +29,14 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ADMIN_FECHA_NACIMIENTO: ${ADMIN_FECHA_NACIMIENTO:-}
+      MAIL_HOST: ${MAIL_HOST:-localhost}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-false}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
+      MAIL_FROM: ${MAIL_FROM:-no-responder@huertos.gob.ec}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:${WEB_PORT:-5173}}
     ports:
       - "${API_PORT:-8080}:8080"
     depends_on:

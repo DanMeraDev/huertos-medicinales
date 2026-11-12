@@ -38,7 +38,7 @@ class EmailServiceImplTest {
     void crearServicio() {
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage(Session.getInstance(new Properties())));
         servicio = new EmailServiceImpl(mailSender,
-                new CorreoProperties("no-responder@huertos.gob.ec", "https://huertos.gob.ec/login"));
+                new CorreoProperties("no-responder@huertos.gob.ec", "https://huertos.gob.ec"));
     }
 
     @Test
@@ -66,7 +66,8 @@ class EmailServiceImplTest {
         assertThat(enviado.getSubject())
                 .isEqualTo("Notificación sobre tu solicitud de huerto medicinal - Ministerio de Salud Pública");
         assertThat(cuerpo(enviado))
-                .contains("La ubicación no tiene &lt;acceso&gt; seguro a fuente de agua.", "Huerto Comunitario Allpa Viva")
+                .contains("La ubicación no tiene &lt;acceso&gt; seguro a fuente de agua.", "Huerto Comunitario Allpa Viva",
+                        "href=\"https://huertos.gob.ec\"")
                 .doesNotContain("<acceso>");
     }
 

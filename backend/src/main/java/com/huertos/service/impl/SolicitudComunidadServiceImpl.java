@@ -1,8 +1,10 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.CredencialesEmailDto;
 import com.huertos.dto.CrearSolicitudComunidadRequest;
 import com.huertos.dto.CrearUsuarioRequest;
 import com.huertos.dto.RechazarSolicitudRequest;
+import com.huertos.dto.RechazoSolicitudEmailDto;
 import com.huertos.dto.ResolucionSolicitudResponse;
 import com.huertos.dto.SolicitudComunidadResponse;
 import com.huertos.dto.SolicitudDetalleCompletoResponse;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +55,7 @@ public class SolicitudComunidadServiceImpl implements SolicitudComunidadService 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
     private final ComunidadService comunidadService;
+    private final ApplicationEventPublisher eventos;
 
     @Override
     public SolicitudComunidadResponse registrarSolicitud(CrearSolicitudComunidadRequest request) {
@@ -81,9 +85,12 @@ public class SolicitudComunidadServiceImpl implements SolicitudComunidadService 
     @Override
     public ResolucionSolicitudResponse aprobarSolicitud(Long id, String correoTecnico) {
         SolicitudComunidad solicitud = buscarPendiente(id);
-        Usuario responsable = usuarioService.crearUsuarioInterno(cuentaDelResponsable(solicitud));
+        String claveTemporal = generarClaveTemporal();
+        Usuario responsable = usuarioService.crearUsuarioInterno(cuentaDelResponsable(solicitud, claveTemporal));
         Long comunidadId = comunidadService.registrarComunidadDesdeSolicitud(solicitud, responsable).id();
         resolver(solicitud, EstadoSolicitud.APROBADA, correoTecnico);
+        eventos.publishEvent(new CredencialesEmailDto(solicitud.getCorreoSolicitante(),
+                solicitud.getNombreSolicitante(), solicitud.getNombreComunidad(), claveTemporal));
         return new ResolucionSolicitudResponse(solicitud.getId(), EstadoSolicitud.APROBADA,
                 "Solicitud aprobada exitosamente. Comunidad y cuenta de usuario creadas.", comunidadId,
                 responsable.getId());
@@ -95,6 +102,8 @@ public class SolicitudComunidadServiceImpl implements SolicitudComunidadService 
         SolicitudComunidad solicitud = buscarPendiente(id);
         solicitud.setMotivoRechazo(request.motivoRechazo());
         resolver(solicitud, EstadoSolicitud.RECHAZADA, correoTecnico);
+        eventos.publishEvent(new RechazoSolicitudEmailDto(solicitud.getCorreoSolicitante(),
+                solicitud.getNombreSolicitante(), solicitud.getNombreComunidad(), request.motivoRechazo()));
         return new ResolucionSolicitudResponse(solicitud.getId(), EstadoSolicitud.RECHAZADA,
                 "Solicitud rechazada. Se registró el motivo del rechazo.", null, null);
     }
@@ -120,10 +129,10 @@ public class SolicitudComunidadServiceImpl implements SolicitudComunidadService 
         solicitudRepository.save(solicitud);
     }
 
-    private CrearUsuarioRequest cuentaDelResponsable(SolicitudComunidad solicitud) {
+    private CrearUsuarioRequest cuentaDelResponsable(SolicitudComunidad solicitud, String claveTemporal) {
         return new CrearUsuarioRequest(solicitud.getNombreSolicitante(), solicitud.getCedulaSolicitante(),
                 solicitud.getFechaNacimientoSolicitante(), solicitud.getGeneroSolicitante(),
-                solicitud.getCorreoSolicitante(), solicitud.getCelularSolicitante(), generarClaveTemporal(),
+                solicitud.getCorreoSolicitante(), solicitud.getCelularSolicitante(), claveTemporal,
                 Rol.RESPONSABLE_COMUNIDAD);
     }
 
