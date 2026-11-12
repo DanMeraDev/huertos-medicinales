@@ -21,7 +21,7 @@ export const mockMiembroDetalle: MiembroDetalleResponse = {
 export const miembrosHandlers = [
   http.post('*/api/comunidades/mi-comunidad/miembros', async ({ request }) => {
     const datos = (await request.json()) as RegistrarMiembroRequest
-    if (datos.cedula === '1710034069') {
+    if (datos.cedula === '1712345675') {
       return HttpResponse.json(
         { detail: 'El voluntario con la cédula ingresada ya se encuentra registrado y activo en esta comunidad' },
         { status: 409 },

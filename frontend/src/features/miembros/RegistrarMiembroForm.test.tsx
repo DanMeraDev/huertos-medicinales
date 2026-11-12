@@ -112,7 +112,7 @@ describe('RegistrarMiembroForm', () => {
     const user = userEvent.setup()
     render(<RegistrarMiembroForm />)
 
-    await user.type(screen.getByLabelText(/cédula de identidad/i), '1710034069')
+    await user.type(screen.getByLabelText(/cédula de identidad/i), '1712345675')
     await user.type(screen.getByLabelText(/nombres/i), 'Segundo')
     await user.type(screen.getByLabelText(/apellidos/i), 'Quishpe')
     await user.type(screen.getByLabelText(/fecha de nacimiento/i), '2000-01-15')
