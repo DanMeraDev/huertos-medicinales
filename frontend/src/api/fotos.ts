@@ -1,3 +1,3 @@
-export function urlFoto(_ruta: string | null): string | null {
-  return null
+export function urlFoto(ruta: string | null): string | null {
+  return ruta ? `/api/publico/fotos/${ruta}` : null
 }
