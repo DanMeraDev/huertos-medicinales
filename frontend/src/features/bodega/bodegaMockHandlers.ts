@@ -1,7 +1,50 @@
 import { http, HttpResponse } from 'msw'
-import type { RegistrarMaterialVegetalRequest } from './types'
+import type { MaterialVegetalResponse, RegistrarMaterialVegetalRequest } from './types'
+
+export const mockInventarioBodega: MaterialVegetalResponse[] = [
+  {
+    id: 1,
+    comunidadId: 1,
+    plantaId: 1,
+    nombreComunPlanta: 'Manzanilla',
+    nombreCientificoPlanta: 'Matricaria chamomilla',
+    tipoMaterial: 'SEMILLAS',
+    cantidadDisponible: 500,
+    unidadMedida: 'GRAMOS',
+    loteOrigen: 'Lote MZ-2026-A',
+    fechaIngreso: '2026-11-10',
+  },
+  {
+    id: 2,
+    comunidadId: 1,
+    plantaId: 2,
+    nombreComunPlanta: 'Menta',
+    nombreCientificoPlanta: 'Mentha spicata',
+    tipoMaterial: 'ESQUEJES',
+    cantidadDisponible: 25,
+    unidadMedida: 'UNIDADES',
+    loteOrigen: 'Donación vivero local',
+    fechaIngreso: '2026-11-11',
+  },
+]
 
 export const bodegaMockHandlers = [
+  http.get('*/api/bodega/comunidades/:comunidadId/material-vegetal', ({ params }) => {
+    const comunidadId = Number(params.comunidadId)
+    if (comunidadId === 999) {
+      return HttpResponse.json(
+        { detail: 'No tiene permisos para consultar el inventario de otra comunidad' },
+        { status: 403 },
+      )
+    }
+    if (comunidadId === 2) {
+      return HttpResponse.json([])
+    }
+    return HttpResponse.json(
+      mockInventarioBodega.map((item) => ({ ...item, comunidadId })),
+    )
+  }),
+
   http.post('*/api/bodega/material-vegetal', async ({ request }) => {
     const cuerpo = (await request.json()) as RegistrarMaterialVegetalRequest
 

@@ -2,6 +2,7 @@ package com.huertos.mapper;
 
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.model.BodegaMaterialVegetal;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -13,4 +14,6 @@ public interface BodegaMapper {
     @Mapping(source = "planta.nombreComun", target = "nombreComunPlanta")
     @Mapping(source = "planta.nombreCientifico", target = "nombreCientificoPlanta")
     MaterialVegetalResponse toMaterialVegetalResponse(BodegaMaterialVegetal entidad);
+
+    List<MaterialVegetalResponse> toListMaterialVegetalResponse(List<BodegaMaterialVegetal> lista);
 }

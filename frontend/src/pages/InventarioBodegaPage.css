@@ -1,0 +1,72 @@
+.pagina-inventario-bodega {
+  width: 100%;
+  max-width: var(--ancho-maximo, 1200px);
+  margin: 0 auto;
+  padding: var(--espacio-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  box-sizing: border-box;
+}
+
+.inventario-bodega-cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.inventario-bodega-titulo {
+  font-size: var(--texto-2xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-texto);
+  margin: 0;
+}
+
+.inventario-bodega-descripcion {
+  font-size: var(--texto-base);
+  color: var(--color-texto-secundario);
+  margin: 0;
+}
+
+.inventario-comunidad-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3) var(--espacio-4);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho, 1px) solid var(--color-borde);
+  border-radius: var(--radio-md);
+}
+
+.inventario-comunidad-etiqueta {
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
+}
+
+.inventario-comunidad-nombre {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-primario);
+}
+
+.inventario-selector-comunidad {
+  width: 100%;
+  max-width: 480px;
+}
+
+.inventario-sin-seleccion {
+  padding: var(--espacio-6) var(--espacio-4);
+  text-align: center;
+  color: var(--color-texto-secundario);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho, 1px) solid var(--color-borde);
+  border-radius: var(--radio-md);
+  font-size: var(--texto-base);
+}
+
+.inventario-cargando-pagina {
+  padding: var(--espacio-6) var(--espacio-4);
+  text-align: center;
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-base);
+}

@@ -4,6 +4,7 @@ import { CalendarioLunarPage } from './pages/CalendarioLunarPage'
 import { CatalogoPlantasPage } from './pages/CatalogoPlantasPage'
 import { IngresoMaterialPage } from './pages/IngresoMaterialPage'
 import { InicioPage } from './pages/InicioPage'
+import { InventarioBodegaPage } from './pages/InventarioBodegaPage'
 import { DirectorioComunidadesPage } from './pages/DirectorioComunidadesPage'
 import { LoginPage } from './pages/LoginPage'
 import { MiComunidadPage } from './pages/MiComunidadPage'
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/calendario-lunar" element={<CalendarioLunarPage />} />
         <Route path="/bodega" element={<Navigate to="/bodega/ingreso-material" replace />} />
         <Route path="/bodega/ingreso-material" element={<IngresoMaterialPage />} />
+        <Route path="/bodega/inventario" element={<InventarioBodegaPage />} />
         <Route path="/saberes-ancestrales" element={<SaberesAncestralesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>

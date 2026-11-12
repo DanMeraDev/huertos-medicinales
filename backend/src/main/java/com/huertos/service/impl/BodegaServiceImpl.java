@@ -11,7 +11,10 @@ import com.huertos.repository.BodegaMaterialVegetalRepository;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.PlantaRepository;
 import com.huertos.service.BodegaService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,5 +56,36 @@ public class BodegaServiceImpl implements BodegaService {
         return comunidadRepository.findByResponsableCorreo(correo)
                 .map(Comunidad::getId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe una comunidad asociada al usuario"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MaterialVegetalResponse> listarMaterialPorComunidad(Long comunidadId) {
+        List<BodegaMaterialVegetal> materiales = bodegaRepository
+                .findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(comunidadId);
+        return bodegaMapper.toListMaterialVegetalResponse(materiales);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void validarAccesoComunidad(Long comunidadId, Authentication authentication) {
+        if (authentication == null) {
+            throw new AccessDeniedException("No autenticado");
+        }
+        boolean esTecnico = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_TECNICO_MSP"));
+        validarAccesoComunidad(comunidadId, authentication.getName(), esTecnico);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void validarAccesoComunidad(Long comunidadId, String correo, boolean esTecnico) {
+        if (esTecnico) {
+            return;
+        }
+        Long comunidadAsignadaId = obtenerComunidadIdPorCorreo(correo);
+        if (!comunidadAsignadaId.equals(comunidadId)) {
+            throw new AccessDeniedException("No tiene permisos para consultar el inventario de otra comunidad");
+        }
     }
 }
