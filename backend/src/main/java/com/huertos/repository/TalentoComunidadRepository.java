@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TalentoComunidadRepository extends JpaRepository<TalentoComunidad, Long> {
 
+    List<TalentoComunidad> findByActividadComunidadIdAndActivoTrue(Long actividadComunidadId);
+
     List<TalentoComunidad> findByComunidadIdAndActivoTrue(Long comunidadId);
 
     boolean existsByComunidadIdAndNombreInsigniaAndActivoTrue(Long comunidadId, String nombreInsignia);

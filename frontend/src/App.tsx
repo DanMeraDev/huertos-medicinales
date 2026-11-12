@@ -4,6 +4,7 @@ import { CambiarClavePage } from './pages/CambiarClavePage'
 import { CrearUsuarioPage } from './pages/CrearUsuarioPage'
 import { CalendarioLunarPage } from './pages/CalendarioLunarPage'
 import { AdminCrearPlantaPage } from './pages/AdminCrearPlantaPage'
+import { AdminEditarPlantaPage } from './pages/AdminEditarPlantaPage'
 import { CatalogoPlantasPage } from './pages/CatalogoPlantasPage'
 import { ConfiguracionHuertoPage } from './pages/ConfiguracionHuertoPage'
 import { DetallePlantaPage } from './pages/DetallePlantaPage'
@@ -25,7 +26,9 @@ import { CatalogoActividadesPage } from './pages/CatalogoActividadesPage'
 import { TalentosComunidadPage } from './pages/TalentosComunidadPage'
 import { RegistroSiembraPage } from './pages/RegistroSiembraPage'
 import { NuevaActividadAncestralPage } from './pages/NuevaActividadAncestralPage'
+import { RegistroLaborMiembroPage } from './pages/RegistroLaborMiembroPage'
 import { SubsanarEvidenciaPage } from './pages/SubsanarEvidenciaPage'
+
 export default function App() {
   return (
     <Layout>
@@ -35,6 +38,7 @@ export default function App() {
         <Route path="/catalogo-plantas" element={<CatalogoPlantasPage />} />
         <Route path="/catalogo-plantas/:id" element={<DetallePlantaPage />} />
         <Route path="/admin/plantas/nueva" element={<AdminCrearPlantaPage />} />
+        <Route path="/admin/plantas/:id/editar" element={<AdminEditarPlantaPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/cambiar-clave" element={<CambiarClavePage />} />
         <Route path="/mi-comunidad" element={<MiComunidadPage />} />
@@ -54,6 +58,7 @@ export default function App() {
         <Route path="/huerto/siembras/nueva" element={<RegistroSiembraPage />} />
         <Route path="/comunidad/actividades-catalogo" element={<CatalogoActividadesPage />} />
         <Route path="/comunidad/talentos" element={<TalentosComunidadPage />} />
+        <Route path="/comunidad/actividades-miembros/nueva" element={<RegistroLaborMiembroPage />} />
         <Route path="/actividades-ancestrales/nueva" element={<NuevaActividadAncestralPage />} />
         <Route path="/actividades-ancestrales/:id/subsanar" element={<SubsanarEvidenciaPage />} />
         <Route path="*" element={<NoEncontradaPage />} />

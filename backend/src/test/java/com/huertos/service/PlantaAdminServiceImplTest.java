@@ -9,9 +9,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.exception.ConflictoException;
+import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.model.CategoriaUso;
@@ -19,12 +21,16 @@ import com.huertos.model.CicloCultivo;
 import com.huertos.model.CualidadTermica;
 import com.huertos.model.OrigenPlanta;
 import com.huertos.model.Planta;
+import com.huertos.model.Usuario;
 import com.huertos.repository.PlantaRepository;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.impl.PlantaAdminServiceImpl;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,9 +46,14 @@ class PlantaAdminServiceImplTest {
 
     private static final Instant AHORA = Instant.parse("2026-11-12T15:30:00Z");
     private static final LocalDateTime FECHA_DEL_RELOJ = LocalDateTime.ofInstant(AHORA, ZoneOffset.UTC);
+    private static final LocalDateTime FECHA_DE_CREACION = LocalDateTime.of(2026, 1, 10, 8, 0);
+    private static final String CORREO_TECNICO = "tecnico.msp@huertos.gob.ec";
 
     @Mock
     private PlantaRepository plantaRepository;
+
+    @Mock
+    private UsuarioRepository usuarioRepository;
 
     @Captor
     private ArgumentCaptor<Planta> plantaGuardada;
@@ -51,7 +62,7 @@ class PlantaAdminServiceImplTest {
 
     @BeforeEach
     void crearServicio() {
-        servicio = new PlantaAdminServiceImpl(plantaRepository, Mappers.getMapper(PlantaMapper.class),
+        servicio = new PlantaAdminServiceImpl(plantaRepository, usuarioRepository, Mappers.getMapper(PlantaMapper.class),
                 Clock.fixed(AHORA, ZoneOffset.UTC));
     }
 
@@ -184,6 +195,203 @@ class PlantaAdminServiceImplTest {
                 Set.of(CategoriaUso.SEDANTE), null));
 
         verify(plantaRepository, times(2)).save(any(Planta.class));
+    }
+
+    @Test
+    void actualizaTodosLosCamposEditablesDeLaPlanta() {
+        prepararActualizacion();
+
+        servicio.actualizarPlanta(7L, solicitudDeActualizacion(), CORREO_TECNICO);
+
+        verify(plantaRepository).save(plantaGuardada.capture());
+        Planta planta = plantaGuardada.getValue();
+        assertThat(planta.getNombreComun()).isEqualTo("Hierba editada");
+        assertThat(planta.getNombreKichwa()).isEqualTo("Yura musuk");
+        assertThat(planta.getNombreCientifico()).isEqualTo("Herba editata");
+        assertThat(planta.getFamiliaBotanica()).isEqualTo("Editaceae");
+        assertThat(planta.getCualidadTermica()).isEqualTo(CualidadTermica.CALIENTE);
+        assertThat(planta.getCicloCultivo()).isEqualTo(CicloCultivo.LARGO);
+        assertThat(planta.getOrigen()).isEqualTo(OrigenPlanta.ENDEMICA);
+        assertThat(planta.getAltitudMinMsnm()).isEqualTo(1000);
+        assertThat(planta.getAltitudMaxMsnm()).isEqualTo(1800);
+        assertThat(planta.getRegionesDistribucion()).isEqualTo("Amazonía");
+        assertThat(planta.getUsosMedicinales()).isEqualTo("Calma la tos");
+        assertThat(planta.getPreparacionDosificacion()).isEqualTo("Jarabe de 10 ml");
+        assertThat(planta.getContraindicaciones()).isEqualTo("No usar en niños");
+        assertThat(planta.getFotografiaUrl()).isEqualTo("plantas/nueva.jpg");
+    }
+
+    @Test
+    void reemplazaLasCategoriasDeLaPlanta() {
+        prepararActualizacion();
+
+        servicio.actualizarPlanta(7L, solicitudDeActualizacion(), CORREO_TECNICO);
+
+        verify(plantaRepository).save(plantaGuardada.capture());
+        assertThat(plantaGuardada.getValue().getCategorias())
+                .containsExactlyInAnyOrder(CategoriaUso.EXPECTORANTE, CategoriaUso.ANTIINFLAMATORIA);
+    }
+
+    @Test
+    void guardaElTecnicoQueActualizaYLaFechaDelReloj() {
+        Usuario tecnico = prepararActualizacion();
+
+        servicio.actualizarPlanta(7L, solicitudDeActualizacion(), CORREO_TECNICO);
+
+        verify(plantaRepository).save(plantaGuardada.capture());
+        assertThat(plantaGuardada.getValue().getActualizadoPor()).isSameAs(tecnico);
+        assertThat(plantaGuardada.getValue().getActualizadoEn()).isEqualTo(FECHA_DEL_RELOJ);
+    }
+
+    @Test
+    void noCambiaElIdLaFechaDeCreacionNiElEstadoActivo() {
+        prepararActualizacion();
+
+        servicio.actualizarPlanta(7L, solicitudDeActualizacion(), CORREO_TECNICO);
+
+        verify(plantaRepository).save(plantaGuardada.capture());
+        Planta planta = plantaGuardada.getValue();
+        assertThat(planta.getId()).isEqualTo(7L);
+        assertThat(planta.getCreadoEn()).isEqualTo(FECHA_DE_CREACION);
+        assertThat(planta.isActiva()).isTrue();
+        assertThat(planta.getMotivoBaja()).isNull();
+        assertThat(planta.getFechaBaja()).isNull();
+        assertThat(planta.getDadoDeBajaPor()).isNull();
+    }
+
+    @Test
+    void devuelveLaFichaActualizada() {
+        prepararActualizacion();
+
+        PlantaDetalleResponse ficha = servicio.actualizarPlanta(7L, solicitudDeActualizacion(), CORREO_TECNICO);
+
+        assertThat(ficha).isEqualTo(new PlantaDetalleResponse(7L, "Hierba editada", "Yura musuk", "Herba editata",
+                "Editaceae", CualidadTermica.CALIENTE, CicloCultivo.LARGO, OrigenPlanta.ENDEMICA, 1000, 1800,
+                "Amazonía", "Calma la tos", "Jarabe de 10 ml", "No usar en niños",
+                Set.of(CategoriaUso.EXPECTORANTE, CategoriaUso.ANTIINFLAMATORIA), "plantas/nueva.jpg"));
+    }
+
+    @Test
+    void recortaLosEspaciosYGuardaComoNuloLosOpcionalesVaciosAlActualizar() {
+        prepararActualizacion();
+        ActualizarPlantaRequest solicitud = new ActualizarPlantaRequest("  Hierba editada ", "   ",
+                " Herba editata  ", " Editaceae ", CualidadTermica.FRIA, null, null, null, null, "",
+                "  Calma la tos ", " ", "", Set.of(CategoriaUso.SEDANTE), "  ");
+
+        servicio.actualizarPlanta(7L, solicitud, CORREO_TECNICO);
+
+        verify(plantaRepository).existsByNombreCientificoIgnoreCaseAndIdNot("Herba editata", 7L);
+        verify(plantaRepository).save(plantaGuardada.capture());
+        Planta planta = plantaGuardada.getValue();
+        assertThat(planta.getNombreComun()).isEqualTo("Hierba editada");
+        assertThat(planta.getNombreCientifico()).isEqualTo("Herba editata");
+        assertThat(planta.getFamiliaBotanica()).isEqualTo("Editaceae");
+        assertThat(planta.getUsosMedicinales()).isEqualTo("Calma la tos");
+        assertThat(planta.getNombreKichwa()).isNull();
+        assertThat(planta.getRegionesDistribucion()).isNull();
+        assertThat(planta.getPreparacionDosificacion()).isNull();
+        assertThat(planta.getContraindicaciones()).isNull();
+        assertThat(planta.getFotografiaUrl()).isNull();
+    }
+
+    @Test
+    void rechazaActualizarUnaPlantaInexistenteODadaDeBaja() {
+        when(plantaRepository.findByIdAndActivaTrue(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> servicio.actualizarPlanta(99L, solicitudDeActualizacion(), CORREO_TECNICO))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("La planta no existe o fue dada de baja");
+        verify(plantaRepository, never()).save(any());
+    }
+
+    @Test
+    void rechazaUnNombreCientificoQuePerteneceAOtraPlanta() {
+        when(plantaRepository.findByIdAndActivaTrue(7L)).thenReturn(Optional.of(plantaExistente()));
+        when(plantaRepository.existsByNombreCientificoIgnoreCaseAndIdNot("Herba editata", 7L)).thenReturn(true);
+
+        assertThatThrownBy(() -> servicio.actualizarPlanta(7L, solicitudDeActualizacion(), CORREO_TECNICO))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("Nombre científico ya registrado en otra planta");
+        verify(plantaRepository, never()).save(any());
+    }
+
+    @Test
+    void rechazaElNombreCientificoDeOtraPlantaEscritoConOtrasMayusculas() {
+        when(plantaRepository.findByIdAndActivaTrue(7L)).thenReturn(Optional.of(plantaExistente()));
+        when(plantaRepository.existsByNombreCientificoIgnoreCaseAndIdNot("HERBA EDITATA", 7L)).thenReturn(true);
+        ActualizarPlantaRequest solicitud = new ActualizarPlantaRequest("Hierba editada", null, "HERBA EDITATA",
+                "Editaceae", CualidadTermica.FRIA, null, null, null, null, null, "Calma la tos", null, null,
+                Set.of(CategoriaUso.SEDANTE), null);
+
+        assertThatThrownBy(() -> servicio.actualizarPlanta(7L, solicitud, CORREO_TECNICO))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("Nombre científico ya registrado en otra planta");
+        verify(plantaRepository, never()).save(any());
+    }
+
+    @Test
+    void permiteCambiarSoloLasMayusculasDelNombreCientificoPropio() {
+        prepararActualizacion();
+        ActualizarPlantaRequest solicitud = new ActualizarPlantaRequest("Hierba de prueba", null, "HERBA FICTICIA",
+                "Ficticiaceae", CualidadTermica.FRIA, null, null, null, null, null, "Alivia el dolor", null, null,
+                Set.of(CategoriaUso.SEDANTE), null);
+
+        servicio.actualizarPlanta(7L, solicitud, CORREO_TECNICO);
+
+        verify(plantaRepository).existsByNombreCientificoIgnoreCaseAndIdNot("HERBA FICTICIA", 7L);
+        verify(plantaRepository).save(plantaGuardada.capture());
+        assertThat(plantaGuardada.getValue().getNombreCientifico()).isEqualTo("HERBA FICTICIA");
+    }
+
+    @Test
+    void rechazaActualizarConUnaAltitudMinimaMayorQueLaMaxima() {
+        ActualizarPlantaRequest solicitud = new ActualizarPlantaRequest("Hierba editada", null, "Herba editata",
+                "Editaceae", CualidadTermica.FRIA, null, null, 3500, 2000, null, "Calma la tos", null, null,
+                Set.of(CategoriaUso.SEDANTE), null);
+
+        assertThatThrownBy(() -> servicio.actualizarPlanta(7L, solicitud, CORREO_TECNICO))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("La altitud mínima no puede ser mayor que la altitud máxima");
+        verifyNoInteractions(plantaRepository, usuarioRepository);
+    }
+
+    private Usuario prepararActualizacion() {
+        Usuario tecnico = new Usuario();
+        tecnico.setId(3L);
+        tecnico.setCorreo(CORREO_TECNICO);
+        when(plantaRepository.findByIdAndActivaTrue(7L)).thenReturn(Optional.of(plantaExistente()));
+        when(usuarioRepository.findByCorreo(CORREO_TECNICO)).thenReturn(Optional.of(tecnico));
+        when(plantaRepository.save(any(Planta.class))).thenAnswer(invocacion -> invocacion.getArgument(0));
+        return tecnico;
+    }
+
+    private static Planta plantaExistente() {
+        Planta planta = new Planta();
+        planta.setId(7L);
+        planta.setNombreComun("Hierba de prueba");
+        planta.setNombreKichwa("Yura kiwa");
+        planta.setNombreCientifico("Herba ficticia");
+        planta.setFamiliaBotanica("Ficticiaceae");
+        planta.setCualidadTermica(CualidadTermica.FRIA);
+        planta.setCicloCultivo(CicloCultivo.CORTO);
+        planta.setOrigen(OrigenPlanta.NATIVA);
+        planta.setAltitudMinMsnm(2000);
+        planta.setAltitudMaxMsnm(3200);
+        planta.setRegionesDistribucion("Costa, Sierra");
+        planta.setUsosMedicinales("Alivia el dolor de estómago");
+        planta.setCategorias(new HashSet<>(Set.of(CategoriaUso.SEDANTE, CategoriaUso.DIURETICA)));
+        planta.setFotografiaUrl("plantas/anterior.jpg");
+        planta.setActiva(true);
+        planta.setCreadoEn(FECHA_DE_CREACION);
+        planta.setActualizadoEn(FECHA_DE_CREACION);
+        return planta;
+    }
+
+    private static ActualizarPlantaRequest solicitudDeActualizacion() {
+        return new ActualizarPlantaRequest("Hierba editada", "Yura musuk", "Herba editata", "Editaceae",
+                CualidadTermica.CALIENTE, CicloCultivo.LARGO, OrigenPlanta.ENDEMICA, 1000, 1800, "Amazonía",
+                "Calma la tos", "Jarabe de 10 ml", "No usar en niños",
+                Set.of(CategoriaUso.EXPECTORANTE, CategoriaUso.ANTIINFLAMATORIA), "plantas/nueva.jpg");
     }
 
     private static CrearPlantaRequest solicitudCompleta() {

@@ -1,6 +1,11 @@
-import { ApiError, apiPost, apiPostFormData } from '../../api/client'
+import { ApiError, apiGet, apiPost, apiPostFormData, apiPut } from '../../api/client'
 import { MENSAJE_FORMATO_NO_ADMITIDO, MENSAJE_IMAGEN_DEMASIADO_GRANDE } from '../../components/CargadorImagen'
-import type { CrearPlantaRequest, FotografiaSubidaResponse, PlantaDetalleResponse } from './types'
+import type {
+  ActualizarPlantaRequest,
+  CrearPlantaRequest,
+  FotografiaSubidaResponse,
+  PlantaDetalleResponse,
+} from './types'
 
 const MENSAJE_ERROR_SUBIDA = 'No se pudo subir la fotografía. Intente nuevamente'
 
@@ -18,4 +23,12 @@ export function mensajeErrorFotografia(error: unknown) {
 
 export function registrarPlanta(datos: CrearPlantaRequest) {
   return apiPost<PlantaDetalleResponse>('/msp/plantas', datos)
+}
+
+export function obtenerPlantaParaEditar(id: number) {
+  return apiGet<PlantaDetalleResponse>(`/publico/plantas/${id}`)
+}
+
+export function actualizarPlanta(id: number, datos: ActualizarPlantaRequest) {
+  return apiPut<PlantaDetalleResponse>(`/msp/plantas/${id}`, datos)
 }

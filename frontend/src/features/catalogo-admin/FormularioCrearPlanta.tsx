@@ -1,10 +1,7 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
-import { Link, useNavigate } from 'react-router'
-import { ApiError } from '../../api/client'
+import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router'
 import { Boton } from '../../components/Boton'
 import { CargadorImagen } from '../../components/CargadorImagen'
-import { Notificacion } from '../../components/Notificacion'
-import { Tarjeta } from '../../components/Tarjeta'
 import {
   CampoContraindicaciones,
   CampoPreparacion,
@@ -13,7 +10,17 @@ import {
   CamposUsos,
   type CamposPlantaProps,
 } from './CamposPlanta'
-import { mensajeErrorFotografia, registrarPlanta, subirFotografiaPlanta } from './plantasAdminApi'
+import {
+  AVISO_SESION,
+  CAMPOS_POR_SECCION,
+  enviarConFotografia,
+  erroresDelServidor,
+  esErrorDeEstado,
+  seccionConError,
+  type Aviso,
+} from './envioPlanta'
+import { AvisoFormulario, TarjetaFormulario } from './PartesFormularioPlanta'
+import { registrarPlanta } from './plantasAdminApi'
 import type { CualidadTermica } from './types'
 import { useEsEscritorio } from './useEsEscritorio'
 import {
@@ -29,60 +36,12 @@ import './FormularioCrearPlanta.css'
 const RUTA_CATALOGO = '/catalogo-plantas'
 const MENSAJE_EXITO = 'Planta registrada exitosamente'
 const MENSAJE_DUPLICADO = 'El nombre científico ya existe en el catálogo'
-const MENSAJE_SESION = 'Necesitas iniciar sesión como Técnico MSP'
 const MENSAJE_ERROR_REGISTRO = 'No se pudo registrar la planta. Intente nuevamente'
 
-const PASOS: { titulo: string; campos: (keyof ErroresPlanta)[] }[] = [
-  {
-    titulo: 'Identificación y fotografía',
-    campos: ['nombreComun', 'nombreCientifico', 'nombreKichwa', 'familiaBotanica', 'fotografiaUrl'],
-  },
-  {
-    titulo: 'Parámetros agronómicos',
-    campos: ['cualidadTermica', 'cicloCultivo', 'origen', 'altitudMinMsnm', 'altitudMaxMsnm', 'rangoAltitud',
-      'regionesDistribucion'],
-  },
-  {
-    titulo: 'Usos y dosificación',
-    campos: ['categorias', 'usosMedicinales', 'preparacionDosificacion', 'contraindicaciones'],
-  },
-]
-
-interface Aviso {
-  mensaje: string
-  conEnlaceLogin: boolean
-}
-
-function erroresDelServidor(error: ApiError): ErroresPlanta | null {
-  if (error.status === 409) return { nombreCientifico: MENSAJE_DUPLICADO }
-  if (error.status === 400) return error.errores ?? { rangoAltitud: error.detalle ?? error.message }
-  return null
-}
+const TITULOS_PASOS = ['Identificación y fotografía', 'Parámetros agronómicos', 'Usos y dosificación']
 
 function avisoDeError(error: unknown): Aviso {
-  const sinPermiso = error instanceof ApiError && (error.status === 401 || error.status === 403)
-  return sinPermiso
-    ? { mensaje: MENSAJE_SESION, conEnlaceLogin: true }
-    : { mensaje: MENSAJE_ERROR_REGISTRO, conEnlaceLogin: false }
-}
-
-function AvisoFormulario({ aviso }: { aviso: Aviso | null }) {
-  if (!aviso) return null
-  return (
-    <div className="crear-planta-aviso">
-      <Notificacion tipo="error" mensaje={aviso.mensaje} />
-      {aviso.conEnlaceLogin && <Link to="/login">Iniciar sesión</Link>}
-    </div>
-  )
-}
-
-function TarjetaFormulario({ titulo, children }: { titulo: string; children: ReactNode }) {
-  return (
-    <Tarjeta className="crear-planta-tarjeta">
-      <h2 className="crear-planta-tarjeta-titulo">{titulo}</h2>
-      {children}
-    </Tarjeta>
-  )
+  return esErrorDeEstado(error, 401, 403) ? AVISO_SESION : { mensaje: MENSAJE_ERROR_REGISTRO, enlace: null }
 }
 
 export function FormularioCrearPlanta() {
@@ -94,7 +53,7 @@ export function FormularioCrearPlanta() {
   const [aviso, setAviso] = useState<Aviso | null>(null)
   const [paso, setPaso] = useState(0)
   const [enviando, setEnviando] = useState(false)
-  const esUltimoPaso = paso === PASOS.length - 1
+  const esUltimoPaso = paso === TITULOS_PASOS.length - 1
 
   function actualizar<K extends keyof DatosPlanta>(campo: K, valor: DatosPlanta[K]) {
     setDatos((actuales) => ({ ...actuales, [campo]: valor }))
@@ -102,33 +61,22 @@ export function FormularioCrearPlanta() {
 
   function mostrarErrores(nuevos: ErroresPlanta) {
     setErrores(nuevos)
-    const pasoConError = PASOS.findIndex((delPaso) => delPaso.campos.some((campo) => nuevos[campo]))
+    const pasoConError = seccionConError(nuevos)
     if (pasoConError >= 0) setPaso(pasoConError)
   }
 
   function siguiente() {
-    const delPaso = erroresDelPaso(validarPlanta(datos), PASOS[paso].campos)
+    const delPaso = erroresDelPaso(validarPlanta(datos), CAMPOS_POR_SECCION[paso])
     setErrores(delPaso)
     if (Object.keys(delPaso).length === 0) setPaso(paso + 1)
   }
 
-  async function subirFotografia() {
-    return fotografia ? (await subirFotografiaPlanta(fotografia)).fotografiaUrl : null
-  }
-
-  async function enviar(cualidadTermica: CualidadTermica) {
-    let fotografiaUrl: string | null
-    try {
-      fotografiaUrl = await subirFotografia()
-    } catch (error) {
-      setAviso({ mensaje: mensajeErrorFotografia(error), conEnlaceLogin: false })
-      return
-    }
+  async function registrar(cualidadTermica: CualidadTermica, fotografiaUrl: string | null) {
     try {
       await registrarPlanta(construirSolicitud(datos, cualidadTermica, fotografiaUrl))
       navegar(RUTA_CATALOGO, { state: { mensajeExito: MENSAJE_EXITO } })
     } catch (error) {
-      const delServidor = error instanceof ApiError ? erroresDelServidor(error) : null
+      const delServidor = erroresDelServidor(error, MENSAJE_DUPLICADO)
       if (delServidor) mostrarErrores(delServidor)
       else setAviso(avisoDeError(error))
     }
@@ -145,7 +93,7 @@ export function FormularioCrearPlanta() {
     setAviso(null)
     setEnviando(true)
     try {
-      await enviar(cualidadTermica)
+      await enviarConFotografia(fotografia, null, (url) => registrar(cualidadTermica, url), setAviso)
     } finally {
       setEnviando(false)
     }
@@ -224,14 +172,14 @@ export function FormularioCrearPlanta() {
       <div
         className="crear-planta-progreso"
         role="progressbar"
-        aria-label={`Paso ${paso + 1} de ${PASOS.length}`}
+        aria-label={`Paso ${paso + 1} de ${TITULOS_PASOS.length}`}
         aria-valuemin={1}
-        aria-valuemax={PASOS.length}
+        aria-valuemax={TITULOS_PASOS.length}
         aria-valuenow={paso + 1}
       >
-        <div className="crear-planta-progreso-avance" style={{ width: `${((paso + 1) / PASOS.length) * 100}%` }} />
+        <div className="crear-planta-progreso-avance" style={{ width: `${((paso + 1) / TITULOS_PASOS.length) * 100}%` }} />
       </div>
-      <h2 className="crear-planta-paso-titulo">{PASOS[paso].titulo}</h2>
+      <h2 className="crear-planta-paso-titulo">{TITULOS_PASOS[paso]}</h2>
       <div className="crear-planta-campos">{contenidoDelPaso()}</div>
       <AvisoFormulario aviso={aviso} />
       <div className="crear-planta-barra-inferior">
