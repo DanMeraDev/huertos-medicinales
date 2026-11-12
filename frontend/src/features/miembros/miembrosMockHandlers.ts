@@ -1,5 +1,10 @@
 import { http, HttpResponse } from 'msw'
-import type { RegistrarMiembroRequest, MiembroDetalleResponse, CambiarEstadoMiembroRequest } from './miembrosApi'
+import type {
+  RegistrarMiembroRequest,
+  MiembroDetalleResponse,
+  CambiarEstadoMiembroRequest,
+  ActualizarMiembroRequest,
+} from './miembrosApi'
 
 export const mockMiembroDetalle: MiembroDetalleResponse = {
   id: 15,
@@ -95,6 +100,32 @@ export const miembrosHandlers = [
       mensaje: body.activo
         ? 'El miembro ha sido reactivado en la comunidad exitosamente'
         : 'El miembro ha sido dado de baja de la comunidad exitosamente',
+    })
+  }),
+  http.put('*/api/comunidades/mi-comunidad/miembros/:miembroId', async ({ params, request }) => {
+    const { miembroId } = params
+    if (miembroId === '99') {
+      return HttpResponse.json(
+        { detail: 'El voluntario no pertenece a la comunidad administrada' },
+        { status: 404 },
+      )
+    }
+    const body = (await request.json()) as ActualizarMiembroRequest
+    if (!body.telefono || !/^09[0-9]{8}$/.test(body.telefono)) {
+      return HttpResponse.json(
+        {
+          detail: 'Datos no válidos',
+          errores: { telefono: 'El teléfono debe iniciar con 09 y tener 10 dígitos' },
+        },
+        { status: 400 },
+      )
+    }
+    const idNum = Number(miembroId)
+    const base = mockMiembrosLista.find((m) => m.id === idNum) ?? mockMiembroDetalle
+    return HttpResponse.json({
+      ...base,
+      genero: body.genero,
+      telefono: body.telefono,
     })
   }),
 ]
