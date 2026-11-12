@@ -1,0 +1,24 @@
+.pagina-saberes {
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  padding: var(--espacio-8) var(--espacio-4);
+}
+
+.pagina-saberes-titulo {
+  font-size: var(--texto-4xl);
+  color: var(--color-primario);
+  font-weight: var(--peso-negrita);
+  line-height: var(--interlineado-apretado);
+}
+
+.pagina-saberes-descripcion {
+  margin-top: var(--espacio-2);
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-base);
+}
+
+@media (min-width: 720px) {
+  .pagina-saberes {
+    max-width: var(--ancho-maximo);
+  }
+}
