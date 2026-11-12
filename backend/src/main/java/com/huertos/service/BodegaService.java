@@ -25,4 +25,3 @@ public interface BodegaService {
      */
     Long obtenerComunidadIdPorCorreo(String correo);
 }
-

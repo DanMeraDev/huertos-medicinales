@@ -28,4 +28,3 @@ export interface PlantaResumen {
   nombreComun: string
   nombreCientifico?: string
 }
-

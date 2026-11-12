@@ -10,4 +10,3 @@ export function IngresoMaterialPage() {
     </div>
   )
 }
-

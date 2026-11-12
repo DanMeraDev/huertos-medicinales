@@ -73,7 +73,6 @@ export function FormularioIngresoMaterial({
     etiqueta: planta.nombreComun,
   }))
 
-
   const manejarEnvio = async (evento: FormEvent<HTMLFormElement>) => {
     evento.preventDefault()
     setNotificacion(null)
