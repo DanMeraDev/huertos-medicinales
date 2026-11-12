@@ -78,7 +78,7 @@ describe('TablaSolicitudes', () => {
     await usuario.click(screen.getByRole('button', { name: 'Confirmar Rechazo' }))
 
     expect(screen.getByText('El motivo es obligatorio y debe tener al menos 20 caracteres')).toBeInTheDocument()
-    expect(screen.getByRole('dialog', { name: 'Motivo del rechazo' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'No aprobar solicitud' })).toBeInTheDocument()
 
     await usuario.clear(screen.getByLabelText('Motivo del rechazo'))
     await usuario.type(screen.getByLabelText('Motivo del rechazo'), MOTIVO)

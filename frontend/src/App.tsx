@@ -14,6 +14,7 @@ import { NoEncontradaPage } from './pages/NoEncontradaPage'
 import { SolicitarComunidadPage } from './pages/SolicitarComunidadPage'
 import { RankingComunidadesPage } from './pages/RankingComunidadesPage'
 import { RegistrarMiembroPage } from './pages/RegistrarMiembroPage'
+import { SolicitudesPage } from './pages/SolicitudesPage'
 import { SaberesAncestralesPage } from './pages/SaberesAncestralesPage'
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/bodega/ingreso-material" element={<IngresoMaterialPage />} />
         <Route path="/bodega/inventario" element={<InventarioBodegaPage />} />
         <Route path="/saberes-ancestrales" element={<SaberesAncestralesPage />} />
+        <Route path="/solicitudes" element={<SolicitudesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
