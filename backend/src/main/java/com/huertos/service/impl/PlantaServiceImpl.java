@@ -5,6 +5,7 @@ import com.huertos.dto.PlantaResumenResponse;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.repository.PlantaRepository;
 import com.huertos.service.PlantaService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,5 +29,10 @@ public class PlantaServiceImpl implements PlantaService {
         PageRequest paginacion = PageRequest.of(
                 Math.max(pagina, 0), Math.clamp(tamanio, TAMANIO_MINIMO, TAMANIO_MAXIMO), POR_NOMBRE_COMUN);
         return PaginaResponse.de(plantaRepository.findAllByActivaTrue(paginacion).map(plantaMapper::aResumen));
+    }
+
+    @Override
+    public List<PlantaResumenResponse> buscarPorNombre(String criterio) {
+        throw new UnsupportedOperationException();
     }
 }

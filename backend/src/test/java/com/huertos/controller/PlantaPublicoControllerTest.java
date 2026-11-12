@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaResumenResponse;
+import com.huertos.exception.ReglaNegocioException;
 import com.huertos.model.CategoriaUso;
 import com.huertos.model.CualidadTermica;
 import com.huertos.service.PlantaService;
@@ -64,5 +65,34 @@ class PlantaPublicoControllerTest {
                 .andExpect(jsonPath("$.contenido").isEmpty())
                 .andExpect(jsonPath("$.pagina").value(2))
                 .andExpect(jsonPath("$.tamanio").value(100));
+    }
+
+    @Test
+    void buscaPlantasSinTokenYDevuelveLaListaEnJson() throws Exception {
+        when(plantaService.buscarPorNombre("manza")).thenReturn(List.of(MANZANILLA));
+
+        mockMvc.perform(get("/api/publico/plantas/buscar").param("criterio", "manza"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nombreComun").value("Manzanilla"))
+                .andExpect(jsonPath("$[0].nombreCientifico").value("Matricaria chamomilla"))
+                .andExpect(jsonPath("$[0].categorias", containsInAnyOrder("SEDANTE", "ANTIESPASMODICA")))
+                .andExpect(jsonPath("$.length()").value(1));
+    }
+
+    @Test
+    void sinCriterioRespondeSolicitudIncorrecta() throws Exception {
+        mockMvc.perform(get("/api/publico/plantas/buscar"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void conUnCriterioCortoRespondeSolicitudIncorrectaConElMensaje() throws Exception {
+        when(plantaService.buscarPorNombre("a"))
+                .thenThrow(new ReglaNegocioException("El criterio de búsqueda debe tener entre 2 y 100 caracteres"));
+
+        mockMvc.perform(get("/api/publico/plantas/buscar").param("criterio", "a"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("El criterio de búsqueda debe tener entre 2 y 100 caracteres"));
     }
 }
