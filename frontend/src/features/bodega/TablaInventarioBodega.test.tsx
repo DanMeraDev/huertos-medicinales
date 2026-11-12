@@ -105,5 +105,14 @@ describe('TablaInventarioBodega', () => {
       )
     })
   })
+
+  it('encapsula la tabla en un contenedor responsivo con scroll horizontal para mobile first', async () => {
+    const { container } = render(<TablaInventarioBodega comunidadId={1} />)
+
+    expect(await screen.findByText('Manzanilla')).toBeInTheDocument()
+    const contenedorTabla = container.querySelector('.bodega-inventario__tabla-contenedor')
+    expect(contenedorTabla).toBeInTheDocument()
+    expect(contenedorTabla?.querySelector('table')).toBeInTheDocument()
+  })
 })
 
