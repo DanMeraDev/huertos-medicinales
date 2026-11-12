@@ -1,7 +1,9 @@
 package com.huertos.mapper;
 
+import com.huertos.dto.ComunidadResumenResponse;
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.model.BodegaMaterialVegetal;
+import com.huertos.model.Comunidad;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,5 +18,7 @@ public interface BodegaMapper {
     MaterialVegetalResponse toMaterialVegetalResponse(BodegaMaterialVegetal entidad);
 
     List<MaterialVegetalResponse> toListMaterialVegetalResponse(List<BodegaMaterialVegetal> lista);
+
+    List<ComunidadResumenResponse> toListComunidadResumenResponse(List<Comunidad> comunidades);
 }
 

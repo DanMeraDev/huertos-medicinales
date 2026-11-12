@@ -1,5 +1,6 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.ContextoBodegaResponse;
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -7,6 +8,7 @@ import com.huertos.mapper.BodegaMapper;
 import com.huertos.model.BodegaMaterialVegetal;
 import com.huertos.model.Comunidad;
 import com.huertos.model.Planta;
+import com.huertos.model.Rol;
 import com.huertos.repository.BodegaMaterialVegetalRepository;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.PlantaRepository;
@@ -78,5 +80,19 @@ public class BodegaServiceImpl implements BodegaService {
             }
         }
         return listarMaterialPorComunidad(comunidadId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ContextoBodegaResponse obtenerContexto(String correoUsuario, boolean esTecnicoMsp) {
+        if (esTecnicoMsp) {
+            return new ContextoBodegaResponse(
+                    Rol.TECNICO_MSP,
+                    bodegaMapper.toListComunidadResumenResponse(comunidadRepository.findByActivaTrueOrderByNombreAsc()));
+        }
+        Comunidad comunidad = comunidadRepository.findByResponsableCorreo(correoUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe una comunidad asociada al usuario"));
+        return new ContextoBodegaResponse(
+                Rol.RESPONSABLE_COMUNIDAD, bodegaMapper.toListComunidadResumenResponse(List.of(comunidad)));
     }
 }

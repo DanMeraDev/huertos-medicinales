@@ -1,5 +1,6 @@
 package com.huertos.service;
 
+import com.huertos.dto.ContextoBodegaResponse;
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import java.util.List;
@@ -43,5 +44,14 @@ public interface BodegaService {
      * @return lista de lotes de material vegetal disponibles
      */
     List<MaterialVegetalResponse> listarMaterialPorComunidad(Long comunidadId, String correoUsuario, boolean esTecnicoMsp);
-}
 
+    /**
+     * Obtiene el rol del usuario y las comunidades cuya bodega puede consultar: solo la suya si es
+     * responsable de comunidad, o todas las activas si es técnico MSP.
+     *
+     * @param correoUsuario correo del usuario autenticado
+     * @param esTecnicoMsp indica si el usuario tiene rol de técnico MSP
+     * @return rol del usuario y comunidades consultables
+     */
+    ContextoBodegaResponse obtenerContexto(String correoUsuario, boolean esTecnicoMsp);
+}

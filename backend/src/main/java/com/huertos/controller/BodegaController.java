@@ -1,5 +1,6 @@
 package com.huertos.controller;
 
+import com.huertos.dto.ContextoBodegaResponse;
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import com.huertos.service.BodegaService;
@@ -44,9 +45,20 @@ public class BodegaController {
     public List<MaterialVegetalResponse> listarMaterialPorComunidad(
             @PathVariable Long comunidadId,
             Authentication authentication) {
-        boolean esTecnicoMsp = authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_TECNICO_MSP"));
-        String correo = authentication != null ? authentication.getName() : null;
+        boolean esTecnicoMsp = esTecnicoMsp(authentication);
+        String correo = authentication.getName();
         return bodegaService.listarMaterialPorComunidad(comunidadId, correo, esTecnicoMsp);
+    }
+
+    @Operation(summary = "Obtiene el rol del usuario y las comunidades cuya bodega puede consultar")
+    @GetMapping("/contexto")
+    @PreAuthorize("hasAnyRole('RESPONSABLE_COMUNIDAD', 'TECNICO_MSP')")
+    public ContextoBodegaResponse obtenerContexto(Authentication authentication) {
+        return bodegaService.obtenerContexto(authentication.getName(), esTecnicoMsp(authentication));
+    }
+
+    private boolean esTecnicoMsp(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(autoridad -> autoridad.getAuthority().equals("ROLE_TECNICO_MSP"));
     }
 }
