@@ -3,6 +3,7 @@ package com.huertos.service.impl;
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
+import com.huertos.dto.InsigniaObtenidaDto;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.MiembroResumenResponse;
@@ -235,7 +236,23 @@ public class MiembroServiceImpl implements MiembroService {
     @Override
     @Transactional(readOnly = true)
     public PerfilPublicoMiembroResponse obtenerPerfilPublicoPorCedula(String cedula) {
-        throw new UnsupportedOperationException("Pendiente de implementar en Paso 2");
+        Miembro miembro = miembroRepository.findByCedulaAndActivoTrue(cedula)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No se encontró ningún voluntario registrado con la cédula ingresada. Verifica el número o anímate a registrar una nueva comunidad"));
+
+        List<String> comunidades = comunidadMiembroRepository
+                .findByMiembroIdAndActivoEnComunidadTrue(miembro.getId())
+                .stream()
+                .map(relacion -> relacion.getComunidad().getNombre())
+                .toList();
+
+        List<InsigniaObtenidaDto> insignias = miembroInsigniaRepository
+                .findByMiembroIdOrderByFechaObtencionDesc(miembro.getId())
+                .stream()
+                .map(miembroMapper::toInsigniaObtenidaDto)
+                .toList();
+
+        return miembroMapper.toPerfilPublicoResponse(miembro, comunidades, insignias);
     }
 
     private void validarCedula(String cedula) {
