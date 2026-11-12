@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
+import type { DirectorioComunidadResponse } from '../../features/comunidades-publico/comunidadesPublicoApi'
 
 export const mockMiComunidad: ComunidadDetalleResponse = {
   id: 3,
@@ -17,6 +18,23 @@ export const mockMiComunidad: ComunidadDetalleResponse = {
   creadoEn: '2026-10-15T09:30:00Z',
 }
 
+export const mockDirectorioComunidades: DirectorioComunidadResponse[] = [
+  {
+    id: 3,
+    nombre: 'Huerto Comunitario Allpa Viva',
+    nombreResponsable: 'Segundo Tránsito Amaguaña',
+    telefonoContacto: '0991234567',
+    correoContacto: 'comunidad.allpa@huertos.gob.ec',
+    totalMiembros: 14,
+    provincia: 'Pichincha',
+    parroquia: 'Calderon',
+    direccion: 'Calle de las Rosas y Pasaje Los Pinos, lote 14',
+    latitud: -0.0987123,
+    longitud: -78.4321456,
+    altitudMsnm: 2650,
+  },
+]
+
 export const handlers = [
   http.get('*/api/ping', () =>
     HttpResponse.json({ estado: 'ok', baseDeDatos: '11.4.8-MariaDB', fecha: '2026-10-31T12:00:00Z' }),
@@ -31,4 +49,6 @@ export const handlers = [
       ...datos,
     })
   }),
+
+  http.get('*/api/publico/comunidades', () => HttpResponse.json(mockDirectorioComunidades)),
 ]
