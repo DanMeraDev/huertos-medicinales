@@ -2,6 +2,7 @@ package com.huertos.mapper;
 
 import com.huertos.dto.ComunidadDetalleResponse;
 import com.huertos.dto.ComunidadResponse;
+import com.huertos.dto.DirectorioComunidadResponse;
 import com.huertos.model.Comunidad;
 import com.huertos.model.Huerto;
 import com.huertos.model.SolicitudComunidad;
@@ -52,4 +53,18 @@ public interface ComunidadMapper {
     @Mapping(target = "responsableId", source = "responsable.id")
     @Mapping(target = "nombreResponsable", source = "responsable.nombreCompleto")
     ComunidadDetalleResponse toDetalleResponse(Comunidad comunidad);
+
+    @Mapping(target = "id", source = "comunidad.id")
+    @Mapping(target = "nombre", source = "comunidad.nombre")
+    @Mapping(target = "nombreResponsable", source = "nombreResponsable")
+    @Mapping(target = "telefonoContacto", source = "comunidad.telefonoContacto")
+    @Mapping(target = "correoContacto", source = "comunidad.correoContacto")
+    @Mapping(target = "totalMiembros", source = "totalMiembros")
+    @Mapping(target = "provincia", source = "comunidad.provincia")
+    @Mapping(target = "parroquia", source = "comunidad.parroquia")
+    @Mapping(target = "direccion", source = "comunidad.direccion")
+    @Mapping(target = "latitud", source = "huerto.latitud")
+    @Mapping(target = "longitud", source = "huerto.longitud")
+    @Mapping(target = "altitudMsnm", source = "huerto.altitudMsnm")
+    DirectorioComunidadResponse toDirectorioResponse(Comunidad comunidad, String nombreResponsable, int totalMiembros, Huerto huerto);
 }

@@ -3,6 +3,7 @@ package com.huertos.service.impl;
 import com.huertos.dto.ActualizarComunidadRequest;
 import com.huertos.dto.ComunidadDetalleResponse;
 import com.huertos.dto.ComunidadResponse;
+import com.huertos.dto.DirectorioComunidadResponse;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
@@ -10,12 +11,14 @@ import com.huertos.mapper.ComunidadMapper;
 import com.huertos.model.Comunidad;
 import com.huertos.model.SolicitudComunidad;
 import com.huertos.model.Usuario;
+import com.huertos.repository.ComunidadMiembroRepository;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.HuertoRepository;
 import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.ComunidadService;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ public class ComunidadServiceImpl implements ComunidadService {
     private final ComunidadRepository comunidadRepository;
     private final HuertoRepository huertoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ComunidadMiembroRepository comunidadMiembroRepository;
     private final ComunidadMapper comunidadMapper;
     private final Clock clock;
 
@@ -86,5 +90,11 @@ public class ComunidadServiceImpl implements ComunidadService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return actualizarInformacionContacto(usuario.getId(), request);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DirectorioComunidadResponse> obtenerDirectorioPublico() {
+        throw new UnsupportedOperationException("Pendiente de implementar");
     }
 }
