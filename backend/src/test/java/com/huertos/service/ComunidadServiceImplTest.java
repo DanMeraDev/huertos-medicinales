@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.huertos.dto.ActualizarComunidadRequest;
 import com.huertos.dto.ComunidadDetalleResponse;
 import com.huertos.dto.ComunidadResponse;
+import com.huertos.dto.DirectorioComunidadResponse;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
@@ -22,6 +23,7 @@ import com.huertos.model.SolicitudComunidad;
 import com.huertos.model.TipoHuerto;
 import com.huertos.model.TipoOrganizacion;
 import com.huertos.model.Usuario;
+import com.huertos.repository.ComunidadMiembroRepository;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.HuertoRepository;
 import com.huertos.repository.UsuarioRepository;
@@ -31,6 +33,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +58,9 @@ class ComunidadServiceImplTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private ComunidadMiembroRepository comunidadMiembroRepository;
+
     @Spy
     private ComunidadMapper comunidadMapper = Mappers.getMapper(ComunidadMapper.class);
 
@@ -66,6 +72,7 @@ class ComunidadServiceImplTest {
                 comunidadRepository,
                 huertoRepository,
                 usuarioRepository,
+                comunidadMiembroRepository,
                 comunidadMapper,
                 Clock.fixed(AHORA, ZoneOffset.UTC)
         );
@@ -381,6 +388,96 @@ class ComunidadServiceImplTest {
         assertThatThrownBy(() -> servicio.actualizarPorCorreo(correo, request))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void obtenerDirectorioPublicoRetornaListaDeComunidadesActivasConUbicacionYMiembros() {
+        Usuario responsable = new Usuario();
+        responsable.setId(10L);
+        responsable.setNombreCompleto("Mamá Tránsito Amaguaña");
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(1L);
+        comunidad.setNombre("Huerto Allpa");
+        comunidad.setTelefonoContacto("0991234567");
+        comunidad.setCorreoContacto("allpa@huertos.gob.ec");
+        comunidad.setProvincia("Pichincha");
+        comunidad.setParroquia("Calderón");
+        comunidad.setDireccion("Calle Las Rosas 123");
+        comunidad.setResponsable(responsable);
+        comunidad.setActiva(true);
+
+        Huerto huerto = new Huerto();
+        huerto.setId(100L);
+        huerto.setLatitud(new BigDecimal("-0.1234567"));
+        huerto.setLongitud(new BigDecimal("-78.1234567"));
+        huerto.setAltitudMsnm(2800);
+
+        when(comunidadRepository.findAllActivasOrdenadas()).thenReturn(List.of(comunidad));
+        when(comunidadMiembroRepository.countMiembrosActivos(1L)).thenReturn(8);
+        when(huertoRepository.findByComunidadId(1L)).thenReturn(Optional.of(huerto));
+
+        List<DirectorioComunidadResponse> directorio = servicio.obtenerDirectorioPublico();
+
+        assertThat(directorio).hasSize(1);
+        DirectorioComunidadResponse item = directorio.getFirst();
+        assertThat(item.id()).isEqualTo(1L);
+        assertThat(item.nombre()).isEqualTo("Huerto Allpa");
+        assertThat(item.nombreResponsable()).isEqualTo("Mamá Tránsito Amaguaña");
+        assertThat(item.telefonoContacto()).isEqualTo("0991234567");
+        assertThat(item.correoContacto()).isEqualTo("allpa@huertos.gob.ec");
+        assertThat(item.totalMiembros()).isEqualTo(8);
+        assertThat(item.provincia()).isEqualTo("Pichincha");
+        assertThat(item.parroquia()).isEqualTo("Calderón");
+        assertThat(item.direccion()).isEqualTo("Calle Las Rosas 123");
+        assertThat(item.latitud()).isEqualByComparingTo("-0.1234567");
+        assertThat(item.longitud()).isEqualByComparingTo("-78.1234567");
+        assertThat(item.altitudMsnm()).isEqualTo(2800);
+    }
+
+    @Test
+    void obtenerDirectorioPublicoRetornaListaVaciaCuandoNoHayComunidadesActivas() {
+        when(comunidadRepository.findAllActivasOrdenadas()).thenReturn(List.of());
+
+        List<DirectorioComunidadResponse> directorio = servicio.obtenerDirectorioPublico();
+
+        assertThat(directorio).isEmpty();
+        verify(comunidadRepository).findAllActivasOrdenadas();
+        verify(comunidadMiembroRepository, never()).countMiembrosActivos(any());
+        verify(huertoRepository, never()).findByComunidadId(any());
+    }
+
+    @Test
+    void obtenerDirectorioPublicoManejaComunidadSinHuerto() {
+        Usuario responsable = new Usuario();
+        responsable.setId(11L);
+        responsable.setNombreCompleto("Líder Sin Huerto");
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(2L);
+        comunidad.setNombre("Comunidad Naciente");
+        comunidad.setTelefonoContacto("0998887766");
+        comunidad.setCorreoContacto("naciente@huertos.gob.ec");
+        comunidad.setProvincia("Imbabura");
+        comunidad.setParroquia("Otavalo");
+        comunidad.setDireccion("Sector El Jordán");
+        comunidad.setResponsable(responsable);
+        comunidad.setActiva(true);
+
+        when(comunidadRepository.findAllActivasOrdenadas()).thenReturn(List.of(comunidad));
+        when(comunidadMiembroRepository.countMiembrosActivos(2L)).thenReturn(0);
+        when(huertoRepository.findByComunidadId(2L)).thenReturn(Optional.empty());
+
+        List<DirectorioComunidadResponse> directorio = servicio.obtenerDirectorioPublico();
+
+        assertThat(directorio).hasSize(1);
+        DirectorioComunidadResponse item = directorio.getFirst();
+        assertThat(item.id()).isEqualTo(2L);
+        assertThat(item.nombre()).isEqualTo("Comunidad Naciente");
+        assertThat(item.totalMiembros()).isZero();
+        assertThat(item.latitud()).isNull();
+        assertThat(item.longitud()).isNull();
+        assertThat(item.altitudMsnm()).isNull();
     }
 
     private SolicitudComunidad solicitud() {

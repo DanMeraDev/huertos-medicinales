@@ -1,0 +1,124 @@
+.tabla-ranking-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+}
+
+.tabla-ranking-filtros {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  background-color: var(--color-superficie);
+  padding: var(--espacio-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-borde);
+}
+
+.tabla-ranking-filtro-item {
+  flex: 1;
+}
+
+.ranking-aviso-sin-puntos {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  background-color: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-primary-action);
+}
+
+.ranking-aviso-icono {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.ranking-aviso-texto {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  line-height: var(--interlineado-normal);
+}
+
+.tabla-ranking-contenedor {
+  width: 100%;
+  overflow-x: auto;
+  background-color: var(--color-superficie);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-borde);
+}
+
+.ranking-posicion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--peso-negrita);
+  font-size: var(--texto-sm);
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radius-pill);
+  min-width: 2.25rem;
+}
+
+.ranking-pos-1 {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.ranking-pos-2 {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.ranking-pos-3 {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.ranking-pos-comun {
+  background-color: var(--color-superficie-alt);
+  color: var(--color-texto-secundario);
+}
+
+.ranking-col-comunidad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.ranking-nombre-comunidad {
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
+}
+
+.ranking-movil-subdato {
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
+}
+
+.ranking-puntos-destacados {
+  font-weight: var(--peso-negrita);
+  color: var(--color-primary-action);
+  font-size: var(--texto-base);
+}
+
+/* Reglas Mobile First */
+@media (max-width: 640px) {
+  .tabla-ranking-contenedor th:nth-child(3),
+  .tabla-ranking-contenedor td:nth-child(3),
+  .tabla-ranking-contenedor th:nth-child(4),
+  .tabla-ranking-contenedor td:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) {
+  .tabla-ranking-filtros {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .ranking-movil-subdato {
+    display: none;
+  }
+}

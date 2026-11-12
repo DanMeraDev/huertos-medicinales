@@ -12,4 +12,7 @@ export const authMockHandlers = [
       requiereCambioClave: false,
     }),
   ),
+  http.put('*/api/usuarios/cambiar-clave', () =>
+    HttpResponse.json({ mensaje: 'Contraseña actualizada exitosamente', requiereCambioClave: false }),
+  ),
 ]

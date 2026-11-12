@@ -1,3 +1,5 @@
+import type { InsigniaProps } from '../../components/Insignia'
+
 export type CategoriaUso =
   | 'ANTIESPASMODICA'
   | 'ANTIINFLAMATORIA'
@@ -24,6 +26,11 @@ export interface PlantaResumen {
   cualidadTermica: CualidadTermica
   categorias: CategoriaUso[]
   fotografiaUrl: string | null
+}
+
+export const INSIGNIAS_TERMICAS: Record<CualidadTermica, InsigniaProps> = {
+  CALIENTE: { texto: 'Caliente', tono: 'error' },
+  FRIA: { texto: 'Fría', tono: 'exito' },
 }
 
 export const ETIQUETAS_CATEGORIA: Record<CategoriaUso, string> = {

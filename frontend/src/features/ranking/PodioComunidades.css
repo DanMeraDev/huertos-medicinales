@@ -1,0 +1,142 @@
+.podio-seccion {
+  margin-bottom: var(--espacio-8);
+}
+
+.podio-titulo {
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-texto);
+  margin-bottom: var(--espacio-4);
+  text-align: center;
+}
+
+.podio-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+}
+
+.podio-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--espacio-5);
+  border-radius: var(--radius-md);
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.podio-tarjeta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.podio-tarjeta.podio-oro {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, #fffbeb 0%, var(--color-superficie) 35%);
+}
+
+.podio-tarjeta.podio-plata {
+  border-color: #94a3b8;
+  background: linear-gradient(180deg, #f8fafc 0%, var(--color-superficie) 35%);
+}
+
+.podio-tarjeta.podio-bronce {
+  border-color: #d97706;
+  background: linear-gradient(180deg, #fef3c7 0%, var(--color-superficie) 35%);
+}
+
+.podio-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  margin-bottom: var(--espacio-3);
+}
+
+.podio-medalla {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.podio-nombre {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
+  margin-bottom: var(--espacio-2);
+}
+
+.podio-ubicacion {
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+  margin-bottom: var(--espacio-2);
+}
+
+.podio-tipo {
+  display: inline-block;
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
+  background-color: var(--color-superficie-alt);
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radius-pill);
+  margin-bottom: var(--espacio-4);
+}
+
+.podio-puntos {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--espacio-1);
+  padding-top: var(--espacio-2);
+  border-top: 1px solid var(--color-borde);
+  width: 100%;
+}
+
+.podio-puntos-valor {
+  font-size: var(--texto-2xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-primary-action);
+}
+
+.podio-tarjeta.podio-oro .podio-puntos-valor {
+  color: #b45309;
+}
+
+.podio-puntos-etiqueta {
+  font-size: var(--texto-xs);
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+  letter-spacing: 0.05em;
+}
+
+/* Escalado para tablet y escritorio (Podio clásico 2º - 1º - 3º) */
+@media (min-width: 768px) {
+  .podio-contenedor {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: end;
+    gap: var(--espacio-4);
+  }
+
+  .podio-tarjeta.podio-plata {
+    order: 1;
+  }
+
+  .podio-tarjeta.podio-oro {
+    order: 2;
+    padding-top: var(--espacio-8);
+    padding-bottom: var(--espacio-8);
+    transform: scale(1.04);
+  }
+
+  .podio-tarjeta.podio-oro:hover {
+    transform: scale(1.04) translateY(-3px);
+  }
+
+  .podio-tarjeta.podio-bronce {
+    order: 3;
+  }
+}

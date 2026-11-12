@@ -1,12 +1,15 @@
 package com.huertos.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaResumenResponse;
+import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.model.CategoriaUso;
 import com.huertos.model.CualidadTermica;
@@ -19,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
@@ -125,6 +129,60 @@ class PlantaServiceImplTest {
         assertThat(respuesta.contenido()).isEmpty();
         assertThat(respuesta.totalElementos()).isZero();
         assertThat(respuesta.totalPaginas()).isZero();
+    }
+
+    @Test
+    void buscaConElCriterioSinEspaciosAlInicioNiAlFinal() {
+        when(plantaRepository.buscarActivasPorNombre("matico")).thenReturn(List.of());
+
+        servicio.buscarPorNombre("  matico  ");
+
+        verify(plantaRepository).buscarActivasPorNombre("matico");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", " a ", "   "})
+    void rechazaUnCriterioDeMenosDeDosCaracteresSinConsultar(String criterio) {
+        assertThatThrownBy(() -> servicio.buscarPorNombre(criterio))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("El criterio de búsqueda debe tener entre 2 y 100 caracteres");
+        verifyNoInteractions(plantaRepository);
+    }
+
+    @Test
+    void rechazaUnCriterioDeMasDeCienCaracteresSinConsultar() {
+        String criterio = "a".repeat(101);
+
+        assertThatThrownBy(() -> servicio.buscarPorNombre(criterio))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("El criterio de búsqueda debe tener entre 2 y 100 caracteres");
+        verifyNoInteractions(plantaRepository);
+    }
+
+    @Test
+    void aceptaUnCriterioDeCienCaracteres() {
+        String criterio = "a".repeat(100);
+        when(plantaRepository.buscarActivasPorNombre(criterio)).thenReturn(List.of());
+
+        assertThat(servicio.buscarPorNombre(criterio)).isEmpty();
+    }
+
+    @Test
+    void devuelveElResumenDeLasPlantasEncontradas() {
+        Planta manzanilla = planta(1L, "Manzanilla", "Matricaria chamomilla",
+                Set.of(CategoriaUso.SEDANTE), "plantas/manzanilla.jpg");
+        Planta matico = planta(6L, "Matico", "Aristeguietia glutinosa",
+                Set.of(CategoriaUso.CICATRIZANTE), "plantas/matico.jpg");
+        when(plantaRepository.buscarActivasPorNombre("ma")).thenReturn(List.of(manzanilla, matico));
+
+        List<PlantaResumenResponse> resultado = servicio.buscarPorNombre("ma");
+
+        assertThat(resultado).containsExactly(
+                new PlantaResumenResponse(1L, "Manzanilla", null, "Matricaria chamomilla",
+                        CualidadTermica.CALIENTE, Set.of(CategoriaUso.SEDANTE), "plantas/manzanilla.jpg"),
+                new PlantaResumenResponse(6L, "Matico", null, "Aristeguietia glutinosa",
+                        CualidadTermica.CALIENTE, Set.of(CategoriaUso.CICATRIZANTE), "plantas/matico.jpg"));
     }
 
     private Planta planta(Long id, String nombreComun, String nombreCientifico, Set<CategoriaUso> categorias,

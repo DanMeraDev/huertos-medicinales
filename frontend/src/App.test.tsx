@@ -31,6 +31,24 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Mi Comunidad' })).toBeInTheDocument()
   })
 
+  it('muestra la página de directorio de comunidades en /comunidades', async () => {
+    renderizarEn('/comunidades')
+
+    expect(await screen.findByRole('heading', { name: 'Directorio de Comunidades' })).toBeInTheDocument()
+  })
+
+  it('muestra la página de registro de voluntarios en /comunidad/miembros/nuevo', async () => {
+    renderizarEn('/comunidad/miembros/nuevo')
+
+    expect(await screen.findByRole('heading', { name: 'Registrar Voluntario' })).toBeInTheDocument()
+  })
+
+  it('muestra la página de inventario de bodega en /bodega/inventario', async () => {
+    renderizarEn('/bodega/inventario')
+
+    expect(await screen.findByRole('heading', { name: 'Inventario de Bodega' })).toBeInTheDocument()
+  })
+
   it('vuelve al inicio desde la página no encontrada', async () => {
     renderizarEn('/ruta-inexistente')
 

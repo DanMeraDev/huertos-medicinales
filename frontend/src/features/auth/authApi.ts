@@ -1,4 +1,4 @@
-import { apiPost } from '../../api/client'
+import { apiPost, apiPut } from '../../api/client'
 
 export type Rol = 'TECNICO_SIS' | 'TECNICO_MSP' | 'RESPONSABLE_COMUNIDAD'
 
@@ -19,3 +19,17 @@ export interface LoginResponse {
 
 export const iniciarSesion = (credenciales: LoginRequest) =>
   apiPost<LoginResponse>('/publico/auth/login', credenciales)
+
+export interface CambiarClaveRequest {
+  passwordActual: string
+  nuevaPassword: string
+  confirmarPassword: string
+}
+
+export interface CambioClaveResponse {
+  mensaje: string
+  requiereCambioClave: boolean
+}
+
+export const cambiarClave = (datos: CambiarClaveRequest) =>
+  apiPut<CambioClaveResponse>('/usuarios/cambiar-clave', datos)
