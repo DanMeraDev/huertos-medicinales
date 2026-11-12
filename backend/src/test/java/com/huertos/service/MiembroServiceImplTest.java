@@ -13,6 +13,7 @@ import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.MiembroResumenResponse;
+import com.huertos.dto.PerfilPublicoMiembroResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -22,10 +23,13 @@ import com.huertos.model.Comunidad;
 import com.huertos.model.ComunidadMiembro;
 import com.huertos.model.Genero;
 import com.huertos.model.Miembro;
+import com.huertos.model.MiembroInsignia;
 import com.huertos.model.NivelMiembro;
+import com.huertos.model.TipoOrigenInsignia;
 import com.huertos.model.Usuario;
 import com.huertos.repository.ComunidadMiembroRepository;
 import com.huertos.repository.ComunidadRepository;
+import com.huertos.repository.MiembroInsigniaRepository;
 import com.huertos.repository.MiembroRepository;
 import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.impl.MiembroServiceImpl;
@@ -63,6 +67,9 @@ class MiembroServiceImplTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private MiembroInsigniaRepository miembroInsigniaRepository;
+
     @Spy
     private MiembroMapper miembroMapper = Mappers.getMapper(MiembroMapper.class);
 
@@ -77,6 +84,7 @@ class MiembroServiceImplTest {
                 comunidadMiembroRepository,
                 comunidadRepository,
                 usuarioRepository,
+                miembroInsigniaRepository,
                 miembroMapper,
                 clock
         );
@@ -987,5 +995,112 @@ class MiembroServiceImplTest {
         assertThatThrownBy(() -> miembroService.obtenerFichaInternaPorCorreo(correo, 15L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void obtenerPerfilPublicoPorCedulaRetornaComunidadesEInsigniasSinDatosPrivados() {
+        String cedula = "1710034065";
+
+        Miembro miembro = new Miembro();
+        miembro.setId(15L);
+        miembro.setCedula(cedula);
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(1990, 3, 25));
+        miembro.setTelefono("0998877665");
+        miembro.setNivel(NivelMiembro.OFICIAL);
+        miembro.setPuntosTotales(120);
+        miembro.setActivo(true);
+        miembro.setConsentimientoDatos(true);
+
+        Comunidad comunidad1 = new Comunidad();
+        comunidad1.setId(3L);
+        comunidad1.setNombre("Huerto Comunitario Allpa Viva");
+        Comunidad comunidad2 = new Comunidad();
+        comunidad2.setId(4L);
+        comunidad2.setNombre("Sembradores de San Antonio");
+
+        ComunidadMiembro rel1 = new ComunidadMiembro();
+        rel1.setComunidad(comunidad1);
+        rel1.setMiembro(miembro);
+        rel1.setActivoEnComunidad(true);
+
+        ComunidadMiembro rel2 = new ComunidadMiembro();
+        rel2.setComunidad(comunidad2);
+        rel2.setMiembro(miembro);
+        rel2.setActivoEnComunidad(true);
+
+        MiembroInsignia insignia1 = new MiembroInsignia();
+        insignia1.setId(100L);
+        insignia1.setNombreInsignia("Maestro del Abonaje 1");
+        insignia1.setDescripcion("Completó 50 sesiones de preparación y distribución de compost");
+        insignia1.setTipoOrigen(TipoOrigenInsignia.TALENTO_COMUNIDAD);
+        insignia1.setFechaObtencion(LocalDate.of(2026, 11, 5));
+
+        MiembroInsignia insignia2 = new MiembroInsignia();
+        insignia2.setId(101L);
+        insignia2.setNombreInsignia("Guardián de la Chakra Kiwa");
+        insignia2.setDescripcion("Reconocimiento oficial MSP en cultivo y cosecha de plantas medicinales");
+        insignia2.setTipoOrigen(TipoOrigenInsignia.OFICIAL_SABER_MSP);
+        insignia2.setFechaObtencion(LocalDate.of(2026, 10, 20));
+
+        when(miembroRepository.findByCedulaAndActivoTrue(cedula)).thenReturn(Optional.of(miembro));
+        when(comunidadMiembroRepository.findByMiembroIdAndActivoEnComunidadTrue(15L)).thenReturn(List.of(rel1, rel2));
+        when(miembroInsigniaRepository.findByMiembroIdOrderByFechaObtencionDesc(15L))
+                .thenReturn(List.of(insignia1, insignia2));
+
+        PerfilPublicoMiembroResponse response = miembroService.obtenerPerfilPublicoPorCedula(cedula);
+
+        assertThat(response).isNotNull();
+        assertThat(response.nombreCompleto()).isEqualTo("María Tránsito Amaguaña Alba");
+        assertThat(response.nivel()).isEqualTo(NivelMiembro.OFICIAL);
+        assertThat(response.puntosTotales()).isEqualTo(120);
+        assertThat(response.comunidades()).containsExactly(
+                "Huerto Comunitario Allpa Viva",
+                "Sembradores de San Antonio"
+        );
+        assertThat(response.insignias()).hasSize(2);
+        assertThat(response.insignias().get(0).nombre()).isEqualTo("Maestro del Abonaje 1");
+        assertThat(response.insignias().get(0).tipo()).isEqualTo("TALENTO_COMUNIDAD");
+        assertThat(response.insignias().get(0).fechaObtencion()).isEqualTo(LocalDate.of(2026, 11, 5));
+        assertThat(response.insignias().get(1).nombre()).isEqualTo("Guardián de la Chakra Kiwa");
+        assertThat(response.insignias().get(1).tipo()).isEqualTo("OFICIAL_SABER_MSP");
+    }
+
+    @Test
+    void obtenerPerfilPublicoPorCedulaRetornaListasVaciasCuandoNoTieneInsigniasNiComunidades() {
+        String cedula = "1710034065";
+
+        Miembro miembro = new Miembro();
+        miembro.setId(20L);
+        miembro.setCedula(cedula);
+        miembro.setNombres("José");
+        miembro.setApellidos("Quispe");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+        miembro.setPuntosTotales(0);
+        miembro.setActivo(true);
+
+        when(miembroRepository.findByCedulaAndActivoTrue(cedula)).thenReturn(Optional.of(miembro));
+        when(comunidadMiembroRepository.findByMiembroIdAndActivoEnComunidadTrue(20L)).thenReturn(List.of());
+        when(miembroInsigniaRepository.findByMiembroIdOrderByFechaObtencionDesc(20L)).thenReturn(List.of());
+
+        PerfilPublicoMiembroResponse response = miembroService.obtenerPerfilPublicoPorCedula(cedula);
+
+        assertThat(response.nombreCompleto()).isEqualTo("José Quispe");
+        assertThat(response.nivel()).isEqualTo(NivelMiembro.APRENDIZ);
+        assertThat(response.puntosTotales()).isZero();
+        assertThat(response.comunidades()).isEmpty();
+        assertThat(response.insignias()).isEmpty();
+    }
+
+    @Test
+    void obtenerPerfilPublicoPorCedulaLanzaRecursoNoEncontradoCuandoNoExisteOEstaInactivo() {
+        String cedula = "9999999999";
+
+        when(miembroRepository.findByCedulaAndActivoTrue(cedula)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.obtenerPerfilPublicoPorCedula(cedula))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró ningún voluntario registrado con la cédula ingresada. Verifica el número o anímate a registrar una nueva comunidad");
     }
 }
