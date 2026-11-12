@@ -1,5 +1,6 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.FiltrosPlantaRequest;
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
@@ -43,6 +44,12 @@ public class PlantaServiceImpl implements PlantaService {
         return plantaRepository.buscarActivasPorNombre(criterioRecortado).stream()
                 .map(plantaMapper::aResumen)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PlantaResumenResponse> filtrarPlantas(FiltrosPlantaRequest filtros) {
+        return List.of();
     }
 
     @Override
