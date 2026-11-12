@@ -9,6 +9,7 @@ import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.ComunidadMapper;
 import com.huertos.model.Comunidad;
+import com.huertos.model.Huerto;
 import com.huertos.model.SolicitudComunidad;
 import com.huertos.model.Usuario;
 import com.huertos.repository.ComunidadMiembroRepository;
@@ -95,6 +96,15 @@ public class ComunidadServiceImpl implements ComunidadService {
     @Override
     @Transactional(readOnly = true)
     public List<DirectorioComunidadResponse> obtenerDirectorioPublico() {
-        throw new UnsupportedOperationException("Pendiente de implementar");
+        return comunidadRepository.findAllActivasOrdenadas().stream()
+                .map(comunidad -> {
+                    String nombreResponsable = comunidad.getResponsable() != null
+                            ? comunidad.getResponsable().getNombreCompleto()
+                            : null;
+                    int totalMiembros = comunidadMiembroRepository.countMiembrosActivos(comunidad.getId());
+                    Huerto huerto = huertoRepository.findByComunidadId(comunidad.getId()).orElse(null);
+                    return comunidadMapper.toDirectorioResponse(comunidad, nombreResponsable, totalMiembros, huerto);
+                })
+                .toList();
     }
 }
