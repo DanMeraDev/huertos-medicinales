@@ -3,6 +3,7 @@ package com.huertos.controller;
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaResumenResponse;
 import com.huertos.service.PlantaService;
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,11 @@ public class PlantaPublicoController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
         return plantaService.listarPlantasPublicas(page, size);
+    }
+
+    @GetMapping("/buscar")
+    @Operation(summary = "Busca plantas activas por nombre común, científico o kichwa")
+    public List<PlantaResumenResponse> buscarPlantas(@RequestParam String criterio) {
+        return plantaService.buscarPorNombre(criterio);
     }
 }

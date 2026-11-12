@@ -55,7 +55,21 @@ export function paginaDePlantas(plantas: PlantaResumen[], pagina: number, tamani
   }
 }
 
+function normalizar(texto: string) {
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
+
+function coincide(planta: PlantaResumen, criterio: string) {
+  return [planta.nombreComun, planta.nombreCientifico, planta.nombreKichwa].some(
+    (nombre) => nombre !== null && normalizar(nombre).includes(criterio),
+  )
+}
+
 export const plantasHandlers = [
+  http.get('*/api/publico/plantas/buscar', ({ request }) => {
+    const criterio = normalizar(new URL(request.url).searchParams.get('criterio') ?? '')
+    return HttpResponse.json(plantasMock.filter((planta) => coincide(planta, criterio)))
+  }),
   http.get('*/api/publico/plantas', ({ request }) => {
     const parametros = new URL(request.url).searchParams
     const pagina = Number(parametros.get('page') ?? 0)
