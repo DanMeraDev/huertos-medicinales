@@ -1,5 +1,6 @@
 package com.huertos.mapper;
 
+import com.huertos.dto.ComunidadDetalleResponse;
 import com.huertos.dto.ComunidadResponse;
 import com.huertos.model.Comunidad;
 import com.huertos.model.Huerto;
@@ -47,4 +48,8 @@ public interface ComunidadMapper {
 
     @Mapping(target = "responsableId", source = "responsable.id")
     ComunidadResponse toComunidadResponse(Comunidad comunidad);
+
+    @Mapping(target = "responsableId", source = "responsable.id")
+    @Mapping(target = "nombreResponsable", source = "responsable.nombreCompleto")
+    ComunidadDetalleResponse toDetalleResponse(Comunidad comunidad);
 }

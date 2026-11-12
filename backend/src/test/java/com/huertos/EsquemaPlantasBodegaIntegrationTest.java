@@ -38,7 +38,7 @@ class EsquemaPlantasBodegaIntegrationTest {
 
     @Test
     void registraUnaPlantaActivaConVariasCategoriasSinRepetirlas() {
-        Long plantaId = insertarPlanta("Achicoria", "Cichorium intybus");
+        Long plantaId = insertarPlanta("Planta de prueba", "Probatoria ficticia");
         jdbcTemplate.update("INSERT INTO planta_categorias (planta_id, categoria) VALUES (?, 'DEPURATIVA')", plantaId);
         jdbcTemplate.update("INSERT INTO planta_categorias (planta_id, categoria) VALUES (?, 'DIURETICA')", plantaId);
 
@@ -52,9 +52,9 @@ class EsquemaPlantasBodegaIntegrationTest {
 
     @Test
     void impideDosPlantasConElMismoNombreCientifico() {
-        insertarPlanta("Achicoria", "Cichorium intybus");
+        insertarPlanta("Planta de prueba", "Probatoria ficticia");
 
-        assertThatThrownBy(() -> insertarPlanta("Chicoria", "Cichorium intybus"))
+        assertThatThrownBy(() -> insertarPlanta("Otra planta de prueba", "Probatoria ficticia"))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -70,7 +70,7 @@ class EsquemaPlantasBodegaIntegrationTest {
 
     @Test
     void registraQuienActualizoYQuienDioDeBajaUnaPlantaConSuMotivo() {
-        Long plantaId = insertarPlanta("Achicoria", "Cichorium intybus");
+        Long plantaId = insertarPlanta("Planta de prueba", "Probatoria ficticia");
         Long tecnicoId = insertarTecnicoMsp();
 
         jdbcTemplate.update("UPDATE plantas SET usos_medicinales = 'Digestiva', actualizado_por_id = ? WHERE id = ?",
@@ -91,7 +91,7 @@ class EsquemaPlantasBodegaIntegrationTest {
 
     @Test
     void impideDarDeBajaUnaPlantaConUnUsuarioInexistente() {
-        Long plantaId = insertarPlanta("Achicoria", "Cichorium intybus");
+        Long plantaId = insertarPlanta("Planta de prueba", "Probatoria ficticia");
 
         assertThatThrownBy(() -> jdbcTemplate.update(
                 "UPDATE plantas SET activa = FALSE, dado_de_baja_por_id = 999999 WHERE id = ?", plantaId))
@@ -100,7 +100,7 @@ class EsquemaPlantasBodegaIntegrationTest {
 
     @Test
     void guardaCantidadesConDecimalesYNoPermiteStockNegativo() {
-        Long loteId = insertarLote(insertarComunidad(), insertarPlanta("Achicoria", "Cichorium intybus"));
+        Long loteId = insertarLote(insertarComunidad(), insertarPlanta("Planta de prueba", "Probatoria ficticia"));
 
         BigDecimal cantidad = jdbcTemplate.queryForObject(
                 "SELECT cantidad_disponible FROM bodega_material_vegetal WHERE id = ?", BigDecimal.class, loteId);
@@ -150,7 +150,7 @@ class EsquemaPlantasBodegaIntegrationTest {
     @Test
     void registraUnaSiembraDesdeUnLoteYSuPerdidaConCausa() {
         Long comunidadId = insertarComunidad();
-        Long loteId = insertarLote(comunidadId, insertarPlanta("Achicoria", "Cichorium intybus"));
+        Long loteId = insertarLote(comunidadId, insertarPlanta("Planta de prueba", "Probatoria ficticia"));
         Long huertoId = insertarHuerto(comunidadId);
         jdbcTemplate.update("""
                 INSERT INTO subhuertos (huerto_id, nombre_zona, subtipo, area_m2)
