@@ -16,6 +16,8 @@ public interface PlantaRepository extends JpaRepository<Planta, Long>, JpaSpecif
 
     Page<Planta> findAllByActivaTrue(Pageable pageable);
 
+    boolean existsByNombreCientificoIgnoreCase(String nombreCientifico);
+
     @Query("""
             SELECT p FROM Planta p
             WHERE p.activa = true
