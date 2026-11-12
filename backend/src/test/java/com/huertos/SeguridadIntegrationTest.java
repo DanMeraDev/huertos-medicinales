@@ -27,8 +27,8 @@ class SeguridadIntegrationTest {
     }
 
     @Test
-    void unaRutaPrivadaSinSesionDevuelve403() throws Exception {
-        assertThat(estadoDe("/api/comunidades")).isEqualTo(403);
+    void unaRutaPrivadaSinSesionDevuelve401() throws Exception {
+        assertThat(estadoDe("/api/comunidades")).isEqualTo(401);
     }
 
     private int estadoDe(String ruta) throws Exception {

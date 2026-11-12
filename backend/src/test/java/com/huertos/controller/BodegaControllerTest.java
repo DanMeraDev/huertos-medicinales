@@ -12,8 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.huertos.config.JwtService;
 import com.huertos.config.SecurityConfig;
+import com.huertos.dto.ComunidadResumenResponse;
+import com.huertos.dto.ContextoBodegaResponse;
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
+import com.huertos.model.Rol;
 import com.huertos.model.TipoMaterialVegetal;
 import com.huertos.model.UnidadMedida;
 import com.huertos.service.BodegaService;
@@ -98,7 +101,7 @@ class BodegaControllerTest {
     }
 
     @Test
-    void registrarIngresoMaterialSinAutenticacionDevuelve403() throws Exception {
+    void registrarIngresoMaterialSinAutenticacionDevuelve401() throws Exception {
         String json = """
                 {
                     "plantaId": 5,
@@ -112,7 +115,7 @@ class BodegaControllerTest {
         mockMvc.perform(post("/api/bodega/material-vegetal")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -185,9 +188,9 @@ class BodegaControllerTest {
     }
 
     @Test
-    void listarMaterialPorComunidadSinAutenticacionDevuelve403() throws Exception {
+    void listarMaterialPorComunidadSinAutenticacionDevuelve401() throws Exception {
         mockMvc.perform(get("/api/bodega/comunidades/10/material-vegetal"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -211,5 +214,42 @@ class BodegaControllerTest {
                         "No tiene permisos para consultar el inventario de otra comunidad"
                 ));
     }
-}
 
+    @Test
+    void obtenerContextoConRolResponsableComunidadDevuelve200() throws Exception {
+        when(bodegaService.obtenerContexto("responsable@correo.com", false))
+                .thenReturn(new ContextoBodegaResponse(
+                        Rol.RESPONSABLE_COMUNIDAD, List.of(new ComunidadResumenResponse(10L, "Comunidad San Pedro"))));
+
+        mockMvc.perform(get("/api/bodega/contexto")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponsable))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rol").value("RESPONSABLE_COMUNIDAD"))
+                .andExpect(jsonPath("$.comunidades[0].id").value(10L))
+                .andExpect(jsonPath("$.comunidades[0].nombre").value("Comunidad San Pedro"));
+    }
+
+    @Test
+    void obtenerContextoConRolTecnicoMspDevuelve200() throws Exception {
+        when(bodegaService.obtenerContexto("tecnico@msp.gob.ec", true))
+                .thenReturn(new ContextoBodegaResponse(Rol.TECNICO_MSP, List.of()));
+
+        mockMvc.perform(get("/api/bodega/contexto")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenTecnicoMsp))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rol").value("TECNICO_MSP"));
+    }
+
+    @Test
+    void obtenerContextoSinAutenticacionDevuelve401() throws Exception {
+        mockMvc.perform(get("/api/bodega/contexto"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void obtenerContextoConRolNoAutorizadoDevuelve403() throws Exception {
+        mockMvc.perform(get("/api/bodega/contexto")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenMiembro))
+                .andExpect(status().isForbidden());
+    }
+}

@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.huertos.dto.ComunidadResumenResponse;
+import com.huertos.dto.ContextoBodegaResponse;
 import com.huertos.dto.MaterialVegetalResponse;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -13,6 +15,7 @@ import com.huertos.mapper.BodegaMapper;
 import com.huertos.model.BodegaMaterialVegetal;
 import com.huertos.model.Comunidad;
 import com.huertos.model.Planta;
+import com.huertos.model.Rol;
 import com.huertos.model.TipoMaterialVegetal;
 import com.huertos.model.UnidadMedida;
 import com.huertos.repository.BodegaMaterialVegetalRepository;
@@ -219,5 +222,42 @@ class BodegaServiceImplTest {
 
         assertThat(resultado).isEmpty();
     }
-}
 
+    @Test
+    void obtenerContextoDeResponsableDevuelveSoloSuComunidad() {
+        List<ComunidadResumenResponse> resumen = List.of(new ComunidadResumenResponse(1L, "Comunidad San Pedro"));
+        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
+        when(bodegaMapper.toListComunidadResumenResponse(List.of(comunidad))).thenReturn(resumen);
+
+        ContextoBodegaResponse contexto = bodegaService.obtenerContexto("responsable@correo.com", false);
+
+        assertThat(contexto.rol()).isEqualTo(Rol.RESPONSABLE_COMUNIDAD);
+        assertThat(contexto.comunidades()).isEqualTo(resumen);
+    }
+
+    @Test
+    void obtenerContextoDeResponsableSinComunidadLanzaExcepcion() {
+        when(comunidadRepository.findByResponsableCorreo("ajeno@correo.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bodegaService.obtenerContexto("ajeno@correo.com", false))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No existe una comunidad asociada al usuario");
+    }
+
+    @Test
+    void obtenerContextoDeTecnicoMspDevuelveComunidadesActivas() {
+        Comunidad otra = new Comunidad();
+        otra.setId(2L);
+        otra.setNombre("Comunidad Santa Clara");
+        List<ComunidadResumenResponse> resumen = List.of(
+                new ComunidadResumenResponse(1L, "Comunidad San Pedro"),
+                new ComunidadResumenResponse(2L, "Comunidad Santa Clara"));
+        when(comunidadRepository.findByActivaTrueOrderByNombreAsc()).thenReturn(List.of(comunidad, otra));
+        when(bodegaMapper.toListComunidadResumenResponse(List.of(comunidad, otra))).thenReturn(resumen);
+
+        ContextoBodegaResponse contexto = bodegaService.obtenerContexto("tecnico@msp.gob.ec", true);
+
+        assertThat(contexto.rol()).isEqualTo(Rol.TECNICO_MSP);
+        assertThat(contexto.comunidades()).isEqualTo(resumen);
+    }
+}

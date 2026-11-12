@@ -37,8 +37,8 @@ class PingControllerTest {
     }
 
     @Test
-    void rutaNoPublicaSinAutenticacionDevuelve403() throws Exception {
+    void rutaNoPublicaSinAutenticacionDevuelve401() throws Exception {
         mockMvc.perform(get("/api/comunidades"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }

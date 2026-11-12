@@ -35,15 +35,15 @@ class SeguridadJwtTest {
     }
 
     @Test
-    void conTokenInvalidoDevuelve403() throws Exception {
+    void conTokenInvalidoDevuelve401() throws Exception {
         mockMvc.perform(get("/api/ruta-inexistente").header(HttpHeaders.AUTHORIZATION, "Bearer token-falso"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void sinTokenDevuelve403() throws Exception {
+    void sinTokenDevuelve401() throws Exception {
         mockMvc.perform(get("/api/ruta-inexistente"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
