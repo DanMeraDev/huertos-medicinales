@@ -1,0 +1,12 @@
+.crear-usuario-pagina {
+  width: 100%;
+  padding: var(--espacio-4);
+}
+
+@media (min-width: 640px) {
+  .crear-usuario-pagina {
+    max-width: var(--ancho-lectura);
+    margin: 0 auto;
+    padding: var(--espacio-8) var(--espacio-4);
+  }
+}
