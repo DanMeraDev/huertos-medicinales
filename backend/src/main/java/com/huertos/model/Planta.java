@@ -19,6 +19,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -69,6 +70,7 @@ public class Planta {
     private String fotografiaUrl;
 
     @ElementCollection
+    @BatchSize(size = 100)
     @CollectionTable(name = "planta_categorias", joinColumns = @JoinColumn(name = "planta_id"))
     @Column(name = "categoria")
     @Enumerated(EnumType.STRING)
