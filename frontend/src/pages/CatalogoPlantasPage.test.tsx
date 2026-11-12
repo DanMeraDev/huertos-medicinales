@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http } from 'msw'
 import { MemoryRouter } from 'react-router'
@@ -33,12 +33,21 @@ function registrarPeticiones() {
   return peticiones
 }
 
-function renderizar() {
+function renderizar(estado: unknown = null) {
   render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[{ pathname: '/catalogo-plantas', state: estado }]}>
       <CatalogoPlantasPage />
     </MemoryRouter>,
   )
+}
+
+function base64Url(datos: object) {
+  return btoa(JSON.stringify(datos)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function iniciarSesionComo(rol: string) {
+  const payload = { sub: 'usuario@huertos.gob.ec', rol, exp: Math.floor(Date.now() / 1000) + 3600 }
+  localStorage.setItem('token', `${base64Url({ alg: 'HS256' })}.${base64Url(payload)}.firma`)
 }
 
 function opcion(grupo: string, nombre: string) {
@@ -120,5 +129,59 @@ describe('CatalogoPlantasPage', () => {
 
     expect(await screen.findByText('6 plantas encontradas')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Filtros (1 activo)' })).toBeInTheDocument()
+  })
+
+  describe('acceso al registro de plantas', () => {
+    afterEach(() => localStorage.clear())
+
+    it('muestra Registrar planta al técnico MSP', () => {
+      iniciarSesionComo('TECNICO_MSP')
+      renderizar()
+
+      expect(screen.getByRole('link', { name: 'Registrar planta' })).toHaveAttribute('href', '/admin/plantas/nueva')
+    })
+
+    it('no muestra Registrar planta sin sesión', () => {
+      renderizar()
+
+      expect(screen.queryByRole('link', { name: 'Registrar planta' })).not.toBeInTheDocument()
+    })
+
+    it('no muestra Registrar planta al responsable de comunidad', () => {
+      iniciarSesionComo('RESPONSABLE_COMUNIDAD')
+      renderizar()
+
+      expect(screen.queryByRole('link', { name: 'Registrar planta' })).not.toBeInTheDocument()
+    })
+  })
+
+  describe('mensaje de planta registrada', () => {
+    afterEach(() => vi.useRealTimers())
+
+    it('muestra el mensaje recibido al volver del registro y se cierra con el botón', async () => {
+      renderizar({ mensajeExito: 'Planta registrada exitosamente' })
+
+      expect(screen.getByText('Planta registrada exitosamente')).toBeInTheDocument()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Cerrar notificación' }))
+
+      expect(screen.queryByText('Planta registrada exitosamente')).not.toBeInTheDocument()
+    })
+
+    it('oculta el mensaje solo después de unos segundos', () => {
+      vi.useFakeTimers()
+      renderizar({ mensajeExito: 'Planta registrada exitosamente' })
+      expect(screen.getByText('Planta registrada exitosamente')).toBeInTheDocument()
+
+      act(() => vi.advanceTimersByTime(5000))
+
+      expect(screen.queryByText('Planta registrada exitosamente')).not.toBeInTheDocument()
+    })
+
+    it('sin mensaje en la navegación no muestra la notificación', () => {
+      renderizar()
+
+      expect(screen.queryByRole('button', { name: 'Cerrar notificación' })).not.toBeInTheDocument()
+    })
   })
 })
