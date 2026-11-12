@@ -53,6 +53,10 @@ a {
   --tag-cold-bg: #E8F4F8;
   --tag-cold-text: #1A6E82;
 
+  /* Luna del calendario */
+  --color-luna-luz: #F4E7B8;
+  --color-luna-sombra: #2A2E3A;
+
   /* Bordes y Sombras */
   --border-color: #E6EAE6;
   --shadow-card: 0 6px 20px rgba(76, 122, 38, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
@@ -158,6 +162,10 @@ a {
   --tag-hot-text: #FFB380;
   --tag-cold-bg: #122229;
   --tag-cold-text: #7BD3EA;
+
+  /* Luna del calendario */
+  --color-luna-luz: #F4E7B8;
+  --color-luna-sombra: #12151C;
 
   /* Bordes y Sombras */
   --border-color: #31362F;
