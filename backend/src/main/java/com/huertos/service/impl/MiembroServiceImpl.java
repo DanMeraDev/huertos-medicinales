@@ -2,6 +2,7 @@ package com.huertos.service.impl;
 
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
@@ -192,6 +193,18 @@ public class MiembroServiceImpl implements MiembroService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return actualizarDatosContacto(usuario.getId(), miembroId, request);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FichaInternaMiembroResponse obtenerFichaInterna(Long responsableId, Long miembroId) {
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FichaInternaMiembroResponse obtenerFichaInternaPorCorreo(String correo, Long miembroId) {
+        return null;
     }
 
     private void validarCedula(String cedula) {

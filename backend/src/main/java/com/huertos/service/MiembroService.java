@@ -2,6 +2,7 @@ package com.huertos.service;
 
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
@@ -82,4 +83,22 @@ public interface MiembroService {
      * @return Ficha detallada del miembro con los datos actualizados
      */
     MiembroDetalleResponse actualizarDatosContactoPorCorreo(String correo, Long miembroId, ActualizarMiembroRequest request);
+
+    /**
+     * Obtiene la ficha interna consolidada de un miembro perteneciente a la comunidad del responsable.
+     *
+     * @param responsableId ID del usuario responsable de la comunidad
+     * @param miembroId ID del miembro a consultar
+     * @return Ficha interna de solo lectura del miembro
+     */
+    FichaInternaMiembroResponse obtenerFichaInterna(Long responsableId, Long miembroId);
+
+    /**
+     * Obtiene la ficha interna consolidada de un miembro a partir del correo del responsable autenticado.
+     *
+     * @param correo Correo electrónico del usuario responsable de la comunidad
+     * @param miembroId ID del miembro a consultar
+     * @return Ficha interna de solo lectura del miembro
+     */
+    FichaInternaMiembroResponse obtenerFichaInternaPorCorreo(String correo, Long miembroId);
 }
