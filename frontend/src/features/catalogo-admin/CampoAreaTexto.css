@@ -1,0 +1,5 @@
+.campo-area-texto {
+  font-family: inherit;
+  line-height: var(--interlineado-normal);
+  resize: vertical;
+}
