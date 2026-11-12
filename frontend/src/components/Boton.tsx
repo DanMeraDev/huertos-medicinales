@@ -16,7 +16,8 @@ const MAPA_VARIANTES: Record<VarianteBoton, string> = {
   danger: 'peligro',
 }
 
-export function Boton({ variante = 'primario', type = 'button', ...props }: BotonProps) {
+export function Boton({ variante = 'primario', type = 'button', className, ...props }: BotonProps) {
   const varianteNormalizada = MAPA_VARIANTES[variante] ?? 'primario'
-  return <button type={type} className={`boton boton-${varianteNormalizada}`} {...props} />
+  const clases = className ? `boton boton-${varianteNormalizada} ${className}` : `boton boton-${varianteNormalizada}`
+  return <button type={type} className={clases} {...props} />
 }
