@@ -1,5 +1,8 @@
 import { http, HttpResponse } from 'msw'
 import { authMockHandlers } from '../../features/auth/authMockHandlers'
+import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
+import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
+import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
 import type { DirectorioComunidadResponse } from '../../features/comunidades-publico/comunidadesPublicoApi'
 
@@ -40,7 +43,10 @@ export const handlers = [
   http.get('*/api/ping', () =>
     HttpResponse.json({ estado: 'ok', baseDeDatos: '11.4.8-MariaDB', fecha: '2026-10-31T12:00:00Z' }),
   ),
+  ...bodegaMockHandlers,
+  ...plantasHandlers,
   ...authMockHandlers,
+  ...calendarioLunarMockHandlers,
 
   http.get('*/api/comunidades/mi-comunidad', () => HttpResponse.json(mockMiComunidad)),
 

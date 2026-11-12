@@ -12,6 +12,8 @@ public interface ComunidadRepository extends JpaRepository<Comunidad, Long> {
 
     Optional<Comunidad> findByResponsableId(Long responsableId);
 
+    Optional<Comunidad> findByResponsableCorreo(String correo);
+
     boolean existsByNombreAndIdNot(String nombre, Long id);
 
     @Query("SELECT c FROM Comunidad c WHERE c.activa = true ORDER BY c.nombre ASC")

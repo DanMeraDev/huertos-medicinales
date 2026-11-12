@@ -1,0 +1,13 @@
+.paginador {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+}
+
+.paginador-paginas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}

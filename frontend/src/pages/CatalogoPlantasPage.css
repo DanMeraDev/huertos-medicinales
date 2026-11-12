@@ -1,0 +1,26 @@
+.catalogo-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+}
+
+.catalogo-pagina-cabecera h1 {
+  font-size: var(--texto-2xl);
+}
+
+.catalogo-pagina-cuerpo {
+  display: grid;
+  grid-template-areas: 'contenido';
+}
+
+.catalogo-pagina-contenido {
+  grid-area: contenido;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .catalogo-pagina-cuerpo {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: 'lateral contenido';
+  }
+}
