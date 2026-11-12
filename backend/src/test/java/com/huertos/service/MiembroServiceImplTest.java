@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
@@ -785,6 +786,177 @@ class MiembroServiceImplTest {
         when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> miembroService.actualizarDatosContactoPorCorreo(correo, 15L, request))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró el usuario");
+    }
+
+    @Test
+    void obtenerFichaInternaRetornaFichaConsolidadaConEdadCalculada() {
+        Long responsableId = 10L;
+        Long miembroId = 15L;
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+        comunidad.setNombre("Huerto Comunitario Allpa Viva");
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.FEMENINO);
+        miembro.setTelefono("0998877665");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+        miembro.setPuntosTotales(45);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+
+        FichaInternaMiembroResponse response = miembroService.obtenerFichaInterna(responsableId, miembroId);
+
+        assertThat(response).isNotNull();
+        assertThat(response.id()).isEqualTo(miembroId);
+        assertThat(response.comunidadId()).isEqualTo(3L);
+        assertThat(response.nombreComunidad()).isEqualTo("Huerto Comunitario Allpa Viva");
+        assertThat(response.cedula()).isEqualTo("1710034065");
+        assertThat(response.nombres()).isEqualTo("María Tránsito");
+        assertThat(response.apellidos()).isEqualTo("Amaguaña Alba");
+        assertThat(response.nombreCompleto()).isEqualTo("María Tránsito Amaguaña Alba");
+        assertThat(response.fechaNacimiento()).isEqualTo(LocalDate.of(2010, 3, 25));
+        assertThat(response.edad()).isEqualTo(16);
+        assertThat(response.genero()).isEqualTo(Genero.FEMENINO);
+        assertThat(response.telefono()).isEqualTo("0998877665");
+        assertThat(response.nivel()).isEqualTo(NivelMiembro.APRENDIZ);
+        assertThat(response.puntosTotales()).isEqualTo(45);
+        assertThat(response.activoEnComunidad()).isTrue();
+        assertThat(response.fechaIngreso()).isEqualTo(LocalDate.of(2026, 11, 10));
+        assertThat(response.fechaBaja()).isNull();
+        assertThat(response.motivoBaja()).isNull();
+    }
+
+    @Test
+    void obtenerFichaInternaRetornaFichaDeMiembroInactivoConBaja() {
+        Long responsableId = 10L;
+        Long miembroId = 15L;
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+        comunidad.setNombre("Huerto Comunitario Allpa Viva");
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.FEMENINO);
+        miembro.setTelefono("0998877665");
+        miembro.setNivel(NivelMiembro.OFICIAL);
+        miembro.setPuntosTotales(120);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(false);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+        relacion.setFechaBaja(LocalDate.of(2026, 11, 11));
+        relacion.setMotivoBaja("Cambio de domicilio");
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+
+        FichaInternaMiembroResponse response = miembroService.obtenerFichaInterna(responsableId, miembroId);
+
+        assertThat(response).isNotNull();
+        assertThat(response.activoEnComunidad()).isFalse();
+        assertThat(response.fechaBaja()).isEqualTo(LocalDate.of(2026, 11, 11));
+        assertThat(response.motivoBaja()).isEqualTo("Cambio de domicilio");
+    }
+
+    @Test
+    void obtenerFichaInternaLanzaRecursoNoEncontradoSiResponsableNoTieneComunidad() {
+        Long responsableId = 99L;
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.obtenerFichaInterna(responsableId, 15L))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró ninguna comunidad asociada al responsable autenticado");
+    }
+
+    @Test
+    void obtenerFichaInternaLanzaRecursoNoEncontradoSiMiembroNoPerteneceAComunidad() {
+        Long responsableId = 10L;
+        Long miembroId = 99L;
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+
+        when(comunidadRepository.findByResponsableId(responsableId)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.obtenerFichaInterna(responsableId, miembroId))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("No se encontró la ficha del voluntario en tu comunidad");
+    }
+
+    @Test
+    void obtenerFichaInternaPorCorreoRetornaFichaExitosamente() {
+        String correo = "responsable@huertos.gob.ec";
+        Long miembroId = 15L;
+
+        Usuario usuario = new Usuario();
+        usuario.setId(10L);
+        usuario.setCorreo(correo);
+
+        Comunidad comunidad = new Comunidad();
+        comunidad.setId(3L);
+        comunidad.setNombre("Huerto Comunitario Allpa Viva");
+
+        Miembro miembro = new Miembro();
+        miembro.setId(miembroId);
+        miembro.setCedula("1710034065");
+        miembro.setNombres("María Tránsito");
+        miembro.setApellidos("Amaguaña Alba");
+        miembro.setFechaNacimiento(LocalDate.of(2010, 3, 25));
+        miembro.setGenero(Genero.FEMENINO);
+        miembro.setTelefono("0998877665");
+        miembro.setNivel(NivelMiembro.APRENDIZ);
+        miembro.setPuntosTotales(45);
+
+        ComunidadMiembro relacion = new ComunidadMiembro();
+        relacion.setId(50L);
+        relacion.setComunidad(comunidad);
+        relacion.setMiembro(miembro);
+        relacion.setActivoEnComunidad(true);
+        relacion.setFechaIngreso(LocalDate.of(2026, 11, 10));
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        when(comunidadRepository.findByResponsableId(10L)).thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.findByComunidadIdAndMiembroId(3L, miembroId)).thenReturn(Optional.of(relacion));
+
+        FichaInternaMiembroResponse response = miembroService.obtenerFichaInternaPorCorreo(correo, miembroId);
+
+        assertThat(response).isNotNull();
+        assertThat(response.id()).isEqualTo(miembroId);
+    }
+
+    @Test
+    void obtenerFichaInternaPorCorreoLanzaRecursoNoEncontradoSiUsuarioNoExiste() {
+        String correo = "desconocido@huertos.gob.ec";
+
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> miembroService.obtenerFichaInternaPorCorreo(correo, 15L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No se encontró el usuario");
     }

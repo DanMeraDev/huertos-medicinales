@@ -1,6 +1,7 @@
 package com.huertos.mapper;
 
 import com.huertos.dto.ActualizarMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
@@ -56,4 +57,23 @@ public interface MiembroMapper {
     @Mapping(target = "motivoBaja", source = "relacion.motivoBaja")
     @Mapping(target = "mensaje", source = "mensaje")
     MiembroEstadoResponse toEstadoResponse(ComunidadMiembro relacion, String mensaje);
+
+    @Mapping(target = "id", source = "miembro.id")
+    @Mapping(target = "comunidadId", source = "relacion.comunidad.id")
+    @Mapping(target = "nombreComunidad", source = "relacion.comunidad.nombre")
+    @Mapping(target = "cedula", source = "miembro.cedula")
+    @Mapping(target = "nombres", source = "miembro.nombres")
+    @Mapping(target = "apellidos", source = "miembro.apellidos")
+    @Mapping(target = "nombreCompleto", expression = "java(miembro.getNombres() + \" \" + miembro.getApellidos())")
+    @Mapping(target = "fechaNacimiento", source = "miembro.fechaNacimiento")
+    @Mapping(target = "edad", source = "edad")
+    @Mapping(target = "genero", source = "miembro.genero")
+    @Mapping(target = "telefono", source = "miembro.telefono")
+    @Mapping(target = "nivel", source = "miembro.nivel")
+    @Mapping(target = "puntosTotales", source = "miembro.puntosTotales")
+    @Mapping(target = "activoEnComunidad", source = "relacion.activoEnComunidad")
+    @Mapping(target = "fechaIngreso", source = "relacion.fechaIngreso")
+    @Mapping(target = "fechaBaja", source = "relacion.fechaBaja")
+    @Mapping(target = "motivoBaja", source = "relacion.motivoBaja")
+    FichaInternaMiembroResponse toFichaInternaResponse(Miembro miembro, ComunidadMiembro relacion, int edad);
 }
