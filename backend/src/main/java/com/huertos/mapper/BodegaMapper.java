@@ -1,6 +1,8 @@
 package com.huertos.mapper;
 
+import com.huertos.dto.BajaMaterialResponse;
 import com.huertos.dto.MaterialVegetalResponse;
+import com.huertos.model.BajaMaterialVegetal;
 import com.huertos.model.BodegaMaterialVegetal;
 import java.util.List;
 import org.mapstruct.Mapper;
@@ -16,4 +18,8 @@ public interface BodegaMapper {
     MaterialVegetalResponse toMaterialVegetalResponse(BodegaMaterialVegetal entidad);
 
     List<MaterialVegetalResponse> toListMaterialVegetalResponse(List<BodegaMaterialVegetal> lista);
+
+    @Mapping(source = "bodegaMaterial.id", target = "bodegaMaterialId")
+    @Mapping(source = "causa", target = "causaFracaso")
+    BajaMaterialResponse toBajaMaterialResponse(BajaMaterialVegetal entidad);
 }

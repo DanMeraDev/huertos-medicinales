@@ -1,12 +1,17 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.BajaMaterialResponse;
 import com.huertos.dto.MaterialVegetalResponse;
+import com.huertos.dto.RegistrarBajaMaterialRequest;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import com.huertos.exception.RecursoNoEncontradoException;
+import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.BodegaMapper;
+import com.huertos.model.BajaMaterialVegetal;
 import com.huertos.model.BodegaMaterialVegetal;
 import com.huertos.model.Comunidad;
 import com.huertos.model.Planta;
+import com.huertos.repository.BajaMaterialVegetalRepository;
 import com.huertos.repository.BodegaMaterialVegetalRepository;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.PlantaRepository;
@@ -15,6 +20,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +31,36 @@ public class BodegaServiceImpl implements BodegaService {
     private final BodegaMaterialVegetalRepository bodegaRepository;
     private final ComunidadRepository comunidadRepository;
     private final PlantaRepository plantaRepository;
+    private final BajaMaterialVegetalRepository bajaMaterialVegetalRepository;
     private final BodegaMapper bodegaMapper;
+
+    @Override
+    @Transactional
+    public BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request) {
+        BodegaMaterialVegetal material = bodegaRepository.findById(bodegaMaterialId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El material vegetal indicado no existe en bodega"));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            validarAccesoComunidad(material.getComunidad().getId(), authentication);
+        }
+
+        if (request.cantidadBaja().compareTo(material.getCantidadDisponible()) > 0) {
+            throw new ReglaNegocioException("La cantidad a dar de baja supera el stock disponible en bodega");
+        }
+
+        material.setCantidadDisponible(material.getCantidadDisponible().subtract(request.cantidadBaja()));
+        bodegaRepository.save(material);
+
+        BajaMaterialVegetal baja = new BajaMaterialVegetal();
+        baja.setBodegaMaterial(material);
+        baja.setCantidadBaja(request.cantidadBaja());
+        baja.setCausa(request.causaFracaso());
+        baja.setObservacion(request.observacion());
+
+        BajaMaterialVegetal guardada = bajaMaterialVegetalRepository.save(baja);
+        return bodegaMapper.toBajaMaterialResponse(guardada);
+    }
 
     @Override
     @Transactional
