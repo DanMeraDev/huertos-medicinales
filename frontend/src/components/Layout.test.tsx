@@ -24,6 +24,7 @@ describe('Layout', () => {
     expect(navegacion).toBeInTheDocument()
 
     expect(screen.getByRole('link', { name: 'Acceso' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Mi Comunidad' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Comunidades y Miembros' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Huerto Real' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Catálogo de Plantas' })).toBeInTheDocument()
