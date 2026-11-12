@@ -83,3 +83,15 @@ export const ETIQUETAS_ORIGEN: Record<OrigenPlanta, string> = {
   ENDEMICA: 'Endémica',
   INTRODUCIDA: 'Introducida',
 }
+
+export interface FiltrosPlanta {
+  cualidad?: CualidadTermica
+  altitud?: number
+  region?: string
+  categoria?: CategoriaUso
+  ciclo?: CicloCultivo
+}
+
+export function contarFiltrosActivos(filtros: FiltrosPlanta) {
+  return Object.values(filtros).filter((valor) => valor !== undefined).length
+}

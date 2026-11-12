@@ -43,6 +43,12 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Registrar Voluntario' })).toBeInTheDocument()
   })
 
+  it('muestra la página de gestión de miembros en /comunidad/miembros', async () => {
+    renderizarEn('/comunidad/miembros')
+
+    expect(await screen.findByRole('heading', { name: 'Miembros de la Comunidad' })).toBeInTheDocument()
+  })
+
   it('muestra la página de inventario de bodega en /bodega/inventario', async () => {
     renderizarEn('/bodega/inventario')
 

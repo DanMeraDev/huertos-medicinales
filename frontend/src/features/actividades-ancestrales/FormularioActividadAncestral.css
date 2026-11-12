@@ -46,6 +46,22 @@
   overflow-x: auto;
 }
 
+.campo-foto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.campo-ayuda {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+}
+
+.formulario-actividad-foto-boton {
+  width: 100%;
+}
+
 .lista-participantes-quitar {
   padding: var(--espacio-1) var(--espacio-3);
 }

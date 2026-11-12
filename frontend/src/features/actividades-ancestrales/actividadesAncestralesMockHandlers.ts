@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import type {
   ActividadAncestralResponse,
+  FotografiaSubidaResponse,
   MiembroComunidadOpcion,
   RegistrarActividadAncestralRequest,
 } from './actividadesAncestralesApi'
@@ -11,9 +12,15 @@ export const mockMiembrosComunidad: MiembroComunidadOpcion[] = [
 ]
 
 export const actividadesAncestralesMockHandlers = [
-  http.get('*/api/comunidades/mi-comunidad/miembros', () =>
+  http.get('*/api/comunidades/mi-comunidad/miembros/activos', () =>
     HttpResponse.json(mockMiembrosComunidad),
   ),
+  http.post('*/api/actividades-ancestrales/fotografia', async () => {
+    const respuesta: FotografiaSubidaResponse = {
+      fotografiaUrl: 'actividades/3f2a9b1c-4d5e-6f7a-8b9c-0d1e2f3a4b5c.jpg',
+    }
+    return HttpResponse.json(respuesta, { status: 200 })
+  }),
   http.post('*/api/actividades-ancestrales', async ({ request }) => {
     const datos = (await request.json()) as RegistrarActividadAncestralRequest
 
@@ -24,7 +31,7 @@ export const actividadesAncestralesMockHandlers = [
       )
     }
 
-    if (datos.evidenciaFotoUrl === 'https://error.gob.ec/foto.jpg') {
+    if (!datos.evidenciaFotoUrl) {
       return HttpResponse.json(
         { detail: 'La fotografía de evidencia es obligatoria para la revisión del MSP' },
         { status: 400 },

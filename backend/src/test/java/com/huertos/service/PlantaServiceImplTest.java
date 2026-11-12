@@ -3,11 +3,13 @@ package com.huertos.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.huertos.dto.FiltrosPlantaRequest;
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
@@ -40,6 +42,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class PlantaServiceImplTest {
@@ -191,6 +194,70 @@ class PlantaServiceImplTest {
                         CualidadTermica.CALIENTE, Set.of(CategoriaUso.CICATRIZANTE), "plantas/matico.jpg"));
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 6001})
+    void rechazaUnaAltitudFueraDeRangoSinConsultar(int altitud) {
+        FiltrosPlantaRequest filtros = new FiltrosPlantaRequest(null, altitud, null, null, null, null, null);
+
+        assertThatThrownBy(() -> servicio.filtrarPlantas(filtros))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("La altitud debe estar entre 0 y 6000 msnm");
+        verifyNoInteractions(plantaRepository);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 6000})
+    void aceptaLasAltitudesDelLimiteDelRango(int altitud) {
+        when(plantaRepository.findAll(anySpecification(), eq(POR_NOMBRE_COMUN))).thenReturn(List.of());
+
+        assertThat(servicio.filtrarPlantas(new FiltrosPlantaRequest(null, altitud, null, null, null, null, null)))
+                .isEmpty();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " a ", "   "})
+    void rechazaUnCriterioDeFiltroDeMenosDeDosCaracteresSinConsultar(String criterio) {
+        FiltrosPlantaRequest filtros = new FiltrosPlantaRequest(null, null, null, null, null, null, criterio);
+
+        assertThatThrownBy(() -> servicio.filtrarPlantas(filtros))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("El criterio de búsqueda debe tener entre 2 y 100 caracteres");
+        verifyNoInteractions(plantaRepository);
+    }
+
+    @Test
+    void rechazaUnCriterioDeFiltroDeMasDeCienCaracteresSinConsultar() {
+        FiltrosPlantaRequest filtros = new FiltrosPlantaRequest(null, null, null, null, null, null, "a".repeat(101));
+
+        assertThatThrownBy(() -> servicio.filtrarPlantas(filtros))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("El criterio de búsqueda debe tener entre 2 y 100 caracteres");
+        verifyNoInteractions(plantaRepository);
+    }
+
+    @Test
+    void filtraSinFiltrosOrdenandoPorNombreComun() {
+        when(plantaRepository.findAll(anySpecification(), eq(POR_NOMBRE_COMUN))).thenReturn(List.of());
+
+        servicio.filtrarPlantas(new FiltrosPlantaRequest(null, null, null, null, null, null, null));
+
+        verify(plantaRepository).findAll(anySpecification(), eq(POR_NOMBRE_COMUN));
+    }
+
+    @Test
+    void devuelveElResumenDeLasPlantasFiltradas() {
+        Planta llanten = planta(16L, "Llantén", "Plantago major",
+                Set.of(CategoriaUso.CICATRIZANTE), "plantas/llanten.jpg");
+        llanten.setCualidadTermica(CualidadTermica.FRIA);
+        when(plantaRepository.findAll(anySpecification(), eq(POR_NOMBRE_COMUN))).thenReturn(List.of(llanten));
+
+        List<PlantaResumenResponse> resultado = servicio.filtrarPlantas(
+                new FiltrosPlantaRequest(CualidadTermica.FRIA, 2800, "Sierra", null, null, null, "ma"));
+
+        assertThat(resultado).containsExactly(new PlantaResumenResponse(16L, "Llantén", null, "Plantago major",
+                CualidadTermica.FRIA, Set.of(CategoriaUso.CICATRIZANTE), "plantas/llanten.jpg"));
+    }
+
     @Test
     void devuelveLaFichaTecnicaConTodosLosCamposDeUnaPlantaActiva() {
         Planta colaDeCaballo = planta(7L, "Cola de caballo", "Equisetum giganteum",
@@ -249,6 +316,11 @@ class PlantaServiceImplTest {
         assertThatThrownBy(() -> servicio.obtenerDetalle(99L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("La ficha solicitada no está disponible");
+    }
+
+    @SuppressWarnings("unchecked")
+    private Specification<Planta> anySpecification() {
+        return any(Specification.class);
     }
 
     private Planta planta(Long id, String nombreComun, String nombreCientifico, Set<CategoriaUso> categorias,

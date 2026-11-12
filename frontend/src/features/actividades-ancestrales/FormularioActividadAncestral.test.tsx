@@ -1,9 +1,50 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormularioActividadAncestral } from './FormularioActividadAncestral'
+import {
+  listarSaberesAncestrales,
+  listarMiembrosComunidad,
+  subirFotografiaActividad,
+  registrarActividadAncestral,
+} from './actividadesAncestralesApi'
+
+vi.mock('./actividadesAncestralesApi', () => ({
+  listarSaberesAncestrales: vi.fn(),
+  listarMiembrosComunidad: vi.fn(),
+  subirFotografiaActividad: vi.fn(),
+  registrarActividadAncestral: vi.fn(),
+}))
+
+const mockListarSaberes = vi.mocked(listarSaberesAncestrales)
+const mockListarMiembros = vi.mocked(listarMiembrosComunidad)
+const mockSubirFoto = vi.mocked(subirFotografiaActividad)
+const mockRegistrarActividad = vi.mocked(registrarActividadAncestral)
 
 describe('FormularioActividadAncestral', () => {
-  it('renderiza todos los campos del formulario y el botón de envío', async () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockListarSaberes.mockResolvedValue([
+      { id: 3, ordenPaso: 3, titulo: 'Ritual de siembra' },
+    ])
+    mockListarMiembros.mockResolvedValue([
+      { id: 7, nombreCompleto: 'María Tránsito Amaguaña Alba' },
+      { id: 8, nombreCompleto: 'Segundo Quishpe Cueva' },
+    ])
+    mockSubirFoto.mockResolvedValue({
+      fotografiaUrl: 'actividades/3f2a9b1c-4d5e-6f7a-8b9c-0d1e2f3a4b5c.jpg',
+    })
+    mockRegistrarActividad.mockResolvedValue({
+      id: 21,
+      comunidadId: 3,
+      tituloSaber: 'Ritual de siembra',
+      estado: 'PENDIENTE',
+      numeroIntento: 1,
+      fechaRealizacion: '2026-11-10',
+      participantes: [],
+    })
+  })
+
+  it('renderiza todos los campos del formulario, incluido el input de foto y el botón de envío', async () => {
     render(<FormularioActividadAncestral />)
 
     expect(await screen.findByLabelText(/hito \/ saber ancestral/i)).toBeInTheDocument()
@@ -15,10 +56,11 @@ describe('FormularioActividadAncestral', () => {
     expect(screen.getByLabelText(/miembro voluntario/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/horas trabajadas/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /agregar participante/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /subir fotografía/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /enviar a revisión msp/i })).toBeInTheDocument()
   })
 
-  it('valida los campos obligatorios y la nómina de participantes', async () => {
+  it('valida los campos obligatorios, incluida la fotografía sin subir', async () => {
     const user = userEvent.setup()
     render(<FormularioActividadAncestral />)
 
@@ -36,7 +78,7 @@ describe('FormularioActividadAncestral', () => {
     ).toBeInTheDocument()
   })
 
-  it('agrega participantes a la nómina y envía la petición al back', async () => {
+  it('sube la fotografía, agrega participantes y envía la petición al back', async () => {
     const user = userEvent.setup()
     render(<FormularioActividadAncestral />)
 
@@ -47,7 +89,15 @@ describe('FormularioActividadAncestral', () => {
     await user.type(screen.getByLabelText(/fecha de realización/i), '2026-11-10')
     await user.selectOptions(screen.getByLabelText(/fase lunar de ejecución/i), 'PURA_KILLA_LLENA')
     await user.type(screen.getByLabelText(/descripción de la bitácora/i), 'Ritual de siembra con chicha de jora')
-    await user.type(screen.getByLabelText(/evidencia fotográfica/i), 'https://evidencias.gob.ec/foto.jpg')
+
+    const inputFoto = screen.getByLabelText(/evidencia fotográfica/i)
+    await user.upload(inputFoto, [
+      new File([new ArrayBuffer(10)], 'foto.jpg', { type: 'image/jpeg' }),
+    ])
+
+    await user.click(screen.getByRole('button', { name: /subir fotografía/i }))
+
+    await screen.findByText(/fotografía subida correctamente/i)
 
     await user.selectOptions(screen.getByLabelText(/miembro voluntario/i), '7')
     await user.type(screen.getByLabelText(/horas trabajadas/i), '4')
@@ -64,18 +114,17 @@ describe('FormularioActividadAncestral', () => {
     expect(screen.getByLabelText(/fecha de realización/i)).toHaveValue('')
   })
 
-  it('muestra el error del back cuando la evidencia fotográfica es rechazada', async () => {
+  it('no permite enviar sin subir la fotografía', async () => {
     const user = userEvent.setup()
     render(<FormularioActividadAncestral />)
 
     await screen.findByText(/ritual de siembra/i)
-    await screen.findByText(/maría tránsito amaguaña alba/i)
 
     await user.selectOptions(screen.getByLabelText(/hito \/ saber ancestral/i), '3')
     await user.type(screen.getByLabelText(/fecha de realización/i), '2026-11-10')
     await user.selectOptions(screen.getByLabelText(/fase lunar de ejecución/i), 'PURA_KILLA_LLENA')
     await user.type(screen.getByLabelText(/descripción de la bitácora/i), 'Ritual de siembra con chicha de jora')
-    await user.type(screen.getByLabelText(/evidencia fotográfica/i), 'https://error.gob.ec/foto.jpg')
+    await user.type(screen.getByLabelText(/evidencia de video/i), 'https://evidencias.gob.ec/video.mp4')
 
     await user.selectOptions(screen.getByLabelText(/miembro voluntario/i), '7')
     await user.type(screen.getByLabelText(/horas trabajadas/i), '4')
@@ -83,8 +132,6 @@ describe('FormularioActividadAncestral', () => {
 
     await user.click(screen.getByRole('button', { name: /enviar a revisión msp/i }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'La fotografía de evidencia es obligatoria para la revisión del MSP',
-    )
+    expect(await screen.findByText(/la fotografía de evidencia es obligatoria para la revisión del msp/i)).toBeInTheDocument()
   })
 })

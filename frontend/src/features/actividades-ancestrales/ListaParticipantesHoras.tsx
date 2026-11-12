@@ -95,7 +95,7 @@ export function ListaParticipantesHoras({
       <div className="lista-participantes-agregar">
         <Selector
           etiqueta="Miembro Voluntario"
-          opciones={miembros.map((miembro) => ({
+          opciones={(miembros ?? []).map((miembro) => ({
             valor: String(miembro.id),
             etiqueta: miembro.nombreCompleto,
           }))}

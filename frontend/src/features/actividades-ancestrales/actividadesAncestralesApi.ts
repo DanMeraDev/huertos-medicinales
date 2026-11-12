@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from '../../api/client'
+import { apiGet, apiPost, apiPostFormData } from '../../api/client'
 
 export type FaseLunar =
   | 'YANA_KILLA_OSCURA'
@@ -48,11 +48,21 @@ export interface ActividadAncestralResponse {
   participantes: ParticipanteActividad[]
 }
 
+export interface FotografiaSubidaResponse {
+  fotografiaUrl: string
+}
+
 export const listarSaberesAncestrales = () =>
   apiGet<SaberAncestralOpcion[]>('/publico/saberes-ancestrales')
 
 export const listarMiembrosComunidad = () =>
-  apiGet<MiembroComunidadOpcion[]>('/comunidades/mi-comunidad/miembros')
+  apiGet<MiembroComunidadOpcion[]>('/comunidades/mi-comunidad/miembros/activos')
+
+export const subirFotografiaActividad = (archivo: File): Promise<FotografiaSubidaResponse> => {
+  const formData = new FormData()
+  formData.append('archivo', archivo)
+  return apiPostFormData<FotografiaSubidaResponse>('/actividades-ancestrales/fotografia', formData)
+}
 
 export function registrarActividadAncestral(
   datos: RegistrarActividadAncestralRequest,

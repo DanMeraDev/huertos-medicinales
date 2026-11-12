@@ -53,7 +53,7 @@ class ActividadAncestralControllerTest {
                 LocalDate.of(2026, 11, 10),
                 FaseLunar.PURA_KILLA_LLENA,
                 "Ritual de siembra con chicha de jora y sahumerio",
-                "https://evidencias.gob.ec/foto-ritual.jpg",
+                "actividades/3f2a9b1c-4d5e-6f7a-8b9c-0d1e2f3a4b5c.jpg",
                 null,
                 List.of(new ParticipanteActividadDto(7L, 4))
         );
@@ -98,7 +98,7 @@ class ActividadAncestralControllerTest {
                 LocalDate.of(2026, 11, 10),
                 FaseLunar.PURA_KILLA_LLENA,
                 "Ritual de siembra con chicha de jora y sahumerio",
-                "https://evidencias.gob.ec/foto-ritual.jpg",
+                "actividades/3f2a9b1c-4d5e-6f7a-8b9c-0d1e2f3a4b5c.jpg",
                 null,
                 List.of()
         );

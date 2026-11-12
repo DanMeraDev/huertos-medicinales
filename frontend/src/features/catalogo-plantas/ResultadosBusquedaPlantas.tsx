@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
 import { Boton } from '../../components/Boton'
-import { Insignia } from '../../components/Insignia'
 import { Notificacion } from '../../components/Notificacion'
-import { FotoPlanta } from './FotoPlanta'
+import { ListaResultadosPlantas } from './ListaResultadosPlantas'
 import { buscarPlantas } from './plantasApi'
-import { TarjetaPlanta } from './TarjetaPlanta'
-import { INSIGNIAS_TERMICAS, type PlantaResumen } from './types'
-import { useEsEscritorio } from './useEsEscritorio'
+import type { PlantaResumen } from './types'
 import './CatalogoPlantasGrid.css'
-import './ResultadosBusquedaPlantas.css'
+import './ListaResultadosPlantas.css'
 
 export interface ResultadosBusquedaPlantasProps {
   criterio: string
@@ -21,34 +17,7 @@ interface Resultado {
   plantas: PlantaResumen[]
 }
 
-function FilaPlanta({ planta }: { planta: PlantaResumen }) {
-  return (
-    <div className="busqueda-plantas-fila">
-      <div className="busqueda-plantas-miniatura">
-        <FotoPlanta ruta={planta.fotografiaUrl} nombreComun={planta.nombreComun} />
-      </div>
-      <div className="busqueda-plantas-datos">
-        <h2 className="busqueda-plantas-nombre">
-          <Link to={`/catalogo-plantas/${planta.id}`} className="busqueda-plantas-enlace">
-            {planta.nombreComun}
-          </Link>
-        </h2>
-        <p className="planta-secundario">
-          <em>{planta.nombreCientifico}</em>
-        </p>
-        {planta.nombreKichwa && (
-          <p className="planta-secundario">
-            Kichwa: <span lang="qu">{planta.nombreKichwa}</span>
-          </p>
-        )}
-        <Insignia {...INSIGNIAS_TERMICAS[planta.cualidadTermica]} />
-      </div>
-    </div>
-  )
-}
-
 export function ResultadosBusquedaPlantas({ criterio, alVerTodas }: ResultadosBusquedaPlantasProps) {
-  const esEscritorio = useEsEscritorio()
   const [resultado, setResultado] = useState<Resultado | null>(null)
   const [criterioFallido, setCriterioFallido] = useState<string | null>(null)
 
@@ -87,13 +56,7 @@ export function ResultadosBusquedaPlantas({ criterio, alVerTodas }: ResultadosBu
           <p className="catalogo-plantas-aviso">
             {plantas.length} {plantas.length === 1 ? 'resultado' : 'resultados'} para «{criterio}»
           </p>
-          <ul className={esEscritorio ? 'catalogo-plantas-grid' : 'busqueda-plantas-lista'}>
-            {plantas.map((planta) => (
-              <li key={planta.id}>
-                {esEscritorio ? <TarjetaPlanta planta={planta} /> : <FilaPlanta planta={planta} />}
-              </li>
-            ))}
-          </ul>
+          <ListaResultadosPlantas plantas={plantas} />
         </>
       )}
     </section>

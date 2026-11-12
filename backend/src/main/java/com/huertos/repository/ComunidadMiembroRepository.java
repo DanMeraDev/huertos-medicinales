@@ -18,5 +18,7 @@ public interface ComunidadMiembroRepository extends JpaRepository<ComunidadMiemb
 
     List<ComunidadMiembro> findByComunidadIdAndActivoEnComunidadTrue(Long comunidadId);
 
+    List<ComunidadMiembro> findByComunidadId(Long comunidadId);
+
     long countByComunidadIdAndActivoEnComunidadTrue(Long comunidadId);
 }

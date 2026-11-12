@@ -24,8 +24,7 @@ public record RegistrarActividadAncestralRequest(
         String descripcionBitacora,
 
         @NotBlank(message = "La fotografía de evidencia es obligatoria para la revisión del MSP")
-        @Pattern(regexp = "^https?://\\S+$", message = "La fotografía de evidencia es obligatoria para la revisión del MSP")
-        @Size(max = 500, message = "La URL de la fotografía no puede superar 500 caracteres")
+        @Size(max = 500, message = "La ruta de la fotografía no puede superar 500 caracteres")
         String evidenciaFotoUrl,
 
         @Pattern(regexp = "^https?://\\S+$", message = "El video de evidencia debe ser una URL válida")
