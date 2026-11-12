@@ -1,0 +1,116 @@
+.directorio-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+}
+
+.directorio-cabecera {
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-4);
+  box-shadow: var(--sombra-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.directorio-cabecera-mensaje {
+  font-size: var(--texto-base);
+  color: var(--color-primario);
+  font-weight: var(--peso-medio);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.directorio-cta {
+  background-color: var(--color-superficie-alt);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-4);
+  margin-top: var(--espacio-2);
+  margin-bottom: var(--espacio-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  align-items: center;
+  text-align: center;
+}
+
+.directorio-cta-contenido {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  flex-direction: column;
+}
+
+.directorio-cta-mensaje {
+  font-size: var(--texto-base);
+  color: var(--color-texto);
+  font-weight: var(--peso-medio);
+  margin: 0;
+}
+
+.directorio-cta-boton {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--espacio-3) var(--espacio-4);
+  text-decoration: none;
+  border-radius: var(--radio-md);
+  box-sizing: border-box;
+}
+
+.directorio-tabla-envoltorio {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--color-superficie);
+  border-radius: var(--radio-lg);
+  border: var(--borde-ancho) solid var(--color-borde);
+  box-shadow: var(--sombra-sm);
+}
+
+.directorio-vacio {
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-8) var(--espacio-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-4);
+  text-align: center;
+}
+
+.directorio-vacio-mensaje {
+  font-size: var(--texto-base);
+  color: var(--color-texto-secundario);
+  margin: 0;
+  max-width: 32rem;
+}
+
+.directorio-cargando {
+  padding: var(--espacio-8);
+  text-align: center;
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-base);
+}
+
+@media (min-width: 640px) {
+  .directorio-cta {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+
+  .directorio-cta-contenido {
+    flex-direction: row;
+  }
+
+  .directorio-cta-boton {
+    width: auto;
+    min-width: 14rem;
+  }
+}

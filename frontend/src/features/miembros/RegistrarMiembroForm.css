@@ -1,0 +1,64 @@
+.formulario-miembro-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+}
+
+.formulario-miembro-motivacional {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-4);
+  box-shadow: var(--sombra-sm);
+}
+
+.formulario-miembro-kinti {
+  flex-shrink: 0;
+}
+
+.formulario-miembro-mensaje {
+  margin: 0;
+  font-size: var(--texto-base);
+  font-weight: var(--peso-medio);
+  color: var(--color-primario);
+  line-height: var(--interlineado-normal);
+}
+
+.formulario-miembro-grilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-4);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-6);
+  box-shadow: var(--sombra-sm);
+}
+
+@media (min-width: 640px) {
+  .formulario-miembro-grilla {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.formulario-miembro-acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--espacio-2);
+}
+
+.formulario-miembro-boton {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .formulario-miembro-boton {
+    width: auto;
+    min-width: 14rem;
+  }
+}
