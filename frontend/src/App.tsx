@@ -20,6 +20,7 @@ import { SolicitudesPage } from './pages/SolicitudesPage'
 import { SaberesAncestralesPage } from './pages/SaberesAncestralesPage'
 import { SubhuertosPage } from './pages/SubhuertosPage'
 import { CatalogoActividadesPage } from './pages/CatalogoActividadesPage'
+import { NuevaActividadAncestralPage } from './pages/NuevaActividadAncestralPage'
 export default function App() {
   return (
     <Layout>
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/solicitudes" element={<SolicitudesPage />} />
         <Route path="/huerto/subhuertos" element={<SubhuertosPage />} />
         <Route path="/comunidad/actividades-catalogo" element={<CatalogoActividadesPage />} />
+        <Route path="/actividades-ancestrales/nueva" element={<NuevaActividadAncestralPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
