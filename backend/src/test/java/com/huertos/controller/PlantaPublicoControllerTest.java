@@ -3,12 +3,14 @@ package com.huertos.controller;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.huertos.config.SecurityConfig;
+import com.huertos.dto.FiltrosPlantaRequest;
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.dto.PlantaResumenResponse;
@@ -100,6 +102,56 @@ class PlantaPublicoControllerTest {
         mockMvc.perform(get("/api/publico/plantas/buscar").param("criterio", "a"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("El criterio de búsqueda debe tener entre 2 y 100 caracteres"));
+    }
+
+    @Test
+    void filtraPlantasSinTokenYDevuelveLaListaEnJson() throws Exception {
+        when(plantaService.filtrarPlantas(new FiltrosPlantaRequest(null, null, null, null, null, null, null)))
+                .thenReturn(List.of(MANZANILLA));
+
+        mockMvc.perform(get("/api/publico/plantas/filtrar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nombreComun").value("Manzanilla"))
+                .andExpect(jsonPath("$[0].cualidadTermica").value("CALIENTE"))
+                .andExpect(jsonPath("$[0].categorias", containsInAnyOrder("SEDANTE", "ANTIESPASMODICA")))
+                .andExpect(jsonPath("$.length()").value(1));
+    }
+
+    @Test
+    void pasaTodosLosFiltrosAlServicioEnElRecord() throws Exception {
+        when(plantaService.filtrarPlantas(new FiltrosPlantaRequest(CualidadTermica.CALIENTE, 2800, "Sierra",
+                CategoriaUso.SEDANTE, CicloCultivo.CORTO, OrigenPlanta.INTRODUCIDA, "manza")))
+                .thenReturn(List.of(MANZANILLA));
+
+        mockMvc.perform(get("/api/publico/plantas/filtrar")
+                        .param("cualidad", "CALIENTE")
+                        .param("altitud", "2800")
+                        .param("region", "Sierra")
+                        .param("categoria", "SEDANTE")
+                        .param("ciclo", "CORTO")
+                        .param("origen", "INTRODUCIDA")
+                        .param("criterio", "manza"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nombreComun").value("Manzanilla"));
+    }
+
+    @Test
+    void conUnaAltitudFueraDeRangoRespondeSolicitudIncorrectaConElMensaje() throws Exception {
+        when(plantaService.filtrarPlantas(new FiltrosPlantaRequest(null, 7000, null, null, null, null, null)))
+                .thenThrow(new ReglaNegocioException("La altitud debe estar entre 0 y 6000 msnm"));
+
+        mockMvc.perform(get("/api/publico/plantas/filtrar").param("altitud", "7000"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("La altitud debe estar entre 0 y 6000 msnm"));
+    }
+
+    @Test
+    void conUnaCualidadInexistenteRespondeSolicitudIncorrecta() throws Exception {
+        mockMvc.perform(get("/api/publico/plantas/filtrar").param("cualidad", "TIBIA"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.cualidad").exists());
+        verifyNoInteractions(plantaService);
     }
 
     @Test

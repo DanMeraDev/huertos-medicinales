@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import type { PaginaResponse } from '../../api/client'
-import type { CategoriaUso, CualidadTermica, PlantaDetalle, PlantaResumen } from './types'
+import type { CategoriaUso, CicloCultivo, CualidadTermica, PlantaDetalle, PlantaResumen } from './types'
 
 function planta(
   id: number,
@@ -88,6 +88,40 @@ export const achicoriaSinDatosDetalle: PlantaDetalle = {
 
 const detallesMock = [colaDeCaballoDetalle, achicoriaSinDatosDetalle]
 
+interface DatosCultivo {
+  altitudMin: number
+  altitudMax: number
+  regiones: string
+  ciclo: CicloCultivo
+}
+
+function cultivo(altitudMin: number, altitudMax: number, regiones: string, ciclo: CicloCultivo): DatosCultivo {
+  return { altitudMin, altitudMax, regiones, ciclo }
+}
+
+const datosCultivo: Record<number, DatosCultivo> = {
+  1: cultivo(1500, 3500, 'Sierra', 'CORTO'),
+  2: cultivo(1000, 3200, 'Sierra', 'CORTO'),
+  3: cultivo(1500, 3200, 'Sierra', 'CORTO'),
+  4: cultivo(1500, 3200, 'Sierra', 'CORTO'),
+  5: cultivo(1500, 3200, 'Sierra', 'LARGO'),
+  6: cultivo(2200, 3500, 'Sierra', 'LARGO'),
+  7: cultivo(2500, 3800, 'Sierra', 'LARGO'),
+  8: cultivo(2200, 3800, 'Sierra', 'CORTO'),
+  9: cultivo(500, 3500, 'Sierra, Costa', 'CORTO'),
+  10: cultivo(2000, 3800, 'Sierra', 'LARGO'),
+  11: cultivo(1500, 3000, 'Sierra', 'LARGO'),
+  12: cultivo(0, 2800, 'Costa, Sierra', 'CORTO'),
+  13: cultivo(1500, 3200, 'Sierra, Costa', 'LARGO'),
+  14: cultivo(1500, 3200, 'Sierra', 'CORTO'),
+  15: cultivo(2000, 3800, 'Sierra', 'CORTO'),
+  16: cultivo(1500, 3800, 'Sierra', 'CORTO'),
+  17: cultivo(0, 3500, 'Sierra, Amazonía', 'LARGO'),
+  18: cultivo(2000, 3200, 'Sierra', 'LARGO'),
+  19: cultivo(0, 2800, 'Costa, Sierra', 'LARGO'),
+  20: cultivo(1800, 3200, 'Sierra', 'LARGO'),
+}
+
 export function paginaDePlantas(plantas: PlantaResumen[], pagina: number, tamanio: number): PaginaResponse<PlantaResumen> {
   return {
     contenido: plantas.slice(pagina * tamanio, (pagina + 1) * tamanio),
@@ -108,10 +142,32 @@ function coincide(planta: PlantaResumen, criterio: string) {
   )
 }
 
+function cumpleFiltros(planta: PlantaResumen, parametros: URLSearchParams) {
+  const datos = datosCultivo[planta.id]
+  const cualidad = parametros.get('cualidad')
+  const ciclo = parametros.get('ciclo')
+  const categoria = parametros.get('categoria')
+  const altitud = parametros.get('altitud')
+  const region = normalizar(parametros.get('region')?.trim() ?? '')
+  const criterio = normalizar(parametros.get('criterio')?.trim() ?? '')
+  return (
+    (cualidad === null || planta.cualidadTermica === cualidad) &&
+    (ciclo === null || datos.ciclo === ciclo) &&
+    (categoria === null || planta.categorias.some((categoriaPlanta) => categoriaPlanta === categoria)) &&
+    (altitud === null || (datos.altitudMin <= Number(altitud) && Number(altitud) <= datos.altitudMax)) &&
+    normalizar(datos.regiones).includes(region) &&
+    coincide(planta, criterio)
+  )
+}
+
 export const plantasHandlers = [
   http.get('*/api/publico/plantas/buscar', ({ request }) => {
     const criterio = normalizar(new URL(request.url).searchParams.get('criterio') ?? '')
     return HttpResponse.json(plantasMock.filter((planta) => coincide(planta, criterio)))
+  }),
+  http.get('*/api/publico/plantas/filtrar', ({ request }) => {
+    const parametros = new URL(request.url).searchParams
+    return HttpResponse.json(plantasMock.filter((planta) => cumpleFiltros(planta, parametros)))
   }),
   http.get('*/api/publico/plantas/:id', ({ params }) => {
     const detalle = detallesMock.find((planta) => String(planta.id) === params.id)
