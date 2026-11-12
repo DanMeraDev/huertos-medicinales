@@ -25,30 +25,24 @@ public class GamificacionServiceImpl implements GamificacionService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Miembro no encontrado con id: " + miembroId));
 
         NivelMiembro nivelAnterior = miembro.getNivel();
-        evaluarAscensoNivelEntidad(miembro);
+        NivelMiembro nuevoNivel = determinarNuevoNivel(miembro.getPuntosTotales(), nivelAnterior);
 
-        if (miembro.getNivel() != nivelAnterior) {
+        if (nuevoNivel != nivelAnterior) {
+            miembro.setNivel(nuevoNivel);
             miembroRepository.save(miembro);
-            log.info("Miembro id {} ascendió honoríficamente a nivel {}", miembro.getId(), miembro.getNivel());
+            log.info("Miembro id {} ascendió honoríficamente a nivel {}", miembro.getId(), nuevoNivel);
         }
 
-        return miembro.getNivel();
+        return nuevoNivel;
     }
 
-    private void evaluarAscensoNivelEntidad(Miembro miembro) {
-        int puntos = miembro.getPuntosTotales();
-        NivelMiembro actual = miembro.getNivel();
-
-        if (puntos >= ConstantesGamificacion.UMBRAL_MAESTRO) {
-            if (actual != NivelMiembro.MAESTRO) {
-                miembro.setNivel(NivelMiembro.MAESTRO);
-            }
-        } else if (puntos >= ConstantesGamificacion.UMBRAL_OFICIAL) {
-            if (actual == null || actual == NivelMiembro.APRENDIZ) {
-                miembro.setNivel(NivelMiembro.OFICIAL);
-            }
-        } else if (actual == null) {
-            miembro.setNivel(NivelMiembro.APRENDIZ);
+    private NivelMiembro determinarNuevoNivel(int puntosTotales, NivelMiembro nivelActual) {
+        if (puntosTotales >= ConstantesGamificacion.UMBRAL_MAESTRO) {
+            return NivelMiembro.MAESTRO;
         }
+        if (puntosTotales >= ConstantesGamificacion.UMBRAL_OFICIAL) {
+            return (nivelActual == NivelMiembro.MAESTRO) ? NivelMiembro.MAESTRO : NivelMiembro.OFICIAL;
+        }
+        return (nivelActual == null) ? NivelMiembro.APRENDIZ : nivelActual;
     }
 }
