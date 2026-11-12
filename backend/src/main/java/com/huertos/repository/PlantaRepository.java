@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PlantaRepository extends JpaRepository<Planta, Long> {
 
@@ -14,6 +15,13 @@ public interface PlantaRepository extends JpaRepository<Planta, Long> {
 
     Page<Planta> findAllByActivaTrue(Pageable pageable);
 
-    @Query("SELECT p FROM Planta p WHERE 1 = 0")
-    List<Planta> buscarActivasPorNombre(String criterio);
+    @Query("""
+            SELECT p FROM Planta p
+            WHERE p.activa = true
+              AND (p.nombreComun LIKE CONCAT('%', :#{escape(#criterio)}, '%') ESCAPE :#{escapeCharacter()}
+                OR p.nombreCientifico LIKE CONCAT('%', :#{escape(#criterio)}, '%') ESCAPE :#{escapeCharacter()}
+                OR p.nombreKichwa LIKE CONCAT('%', :#{escape(#criterio)}, '%') ESCAPE :#{escapeCharacter()})
+            ORDER BY p.nombreComun, p.id
+            """)
+    List<Planta> buscarActivasPorNombre(@Param("criterio") String criterio);
 }

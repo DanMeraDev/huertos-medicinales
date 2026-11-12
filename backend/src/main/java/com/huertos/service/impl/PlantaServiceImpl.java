@@ -2,6 +2,7 @@ package com.huertos.service.impl;
 
 import com.huertos.dto.PaginaResponse;
 import com.huertos.dto.PlantaResumenResponse;
+import com.huertos.exception.ReglaNegocioException;
 import com.huertos.mapper.PlantaMapper;
 import com.huertos.repository.PlantaRepository;
 import com.huertos.service.PlantaService;
@@ -18,6 +19,8 @@ public class PlantaServiceImpl implements PlantaService {
 
     private static final int TAMANIO_MINIMO = 1;
     private static final int TAMANIO_MAXIMO = 100;
+    private static final int LONGITUD_MINIMA_CRITERIO = 2;
+    private static final int LONGITUD_MAXIMA_CRITERIO = 100;
     private static final Sort POR_NOMBRE_COMUN = Sort.by(Sort.Direction.ASC, "nombreComun", "id");
 
     private final PlantaRepository plantaRepository;
@@ -32,7 +35,20 @@ public class PlantaServiceImpl implements PlantaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PlantaResumenResponse> buscarPorNombre(String criterio) {
-        throw new UnsupportedOperationException();
+        String criterioRecortado = validarCriterio(criterio);
+        return plantaRepository.buscarActivasPorNombre(criterioRecortado).stream()
+                .map(plantaMapper::aResumen)
+                .toList();
+    }
+
+    private String validarCriterio(String criterio) {
+        String criterioRecortado = criterio == null ? "" : criterio.trim();
+        if (criterioRecortado.length() < LONGITUD_MINIMA_CRITERIO
+                || criterioRecortado.length() > LONGITUD_MAXIMA_CRITERIO) {
+            throw new ReglaNegocioException("El criterio de búsqueda debe tener entre 2 y 100 caracteres");
+        }
+        return criterioRecortado;
     }
 }
