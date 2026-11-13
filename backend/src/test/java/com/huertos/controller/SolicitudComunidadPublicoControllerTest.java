@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.CrearSolicitudComunidadRequest;
 import com.huertos.dto.SolicitudComunidadResponse;
@@ -42,6 +43,9 @@ class SolicitudComunidadPublicoControllerTest {
 
     @MockitoBean
     private SolicitudComunidadService solicitudComunidadService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void registraLaSolicitudSinTokenYDevuelve201() throws Exception {

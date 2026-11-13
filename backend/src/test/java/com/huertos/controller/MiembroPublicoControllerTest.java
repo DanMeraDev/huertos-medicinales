@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.InsigniaObtenidaDto;
 import com.huertos.dto.PerfilPublicoMiembroResponse;
@@ -33,6 +34,9 @@ class MiembroPublicoControllerTest {
 
     @MockitoBean
     private MiembroService miembroService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void obtenerPerfilPorCedulaRetorna200SinAutenticacionYSinDatosPrivados() throws Exception {

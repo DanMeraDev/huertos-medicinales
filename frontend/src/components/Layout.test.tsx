@@ -138,6 +138,8 @@ describe('Layout', () => {
     )
     expect(screen.queryByRole('link', { name: 'Mi Comunidad' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Crear Usuario' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Configurar Huerto' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Subhuertos' })).not.toBeInTheDocument()
   })
 
   it('muestra las opciones de TECNICO_SIS y permite cerrar sesión', async () => {

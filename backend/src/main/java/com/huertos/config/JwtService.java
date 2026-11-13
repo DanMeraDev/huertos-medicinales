@@ -1,9 +1,13 @@
 package com.huertos.config;
 
+import com.huertos.model.Usuario;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Optional;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -23,6 +27,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
  * Genera y valida los tokens de sesión, firmados con HS256.
  */
 public class JwtService {
+
+    public static final String CLAIM_HUELLA = "huella";
 
     private final JwtEncoder codificador;
     private final JwtDecoder decodificador;
@@ -45,21 +51,40 @@ public class JwtService {
     }
 
     public String generarToken(String email, String rol) {
-        return generarToken(null, email, rol, false);
-    }
-
-    public String generarToken(Long id, String email, String rol, boolean requiereCambioClave) {
-        Instant ahora = clock.instant();
-        JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
+        return codificar(JwtClaimsSet.builder()
                 .subject(email)
                 .claim("rol", rol)
-                .claim("requiereCambioClave", requiereCambioClave)
-                .issuedAt(ahora)
-                .expiresAt(ahora.plus(expiracion));
-        if (id != null) {
-            builder.claim("id", id);
+                .claim("requiereCambioClave", false));
+    }
+
+    public String generarToken(Usuario usuario) {
+        JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
+                .subject(usuario.getCorreo())
+                .claim("rol", usuario.getRol().name())
+                .claim("requiereCambioClave", usuario.isRequiereCambioClave())
+                .claim(CLAIM_HUELLA, huellaDe(usuario.getPasswordHash()));
+        if (usuario.getId() != null) {
+            builder.claim("id", usuario.getId());
         }
-        JwtClaimsSet datos = builder.build();
+        return codificar(builder);
+    }
+
+    /**
+     * Resume el hash de la contraseña para que el token deje de servir cuando la contraseña cambia,
+     * sin incluir el hash en el token.
+     */
+    public String huellaDe(String passwordHash) {
+        try {
+            byte[] resumen = MessageDigest.getInstance("SHA-256").digest(passwordHash.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(resumen);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 no está disponible", e);
+        }
+    }
+
+    private String codificar(JwtClaimsSet.Builder builder) {
+        Instant ahora = clock.instant();
+        JwtClaimsSet datos = builder.issuedAt(ahora).expiresAt(ahora.plus(expiracion)).build();
         JwsHeader encabezado = JwsHeader.with(MacAlgorithm.HS256).build();
         return codificador.encode(JwtEncoderParameters.from(encabezado, datos)).getTokenValue();
     }

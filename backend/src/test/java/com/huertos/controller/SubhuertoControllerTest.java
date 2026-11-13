@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.CrearSubhuertoRequest;
 import com.huertos.dto.SubhuertoResponse;
@@ -38,6 +39,9 @@ class SubhuertoControllerTest {
 
     @MockitoBean
     private SubhuertoService subhuertoService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     @WithMockUser(username = "resp@comunidad.ec", roles = "RESPONSABLE_COMUNIDAD")
@@ -120,6 +124,13 @@ class SubhuertoControllerTest {
         mockMvc.perform(post("/api/comunidad/subhuertos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "tecnico@msp.gob.ec", roles = "TECNICO_MSP")
+    void listarSubhuertos_retorna403ParaTecnicoMsp() throws Exception {
+        mockMvc.perform(get("/api/comunidad/subhuertos"))
                 .andExpect(status().isForbidden());
     }
 }

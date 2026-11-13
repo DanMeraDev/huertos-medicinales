@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.CambiarClaveRequest;
 import com.huertos.dto.CambioClaveResponse;
@@ -52,6 +53,9 @@ class UsuarioControllerTest {
 
     @MockitoBean
     private UsuarioService usuarioService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void elTecnicoSisCreaUnUsuarioYRecibe201() throws Exception {

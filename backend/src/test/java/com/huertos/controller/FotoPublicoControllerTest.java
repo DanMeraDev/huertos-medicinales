@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.service.impl.AlmacenamientoServiceImpl;
 import java.io.IOException;
@@ -52,6 +54,9 @@ class FotoPublicoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void entregaUnJpegSinTokenConSusEncabezados() throws Exception {

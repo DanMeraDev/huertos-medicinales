@@ -9,12 +9,14 @@ import com.huertos.dto.LoginRequest;
 import com.huertos.dto.LoginResponse;
 import com.huertos.exception.CredencialesInvalidasException;
 import com.huertos.exception.CuentaInactivaException;
+import com.huertos.exception.DemasiadosIntentosException;
 import com.huertos.mapper.UsuarioMapper;
 import com.huertos.model.Rol;
 import com.huertos.model.Usuario;
 import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.impl.AuthServiceImpl;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Optional;
@@ -42,12 +44,15 @@ class AuthServiceImplTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private Clock reloj;
+
     private AuthService servicio;
 
     @BeforeEach
     void crearServicio() {
         servicio = new AuthServiceImpl(usuarioRepository, passwordEncoder, jwtService,
-                Mappers.getMapper(UsuarioMapper.class));
+                Mappers.getMapper(UsuarioMapper.class), reloj);
     }
 
     @Test
@@ -94,6 +99,37 @@ class AuthServiceImplTest {
         assertThatThrownBy(() -> servicio.iniciarSesion(new LoginRequest(CORREO, CLAVE)))
                 .isInstanceOf(CuentaInactivaException.class)
                 .hasMessage("Esta cuenta se encuentra inactiva. Comuníquese con la administración del sistema");
+    }
+
+    @Test
+    void bloqueaElCorreoDespuesDeCincoIntentosFallidos() {
+        Instant inicio = Instant.parse("2026-11-11T15:00:00Z");
+        when(reloj.instant()).thenReturn(inicio);
+        when(usuarioRepository.findByCorreo(CORREO)).thenReturn(Optional.of(usuario(true)));
+        fallarCincoVeces();
+
+        assertThatThrownBy(() -> servicio.iniciarSesion(new LoginRequest(CORREO, CLAVE)))
+                .isInstanceOf(DemasiadosIntentosException.class)
+                .hasMessage("Demasiados intentos fallidos. Intente nuevamente en 15 minutos");
+    }
+
+    @Test
+    void permiteIniciarSesionCuandoTerminaElBloqueo() {
+        Instant inicio = Instant.parse("2026-11-11T15:00:00Z");
+        when(reloj.instant()).thenReturn(inicio);
+        when(usuarioRepository.findByCorreo(CORREO)).thenReturn(Optional.of(usuario(true)));
+        fallarCincoVeces();
+
+        when(reloj.instant()).thenReturn(inicio.plus(Duration.ofMinutes(15)));
+
+        assertThat(servicio.iniciarSesion(new LoginRequest(CORREO, CLAVE)).correo()).isEqualTo(CORREO);
+    }
+
+    private void fallarCincoVeces() {
+        for (int intento = 0; intento < 5; intento++) {
+            assertThatThrownBy(() -> servicio.iniciarSesion(new LoginRequest(CORREO, "OtraClave1!")))
+                    .isInstanceOf(CredencialesInvalidasException.class);
+        }
     }
 
     private Usuario usuario(boolean activo) {
