@@ -14,9 +14,24 @@
   font-size: var(--texto-2xl);
 }
 
+.catalogo-pagina-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+.catalogo-pagina-registrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  text-decoration: none;
+}
+
 .catalogo-pagina-cuerpo {
   display: grid;
   grid-template-areas: 'contenido';
+  padding-bottom: var(--espacio-16);
 }
 
 .catalogo-pagina-contenido {
@@ -31,8 +46,16 @@
     justify-content: space-between;
   }
 
+  .catalogo-pagina-titulo {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--espacio-4);
+  }
+
   .catalogo-pagina-cuerpo {
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: 'lateral contenido';
+    column-gap: var(--espacio-6);
+    padding-bottom: 0;
   }
 }

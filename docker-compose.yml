@@ -37,8 +37,11 @@ services:
       MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
       MAIL_FROM: ${MAIL_FROM:-no-responder@huertos.gob.ec}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:${WEB_PORT:-5173}}
+      FOTOS_DIRECTORIO: /app/fotos
     ports:
       - "${API_PORT:-8080}:8080"
+    volumes:
+      - fotos-data:/app/fotos
     depends_on:
       db:
         condition: service_healthy
@@ -52,3 +55,4 @@ services:
 
 volumes:
   db-data:
+  fotos-data:

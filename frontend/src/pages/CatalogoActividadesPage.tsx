@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { Notificacion } from '../components/Notificacion'
 import {
   crearActividad,
@@ -8,6 +9,7 @@ import {
 import { CatalogoActividadesView } from '../features/comunidad-actividades/CatalogoActividadesView'
 
 export function CatalogoActividadesPage() {
+  const navigate = useNavigate()
   const [actividades, setActividades] = useState<ActividadCatalogo[]>([])
   const [cargando, setCargando] = useState(true)
   const [errorCarga, setErrorCarga] = useState<string | null>(null)
@@ -44,6 +46,7 @@ export function CatalogoActividadesPage() {
       actividadesIniciales={actividades}
       cargando={cargando}
       alCrear={crearActividad}
+      alNavegarRegistroLabor={() => navigate('/comunidad/actividades-miembros/nueva')}
     />
   )
 }

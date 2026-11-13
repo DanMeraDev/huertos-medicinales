@@ -29,6 +29,14 @@ describe('KintiGuia', () => {
     expect(img).toHaveAttribute('alt', 'Kinti Guía celebrando logro')
   })
 
+  it('renderiza la variante dorado con kinti-dorado.svg', () => {
+    render(<KintiGuia variante="dorado" />)
+
+    const img = screen.getByRole('img')
+    expect(img).toHaveAttribute('src', '/kinti/kinti-dorado.svg')
+    expect(img).toHaveAttribute('alt', 'Kinti Guía Maestro dorado')
+  })
+
   it('renderiza la variante vacío con su respectivo SVG', () => {
     render(<KintiGuia variante="vacio" />)
 
@@ -73,11 +81,13 @@ describe('KintiGuia', () => {
     let img = screen.getByRole('img')
     expect(img).toHaveAttribute('width', '48')
     expect(img).toHaveAttribute('height', '48')
+    expect(img).toHaveClass('kinti-guia--sm')
 
     rerender(<KintiGuia tamano="lg" />)
     img = screen.getByRole('img')
     expect(img).toHaveAttribute('width', '160')
     expect(img).toHaveAttribute('height', '160')
+    expect(img).toHaveClass('kinti-guia--lg')
   })
 
   it('prioriza width y height explícitos sobre el preset de tamaño', () => {

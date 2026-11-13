@@ -1,10 +1,16 @@
-import { EstadoServidor } from '../features/ping/EstadoServidor'
+import { CtaComunidadInicio } from '../features/inicio/CtaComunidadInicio'
+import { HeroInicio } from '../features/inicio/HeroInicio'
+import { NivelesKinti } from '../features/inicio/NivelesKinti'
+import { SeccionLunarInicio } from '../features/inicio/SeccionLunarInicio'
+import './InicioPage.css'
 
 export function InicioPage() {
   return (
-    <main className="inicio">
-      <h1>Huertos Medicinales Comunitarios</h1>
-      <EstadoServidor />
-    </main>
+    <div className="inicio-pagina">
+      <HeroInicio />
+      <NivelesKinti />
+      <SeccionLunarInicio />
+      <CtaComunidadInicio />
+    </div>
   )
 }

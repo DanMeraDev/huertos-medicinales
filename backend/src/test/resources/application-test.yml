@@ -5,6 +5,8 @@ app:
     allowed-origins: http://localhost:5173
   jwt:
     secreto: clave-de-prueba-con-mas-de-32-caracteres
+  fotos:
+    directorio: target/fotos-prueba
 
 spring:
   jpa:

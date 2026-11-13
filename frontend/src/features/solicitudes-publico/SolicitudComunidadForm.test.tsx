@@ -16,23 +16,28 @@ function renderizar() {
   )
 }
 
+async function escribir(usuario: ReturnType<typeof userEvent.setup>, campo: HTMLElement, texto: string) {
+  await usuario.click(campo)
+  await usuario.paste(texto)
+}
+
 async function llenarFormulario({ cedula = '1710034065' } = {}) {
   const usuario = userEvent.setup()
-  await usuario.type(screen.getByLabelText('Nombre de la comunidad'), 'Huerto Comunitario Allpa Viva')
+  await escribir(usuario, screen.getByLabelText('Nombre de la comunidad'), 'Huerto Comunitario Allpa Viva')
   await usuario.selectOptions(screen.getByLabelText('Tipo de organización'), 'BARRIO')
-  await usuario.type(screen.getByLabelText('Provincia'), 'Pichincha')
-  await usuario.type(screen.getByLabelText('Parroquia'), 'Calderon')
-  await usuario.type(screen.getByLabelText('Dirección exacta'), 'Calle de las Rosas y Pasaje Los Pinos')
-  await usuario.type(screen.getByLabelText('Latitud'), '-0.0987123')
-  await usuario.type(screen.getByLabelText('Longitud'), '-78.4321456')
+  await escribir(usuario, screen.getByLabelText('Provincia'), 'Pichincha')
+  await escribir(usuario, screen.getByLabelText('Parroquia'), 'Calderon')
+  await escribir(usuario, screen.getByLabelText('Dirección exacta'), 'Calle de las Rosas y Pasaje Los Pinos')
+  await escribir(usuario, screen.getByLabelText('Latitud'), '-0.0987123')
+  await escribir(usuario, screen.getByLabelText('Longitud'), '-78.4321456')
   await usuario.selectOptions(screen.getByLabelText('Diseño principal del huerto'), 'EN_TIERRA')
   await usuario.click(screen.getByLabelText('Surcos (wachu)'))
-  await usuario.type(screen.getByLabelText('Cédula de identidad'), cedula)
-  await usuario.type(screen.getByLabelText('Nombre y apellido'), 'Segundo Tránsito Amaguaña')
+  await escribir(usuario, screen.getByLabelText('Cédula de identidad'), cedula)
+  await escribir(usuario, screen.getByLabelText('Nombre y apellido'), 'Segundo Tránsito Amaguaña')
   await usuario.type(screen.getByLabelText('Fecha de nacimiento'), '1990-05-14')
   await usuario.selectOptions(screen.getByLabelText('Género'), 'MASCULINO')
-  await usuario.type(screen.getByLabelText('Correo electrónico'), 'comunidad.allpa@huertos.gob.ec')
-  await usuario.type(screen.getByLabelText('Teléfono celular'), '0991234567')
+  await escribir(usuario, screen.getByLabelText('Correo electrónico'), 'comunidad.allpa@huertos.gob.ec')
+  await escribir(usuario, screen.getByLabelText('Teléfono celular'), '0991234567')
   return usuario
 }
 

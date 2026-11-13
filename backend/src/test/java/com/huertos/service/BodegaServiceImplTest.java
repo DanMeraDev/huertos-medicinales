@@ -392,4 +392,44 @@ class BodegaServiceImplTest {
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No existe una comunidad asociada al usuario");
     }
+
+    @Test
+    void descontarStockPorSiembraExitoso() {
+        BodegaMaterialVegetal material = new BodegaMaterialVegetal();
+        material.setId(5L);
+        material.setCantidadDisponible(new BigDecimal("20.00"));
+        material.setActivo(true);
+
+        when(bodegaRepository.findByIdAndActivoTrue(5L)).thenReturn(Optional.of(material));
+        when(bodegaRepository.save(material)).thenReturn(material);
+
+        bodegaService.descontarStockPorSiembra(5L, new BigDecimal("7.50"));
+
+        assertThat(material.getCantidadDisponible()).isEqualByComparingTo("12.50");
+        verify(bodegaRepository).findByIdAndActivoTrue(5L);
+        verify(bodegaRepository).save(material);
+    }
+
+    @Test
+    void descontarStockPorSiembraLanzaExcepcionCuandoStockInsuficiente() {
+        BodegaMaterialVegetal material = new BodegaMaterialVegetal();
+        material.setId(5L);
+        material.setCantidadDisponible(new BigDecimal("10.00"));
+        material.setActivo(true);
+
+        when(bodegaRepository.findByIdAndActivoTrue(5L)).thenReturn(Optional.of(material));
+
+        assertThatThrownBy(() -> bodegaService.descontarStockPorSiembra(5L, new BigDecimal("15.00")))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("Stock insuficiente en bodega para realizar la siembra. Disponible: 10.00, Solicitado: 15.00");
+    }
+
+    @Test
+    void descontarStockPorSiembraLanzaExcepcionCuandoMaterialNoExisteOInactivo() {
+        when(bodegaRepository.findByIdAndActivoTrue(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bodegaService.descontarStockPorSiembra(99L, new BigDecimal("5.00")))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("El material vegetal especificado no existe en la bodega de la comunidad");
+    }
 }

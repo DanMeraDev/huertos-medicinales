@@ -6,14 +6,19 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface PlantaRepository extends JpaRepository<Planta, Long> {
+public interface PlantaRepository extends JpaRepository<Planta, Long>, JpaSpecificationExecutor<Planta> {
 
     Optional<Planta> findByIdAndActivaTrue(Long id);
 
     Page<Planta> findAllByActivaTrue(Pageable pageable);
+
+    boolean existsByNombreCientificoIgnoreCase(String nombreCientifico);
+
+    boolean existsByNombreCientificoIgnoreCaseAndIdNot(String nombreCientifico, Long id);
 
     @Query("""
             SELECT p FROM Planta p

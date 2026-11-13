@@ -1,0 +1,41 @@
+.pagina-revision-actividades {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-4);
+}
+
+.pagina-revision-encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.pagina-revision-titulo {
+  margin: 0;
+  font-size: var(--texto-2xl);
+  color: var(--color-texto);
+}
+
+.pagina-revision-descripcion {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+}
+
+.pagina-revision-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+@media (min-width: 1024px) {
+  .pagina-revision-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+  }
+}

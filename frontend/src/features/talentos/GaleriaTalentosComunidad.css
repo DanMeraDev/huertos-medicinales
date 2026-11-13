@@ -1,0 +1,80 @@
+.galeria-talentos-seccion {
+  margin-top: var(--espacio-8);
+}
+
+.galeria-talentos-titulo {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
+  margin: 0 0 var(--espacio-4);
+}
+
+.galeria-talentos-grilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-4);
+}
+
+@media (min-width: 640px) {
+  .galeria-talentos-grilla {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .galeria-talentos-grilla {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.galeria-talento-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  background-color: var(--color-superficie);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-md);
+  padding: var(--espacio-4);
+  box-shadow: var(--sombra-sm);
+}
+
+.galeria-talento-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+
+.galeria-talento-nombre {
+  margin: 0;
+  font-size: var(--texto-base);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-primario);
+}
+
+.galeria-talento-descripcion {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--color-texto);
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.galeria-talento-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  padding-top: var(--espacio-2);
+  border-top: 1px solid var(--color-borde);
+  font-size: var(--texto-xs);
+  color: var(--color-texto-suave);
+}
+
+.galeria-talentos-vacia {
+  text-align: center;
+  padding: var(--espacio-8);
+  background-color: var(--color-superficie);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-md);
+  color: var(--color-texto-suave);
+}

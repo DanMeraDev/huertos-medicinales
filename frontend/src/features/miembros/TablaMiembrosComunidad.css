@@ -1,0 +1,66 @@
+.gestion-miembros-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4, 1rem);
+}
+
+.gestion-miembros-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espacio-3, 0.75rem);
+}
+
+.gestion-miembros-titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-texto, #2d3748);
+  margin: 0;
+}
+
+.gestion-miembros-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3, 0.75rem);
+  background: var(--color-fondo-tarjeta, #ffffff);
+  padding: var(--espacio-3, 0.75rem);
+  border-radius: var(--radio-borde, 8px);
+  border: 1px solid var(--color-borde, #e2e8f0);
+}
+
+.gestion-miembros-busqueda {
+  flex: 1;
+  min-width: 250px;
+}
+
+.gestion-miembros-botones-estado {
+  display: flex;
+  gap: var(--espacio-2, 0.5rem);
+}
+
+.miembro-estado-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.miembro-estado-badge.activo {
+  background-color: #c6f6d5;
+  color: #22543d;
+}
+
+.miembro-estado-badge.inactivo {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.miembro-acciones {
+  display: flex;
+  gap: var(--espacio-2, 0.5rem);
+  align-items: center;
+}

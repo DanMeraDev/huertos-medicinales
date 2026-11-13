@@ -1,6 +1,13 @@
 package com.huertos.service.impl;
 
+import com.huertos.dto.ActualizarMiembroRequest;
+import com.huertos.dto.CambiarEstadoMiembroRequest;
+import com.huertos.dto.FichaInternaMiembroResponse;
+import com.huertos.dto.InsigniaObtenidaDto;
 import com.huertos.dto.MiembroDetalleResponse;
+import com.huertos.dto.MiembroEstadoResponse;
+import com.huertos.dto.MiembroResumenResponse;
+import com.huertos.dto.PerfilPublicoMiembroResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -12,6 +19,7 @@ import com.huertos.model.Miembro;
 import com.huertos.model.Usuario;
 import com.huertos.repository.ComunidadMiembroRepository;
 import com.huertos.repository.ComunidadRepository;
+import com.huertos.repository.MiembroInsigniaRepository;
 import com.huertos.repository.MiembroRepository;
 import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.MiembroService;
@@ -19,6 +27,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +41,7 @@ public class MiembroServiceImpl implements MiembroService {
     private final ComunidadMiembroRepository comunidadMiembroRepository;
     private final ComunidadRepository comunidadRepository;
     private final UsuarioRepository usuarioRepository;
+    private final MiembroInsigniaRepository miembroInsigniaRepository;
     private final MiembroMapper miembroMapper;
     private final Clock clock;
 
@@ -104,6 +114,145 @@ public class MiembroServiceImpl implements MiembroService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return registrarMiembroEnComunidad(usuario.getId(), request);
+    }
+
+    @Override
+    @Transactional
+    public MiembroEstadoResponse cambiarEstadoEnComunidad(Long responsableId, Long miembroId, CambiarEstadoMiembroRequest request) {
+        Comunidad comunidad = comunidadRepository.findByResponsableId(responsableId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        ComunidadMiembro relacion = comunidadMiembroRepository.findByComunidadIdAndMiembroId(comunidad.getId(), miembroId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El miembro especificado no pertenece a tu comunidad"));
+
+        if (relacion.isActivoEnComunidad() == request.activo()) {
+            throw new ConflictoException("El voluntario ya se encuentra en el estado solicitado");
+        }
+
+        if (Boolean.FALSE.equals(request.activo())) {
+            relacion.setActivoEnComunidad(false);
+            relacion.setFechaBaja(LocalDate.now(clock));
+            relacion.setMotivoBaja(request.motivoBaja());
+        } else {
+            relacion.setActivoEnComunidad(true);
+            relacion.setFechaBaja(null);
+            relacion.setMotivoBaja(null);
+        }
+
+        ComunidadMiembro relacionGuardada = comunidadMiembroRepository.save(relacion);
+        return miembroMapper.toEstadoResponse(relacionGuardada, "Estado de participación actualizado exitosamente");
+    }
+
+    @Override
+    @Transactional
+    public MiembroEstadoResponse cambiarEstadoPorCorreo(String correo, Long miembroId, CambiarEstadoMiembroRequest request) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
+        return cambiarEstadoEnComunidad(usuario.getId(), miembroId, request);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MiembroDetalleResponse> listarMiembrosDeMiComunidad(Long responsableId) {
+        Comunidad comunidad = comunidadRepository.findByResponsableId(responsableId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        LocalDate hoy = LocalDate.now(clock);
+        return comunidadMiembroRepository.findByComunidadId(comunidad.getId()).stream()
+                .map(rel -> {
+                    int edad = Period.between(rel.getMiembro().getFechaNacimiento(), hoy).getYears();
+                    return miembroMapper.toDetalleResponse(rel.getMiembro(), rel, edad);
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MiembroDetalleResponse> listarMiembrosPorCorreo(String correo) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
+        return listarMiembrosDeMiComunidad(usuario.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MiembroResumenResponse> listarMiembrosActivosPorCorreo(String correo) {
+        Comunidad comunidad = comunidadRepository.findByResponsableCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        return comunidadMiembroRepository.findByComunidadIdAndActivoEnComunidadTrue(comunidad.getId()).stream()
+                .map(relacion -> miembroMapper.toResumenResponse(relacion.getMiembro()))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public MiembroDetalleResponse actualizarDatosContacto(Long responsableId, Long miembroId, ActualizarMiembroRequest request) {
+        Comunidad comunidad = comunidadRepository.findByResponsableId(responsableId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        ComunidadMiembro relacion = comunidadMiembroRepository.findByComunidadIdAndMiembroId(comunidad.getId(), miembroId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El voluntario no pertenece a la comunidad administrada"));
+
+        Miembro miembro = relacion.getMiembro();
+        miembroMapper.actualizarDesdeRequest(request, miembro);
+        Miembro miembroGuardado = miembroRepository.save(miembro);
+
+        LocalDate hoy = LocalDate.now(clock);
+        int edad = Period.between(miembroGuardado.getFechaNacimiento(), hoy).getYears();
+        return miembroMapper.toDetalleResponse(miembroGuardado, relacion, edad);
+    }
+
+    @Override
+    @Transactional
+    public MiembroDetalleResponse actualizarDatosContactoPorCorreo(String correo, Long miembroId, ActualizarMiembroRequest request) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
+        return actualizarDatosContacto(usuario.getId(), miembroId, request);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FichaInternaMiembroResponse obtenerFichaInterna(Long responsableId, Long miembroId) {
+        Comunidad comunidad = comunidadRepository.findByResponsableId(responsableId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        ComunidadMiembro relacion = comunidadMiembroRepository.findByComunidadIdAndMiembroId(comunidad.getId(), miembroId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró la ficha del voluntario en tu comunidad"));
+
+        LocalDate hoy = LocalDate.now(clock);
+        int edad = Period.between(relacion.getMiembro().getFechaNacimiento(), hoy).getYears();
+        return miembroMapper.toFichaInternaResponse(relacion.getMiembro(), relacion, edad);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FichaInternaMiembroResponse obtenerFichaInternaPorCorreo(String correo, Long miembroId) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
+        return obtenerFichaInterna(usuario.getId(), miembroId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PerfilPublicoMiembroResponse obtenerPerfilPublicoPorCedula(String cedula) {
+        Miembro miembro = miembroRepository.findByCedulaAndActivoTrue(cedula)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No se encontró ningún voluntario registrado con la cédula ingresada. Verifica el número o anímate a registrar una nueva comunidad"));
+
+        List<String> comunidades = comunidadMiembroRepository
+                .findByMiembroIdAndActivoEnComunidadTrue(miembro.getId())
+                .stream()
+                .map(relacion -> relacion.getComunidad().getNombre())
+                .toList();
+
+        List<InsigniaObtenidaDto> insignias = miembroInsigniaRepository
+                .findByMiembroIdOrderByFechaObtencionDesc(miembro.getId())
+                .stream()
+                .map(miembroMapper::toInsigniaObtenidaDto)
+                .toList();
+
+        return miembroMapper.toPerfilPublicoResponse(miembro, comunidades, insignias);
     }
 
     private void validarCedula(String cedula) {
