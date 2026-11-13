@@ -2,6 +2,7 @@ package com.huertos.service;
 
 import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
+import com.huertos.dto.DarBajaPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 
 public interface PlantaAdminService {
@@ -35,4 +36,18 @@ public interface PlantaAdminService {
      * @throws com.huertos.exception.ConflictoException si el nombre científico pertenece a otra planta
      */
     PlantaDetalleResponse actualizarPlanta(Long id, ActualizarPlantaRequest request, String correo);
+
+    /**
+     * Da de baja una planta del catálogo con un borrado lógico: la marca como inactiva y guarda el motivo sin los
+     * espacios del inicio y del final, la fecha del reloj del sistema y el técnico que hace la baja. La fila no se
+     * borra y los demás datos de la planta no cambian, así que las siembras, el material de bodega y la fotografía
+     * se conservan. La planta deja de aparecer en el catálogo público.
+     *
+     * @param id identificador de la planta
+     * @param request motivo de la baja
+     * @param correo correo del técnico autenticado
+     * @throws com.huertos.exception.RecursoNoEncontradoException si la planta no existe
+     * @throws com.huertos.exception.ReglaNegocioException si la planta ya está dada de baja
+     */
+    void darDeBajaPlanta(Long id, DarBajaPlantaRequest request, String correo);
 }

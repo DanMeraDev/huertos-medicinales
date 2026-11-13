@@ -57,6 +57,12 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Inventario de Bodega' })).toBeInTheDocument()
   })
 
+  it('muestra la página de consulta pública de voluntario en /consulta-miembro', () => {
+    renderizarEn('/consulta-miembro')
+
+    expect(screen.getByRole('heading', { name: 'Consultar Voluntario' })).toBeInTheDocument()
+  })
+
   it('vuelve al inicio desde la página no encontrada', async () => {
     renderizarEn('/ruta-inexistente')
 

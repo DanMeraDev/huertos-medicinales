@@ -31,6 +31,7 @@ describe('Layout', () => {
     expect(screen.getByRole('link', { name: 'Bodega' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Saberes Ancestrales' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Rankings' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Consultar Voluntario' })).toBeInTheDocument()
   })
 
   it('renderiza el contenido hijo', () => {

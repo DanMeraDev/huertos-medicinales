@@ -2,13 +2,16 @@ package com.huertos.exception;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
@@ -90,5 +93,16 @@ public class GlobalExceptionHandler {
                 return ProblemDetail.forStatusAndDetail(
                                 HttpStatus.FORBIDDEN,
                                 ex.getMessage());
+        }
+
+        @ExceptionHandler(HandlerMethodValidationException.class)
+        ProblemDetail manejarValidacionMetodo(HandlerMethodValidationException ex) {
+                String detalle = ex.getValueResults().stream()
+                                .flatMap(result -> result.getResolvableErrors().stream())
+                                .map(MessageSourceResolvable::getDefaultMessage)
+                                .filter(Objects::nonNull)
+                                .findFirst()
+                                .orElse("Datos no válidos");
+                return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detalle);
         }
 }

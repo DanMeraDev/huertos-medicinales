@@ -6,6 +6,7 @@ import com.huertos.dto.FichaInternaMiembroResponse;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.MiembroResumenResponse;
+import com.huertos.dto.PerfilPublicoMiembroResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import java.util.List;
 
@@ -110,4 +111,13 @@ public interface MiembroService {
      * @return Resumen de cada miembro activo con su nombre completo
      */
     List<MiembroResumenResponse> listarMiembrosActivosPorCorreo(String correo);
+
+    /**
+     * Obtiene el perfil público y motivacional de un miembro activo por su número de cédula,
+     * omitiendo datos privados de contacto o fecha de nacimiento en cumplimiento de la LOPDP.
+     *
+     * @param cedula Número de cédula de 10 dígitos del miembro
+     * @return Perfil público con nombre completo, rango, puntos, comunidades e insignias
+     */
+    PerfilPublicoMiembroResponse obtenerPerfilPublicoPorCedula(String cedula);
 }

@@ -44,6 +44,10 @@ export interface PlantaDetalleResponse extends CrearPlantaRequest {
   id: number
 }
 
+export interface DarBajaPlantaRequest {
+  motivo: string
+}
+
 export interface FotografiaSubidaResponse {
   fotografiaUrl: string
 }
