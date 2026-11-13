@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { MemoryRouter, Route, Routes } from 'react-router'
+import { afterEach } from 'vitest'
 import { server } from '../../test/mocks/server'
 import { SolicitudComunidadForm } from './SolicitudComunidadForm'
 
@@ -25,7 +26,7 @@ async function llenarFormulario({ cedula = '1710034065' } = {}) {
   const usuario = userEvent.setup()
   await escribir(usuario, screen.getByLabelText('Nombre de la comunidad'), 'Huerto Comunitario Allpa Viva')
   await usuario.selectOptions(screen.getByLabelText('Tipo de organización'), 'BARRIO')
-  await escribir(usuario, screen.getByLabelText('Provincia'), 'Pichincha')
+  await usuario.selectOptions(screen.getByLabelText('Provincia'), 'Pichincha')
   await escribir(usuario, screen.getByLabelText('Parroquia'), 'Calderon')
   await escribir(usuario, screen.getByLabelText('Dirección exacta'), 'Calle de las Rosas y Pasaje Los Pinos')
   await escribir(usuario, screen.getByLabelText('Latitud'), '-0.0987123')
@@ -41,7 +42,15 @@ async function llenarFormulario({ cedula = '1710034065' } = {}) {
   return usuario
 }
 
+function simularGeolocalizacion(getCurrentPosition: Geolocation['getCurrentPosition']) {
+  Object.defineProperty(navigator, 'geolocation', { value: { getCurrentPosition }, configurable: true })
+}
+
 describe('SolicitudComunidadForm', () => {
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'geolocation')
+  })
+
   it('agrupa los campos en las tarjetas de comunidad y de solicitante, con Kinti', () => {
     renderizar()
 
@@ -141,5 +150,56 @@ describe('SolicitudComunidadForm', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Ya existe una solicitud pendiente')
     expect(screen.getByLabelText('Cédula de identidad')).toHaveValue('1710034065')
+  })
+
+  it('ofrece las 24 provincias del Ecuador en una lista', () => {
+    renderizar()
+
+    const provincia = screen.getByLabelText('Provincia')
+    expect(provincia.tagName).toBe('SELECT')
+    expect(screen.getByRole('option', { name: 'Pichincha' })).toHaveValue('Pichincha')
+    expect(screen.getByRole('option', { name: 'Santo Domingo de los Tsáchilas' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Galápagos' })).toBeInTheDocument()
+    expect(provincia.querySelectorAll('option[value]:not([value=""])')).toHaveLength(24)
+  })
+
+  it('al marcar en el mapa llena latitud, longitud, provincia y parroquia', async () => {
+    renderizar()
+    const usuario = userEvent.setup()
+
+    await usuario.click(screen.getByRole('button', { name: 'Seleccionar en el mapa' }))
+    fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
+      clientX: 0,
+      clientY: 0,
+    })
+
+    expect(Number((screen.getByLabelText('Latitud') as HTMLInputElement).value)).toBeCloseTo(-1.5, 1)
+    expect(Number((screen.getByLabelText('Longitud') as HTMLInputElement).value)).toBeCloseTo(-78.5, 1)
+    expect(await screen.findByDisplayValue('Calderón')).toBe(screen.getByLabelText('Parroquia'))
+    expect(screen.getByLabelText('Provincia')).toHaveValue('Pichincha')
+  })
+
+  it('usa la ubicación actual del dispositivo para llenar las coordenadas', async () => {
+    simularGeolocalizacion((exito) =>
+      exito({ coords: { latitude: -0.0987123, longitude: -78.4321456 } } as GeolocationPosition),
+    )
+    renderizar()
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Usar mi ubicación actual' }))
+
+    expect(screen.getByLabelText('Latitud')).toHaveValue(-0.0987123)
+    expect(screen.getByLabelText('Longitud')).toHaveValue(-78.4321456)
+    expect(await screen.findByDisplayValue('Calderón')).toBe(screen.getByLabelText('Parroquia'))
+  })
+
+  it('avisa cuando no puede obtener la ubicación actual', async () => {
+    simularGeolocalizacion((_exito, error) => error?.({ code: 1 } as GeolocationPositionError))
+    renderizar()
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Usar mi ubicación actual' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'No se pudo obtener tu ubicación. Revisa el permiso de ubicación del navegador o márcala en el mapa.',
+    )
   })
 })
