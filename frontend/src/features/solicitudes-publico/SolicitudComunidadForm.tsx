@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError } from '../../api/client'
 import { Boton } from '../../components/Boton'
 import { CampoTexto } from '../../components/CampoTexto'
 import { KintiGuia } from '../../components/KintiGuia'
+import { MapaUbicacion } from '../../components/MapaUbicacion'
 import { Notificacion } from '../../components/Notificacion'
 import { Selector } from '../../components/Selector'
 import { esCedulaValida, esMayorDeEdad } from '../../components/validaciones'
@@ -13,6 +14,7 @@ import {
   MAXIMO_SUBTIPOS,
   OPCIONES_DISENO,
   OPCIONES_GENERO,
+  OPCIONES_PROVINCIA,
   OPCIONES_SUBTIPO,
   OPCIONES_TIPO_ORGANIZACION,
 } from './opcionesSolicitud'
@@ -24,6 +26,7 @@ import {
   type SolicitudComunidadResponse,
   type TipoOrganizacion,
 } from './solicitudesPublicoApi'
+import { buscarDivisionPolitica } from './ubicacionApi'
 import './SolicitudComunidadForm.css'
 
 type Campos = Record<
@@ -63,6 +66,17 @@ const CAMPOS_VACIOS: Campos = {
   generoSolicitante: '',
   correoSolicitante: '',
   celularSolicitante: '',
+}
+
+const AVISO_SIN_UBICACION =
+  'No se pudo obtener tu ubicación. Revisa el permiso de ubicación del navegador o márcala en el mapa.'
+
+function sinTildes(texto: string) {
+  return texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+}
+
+function provinciaDeLaLista(nombre: string) {
+  return OPCIONES_PROVINCIA.find((opcion) => sinTildes(opcion.valor) === sinTildes(nombre))?.valor
 }
 
 const SOLO_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/
@@ -124,6 +138,9 @@ export function SolicitudComunidadForm() {
   const [enviando, setEnviando] = useState(false)
   const [errorServidor, setErrorServidor] = useState<ApiError | null>(null)
   const [registrada, setRegistrada] = useState<SolicitudComunidadResponse | null>(null)
+  const [mapaVisible, setMapaVisible] = useState(false)
+  const [avisoUbicacion, setAvisoUbicacion] = useState<string | null>(null)
+  const ultimaConsultaUbicacion = useRef(0)
   const erroresFormato = validarFormato(campos)
 
   function errorDe(campo: keyof Errores) {
@@ -144,14 +161,52 @@ export function SolicitudComunidadForm() {
     setFaltantes((anteriores) => ({ ...anteriores, subtiposSolicitados: undefined }))
   }
 
-  function usarMiUbicacion() {
-    navigator.geolocation.getCurrentPosition(({ coords }) => {
-      setCampos((anteriores) => ({
-        ...anteriores,
-        latitud: coords.latitude.toFixed(7),
-        longitud: coords.longitude.toFixed(7),
-      }))
+  function asignar(cambios: Partial<Campos>) {
+    setCampos((anteriores) => ({ ...anteriores, ...cambios }))
+    setFaltantes((anteriores) => {
+      const pendientes = { ...anteriores }
+      for (const campo of Object.keys(cambios) as (keyof Campos)[]) {
+        delete pendientes[campo]
+      }
+      return pendientes
     })
+  }
+
+  async function completarDivisionPolitica(latitud: number, longitud: number) {
+    const consulta = ++ultimaConsultaUbicacion.current
+    try {
+      const { provincia, parroquia } = await buscarDivisionPolitica(latitud, longitud)
+      if (consulta !== ultimaConsultaUbicacion.current) {
+        return
+      }
+      const provinciaElegida = provincia ? provinciaDeLaLista(provincia) : undefined
+      asignar({
+        ...(provinciaElegida && { provincia: provinciaElegida }),
+        ...(parroquia && { parroquia }),
+      })
+    } catch {
+      setAvisoUbicacion('No se pudo identificar la provincia y la parroquia. Complétalas a mano.')
+    }
+  }
+
+  function aplicarUbicacion(latitud: number, longitud: number) {
+    setAvisoUbicacion(null)
+    asignar({ latitud: latitud.toFixed(7), longitud: longitud.toFixed(7) })
+    void completarDivisionPolitica(latitud, longitud)
+  }
+
+  function usarMiUbicacion() {
+    if (!navigator.geolocation) {
+      setAvisoUbicacion(AVISO_SIN_UBICACION)
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setMapaVisible(true)
+        aplicarUbicacion(coords.latitude, coords.longitude)
+      },
+      () => setAvisoUbicacion(AVISO_SIN_UBICACION),
+    )
   }
 
   function revisar(evento: FormEvent<HTMLFormElement>) {
@@ -197,7 +252,7 @@ export function SolicitudComunidadForm() {
         </div>
         <Selector etiqueta="Tipo de organización" opciones={OPCIONES_TIPO_ORGANIZACION} required
           valor={campos.tipoOrganizacion} alCambiar={cambiar('tipoOrganizacion')} error={errorDe('tipoOrganizacion')} />
-        <CampoTexto etiqueta="Provincia" maxLength={100} required valor={campos.provincia}
+        <Selector etiqueta="Provincia" opciones={OPCIONES_PROVINCIA} required valor={campos.provincia}
           alCambiar={cambiar('provincia')} error={errorDe('provincia')} />
         <CampoTexto etiqueta="Parroquia" maxLength={100} required valor={campos.parroquia}
           alCambiar={cambiar('parroquia')} error={errorDe('parroquia')} />
@@ -209,10 +264,28 @@ export function SolicitudComunidadForm() {
           alCambiar={cambiar('latitud')} error={errorDe('latitud')} />
         <CampoTexto etiqueta="Longitud" type="number" step="any" required valor={campos.longitud}
           alCambiar={cambiar('longitud')} error={errorDe('longitud')} />
-        <div className="solicitud-ancho">
-          <Boton variante="secundario" onClick={usarMiUbicacion}>
-            Usar mi ubicación actual
-          </Boton>
+        <div className="solicitud-ancho solicitud-ubicacion">
+          <div className="solicitud-ubicacion-botones">
+            <Boton variante="secundario" onClick={usarMiUbicacion}>
+              Usar mi ubicación actual
+            </Boton>
+            <Boton variante="secundario" aria-expanded={mapaVisible} onClick={() => setMapaVisible(true)}>
+              Seleccionar en el mapa
+            </Boton>
+          </div>
+          {avisoUbicacion && <Notificacion tipo="error" mensaje={avisoUbicacion} />}
+          {mapaVisible && (
+            <>
+              <p className="solicitud-ubicacion-ayuda">
+                Toca el lugar del huerto en el mapa. La provincia y la parroquia se llenan solas y puedes corregirlas.
+              </p>
+              <MapaUbicacion
+                latitud={campos.latitud}
+                longitud={campos.longitud}
+                alSeleccionar={aplicarUbicacion}
+              />
+            </>
+          )}
         </div>
         <CampoTexto etiqueta="Altitud estimada (msnm)" type="number" min={0} max={5000} required
           valor={campos.altitudMsnm} alCambiar={cambiar('altitudMsnm')} error={errorDe('altitudMsnm')} />
