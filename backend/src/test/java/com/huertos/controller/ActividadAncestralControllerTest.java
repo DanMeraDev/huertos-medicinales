@@ -164,7 +164,7 @@ class ActividadAncestralControllerTest {
                 1,
                 "La fotografía no muestra el ritual completo",
                 "Bitácora inicial",
-                "https://evidencias.gob.ec/foto-inicial.jpg",
+                "actividades/foto-inicial.jpg",
                 null
         );
 
@@ -186,7 +186,7 @@ class ActividadAncestralControllerTest {
     void reenviarEvidenciasRetorna200ConActividadPendienteEIntentoDos() throws Exception {
         ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
                 "Bitácora corregida con el ritual completo",
-                "https://evidencias.gob.ec/foto-corregida.jpg",
+                "actividades/foto-corregida.jpg",
                 null
         );
         ActividadAncestralResponse response = new ActividadAncestralResponse(
@@ -217,7 +217,7 @@ class ActividadAncestralControllerTest {
     void reenviarEvidenciasRetorna409CuandoLaActividadNoEstaObservada() throws Exception {
         ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
                 "Bitácora corregida con el ritual completo",
-                "https://evidencias.gob.ec/foto-corregida.jpg",
+                "actividades/foto-corregida.jpg",
                 null
         );
 
@@ -241,7 +241,7 @@ class ActividadAncestralControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new ReenviarEvidenciasRequest(
                                 "Bitácora corregida con el ritual completo",
-                                "https://evidencias.gob.ec/foto-corregida.jpg",
+                                "actividades/foto-corregida.jpg",
                                 null))))
                 .andExpect(status().isForbidden());
     }

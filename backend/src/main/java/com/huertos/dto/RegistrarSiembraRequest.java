@@ -27,6 +27,6 @@ public record RegistrarSiembraRequest(
         @NotNull(message = "La fase lunar es obligatoria")
         FaseLunar faseLunarSiembra,
 
-        boolean aceptaRiesgoAltitud
+        Boolean aceptaRiesgoAltitud
 ) {}
 
