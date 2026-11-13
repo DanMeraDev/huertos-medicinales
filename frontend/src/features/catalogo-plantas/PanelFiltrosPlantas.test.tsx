@@ -171,6 +171,19 @@ describe('PanelFiltrosPlantas', () => {
       expect(alCambiar).toHaveBeenLastCalledWith({ ciclo: undefined })
     })
 
+    it('ofrece las cuatro regiones y filtra por Galápagos', async () => {
+      const { alCambiar, usuario } = renderizar()
+
+      const regiones = grupo('Región')
+        .getAllByRole('button')
+        .map((boton) => boton.textContent)
+      expect(regiones).toEqual(['Todas', 'Costa', 'Sierra', 'Amazonía', 'Galápagos'])
+
+      await usuario.click(grupo('Región').getByRole('button', { name: 'Galápagos' }))
+
+      expect(alCambiar).toHaveBeenLastCalledWith({ region: 'Galápagos' })
+    })
+
     it('Limpiar todo quita todos los filtros', async () => {
       const { alCambiar, usuario } = renderizar({ cualidad: 'FRIA', categoria: 'SEDANTE', altitud: 2800 })
 
