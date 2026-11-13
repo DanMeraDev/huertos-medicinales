@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import com.huertos.dto.RegistrarLaborMiembroRequest;
 import com.huertos.dto.ResultadoAcreditacionMiembroResponse;
+import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.model.ActividadComunidad;
@@ -339,5 +340,45 @@ class RegistroActividadMiembroServiceImplTest {
 
         assertThrows(RecursoNoEncontradoException.class,
                 () -> service.registrarLabor("resp@huertos.gob.ec", request));
+    }
+
+    private void prepararLaborValida() {
+        when(comunidadRepository.findByResponsableCorreo("resp@huertos.gob.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(miembroRepository.findById(25L))
+                .thenReturn(Optional.of(miembro));
+        when(comunidadMiembroRepository.existsByComunidadIdAndMiembroIdAndActivoEnComunidadTrue(10L, 25L))
+                .thenReturn(true);
+        when(actividadComunidadRepository.findById(5L))
+                .thenReturn(Optional.of(actividad));
+    }
+
+    @Test
+    void registrarLabor_falla_cuandoLasHorasDelDiaSuperan24() {
+        LocalDate fecha = LocalDate.of(2026, 11, 11);
+        var request = new RegistrarLaborMiembroRequest(25L, 5L, fecha, 20, null);
+        prepararLaborValida();
+        when(registroActividadMiembroRepository.sumarHorasDelDia(25L, fecha)).thenReturn(8L);
+
+        ReglaNegocioException error = assertThrows(ReglaNegocioException.class,
+                () -> service.registrarLabor("resp@huertos.gob.ec", request));
+
+        assertEquals("La jornada máxima permitida es de 24 horas por día según norma MSP", error.getMessage());
+        verify(registroActividadMiembroRepository, never()).save(any());
+    }
+
+    @Test
+    void registrarLabor_falla_cuandoLaMismaLaborYaSeRegistroEseDia() {
+        LocalDate fecha = LocalDate.of(2026, 11, 11);
+        var request = new RegistrarLaborMiembroRequest(25L, 5L, fecha, 2, null);
+        prepararLaborValida();
+        when(registroActividadMiembroRepository.existsByMiembroIdAndActividadComunidadIdAndFechaActividad(25L, 5L, fecha))
+                .thenReturn(true);
+
+        ConflictoException error = assertThrows(ConflictoException.class,
+                () -> service.registrarLabor("resp@huertos.gob.ec", request));
+
+        assertEquals("La labor ya fue registrada para este voluntario en la fecha indicada", error.getMessage());
+        verify(registroActividadMiembroRepository, never()).save(any());
     }
 }
