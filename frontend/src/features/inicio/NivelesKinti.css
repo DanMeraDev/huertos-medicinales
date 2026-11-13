@@ -1,0 +1,170 @@
+.niveles-kinti {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-12) var(--espacio-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-8);
+}
+
+.niveles-kinti-cabecera {
+  text-align: center;
+  max-width: 54rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+.niveles-kinti-eyebrow {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-dark);
+}
+
+.niveles-kinti-titulo {
+  font-size: var(--texto-2xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-primario);
+  line-height: 1.2;
+}
+
+.niveles-kinti-intro {
+  font-size: var(--texto-base);
+  color: var(--color-texto-secundario);
+  line-height: 1.6;
+}
+
+.niveles-kinti-lista {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-6);
+  align-items: stretch;
+}
+
+.nivel-kinti-tarjeta {
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radius-lg);
+  padding: var(--espacio-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--espacio-3);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nivel-kinti-tarjeta:hover {
+  transform: translateY(-4px);
+}
+
+.nivel-kinti--aprendiz {
+  border-top: 6px solid var(--color-primary);
+}
+
+.nivel-kinti--oficial {
+  border-top: 6px solid var(--color-primario);
+}
+
+.nivel-kinti--maestro {
+  border-top: 6px solid var(--color-accent);
+  background: linear-gradient(180deg, var(--color-accent-light) 0%, var(--color-superficie) 42%);
+  box-shadow: 0 12px 28px rgba(217, 108, 0, 0.14);
+}
+
+.nivel-kinti-etiqueta {
+  display: inline-block;
+  padding: var(--espacio-1) var(--espacio-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary-light);
+  color: var(--color-primario);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-seminegrita);
+}
+
+.nivel-kinti--maestro .nivel-kinti-etiqueta {
+  background-color: var(--color-accent-light);
+  color: var(--color-accent-dark);
+}
+
+.nivel-kinti-imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espacio-2) 0;
+}
+
+.nivel-kinti--maestro .nivel-kinti-imagen {
+  filter: drop-shadow(0 8px 16px rgba(255, 138, 0, 0.28));
+}
+
+.nivel-kinti-nombre {
+  font-size: var(--texto-2xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-texto);
+  letter-spacing: 0.03em;
+}
+
+.nivel-kinti-rango {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-primario);
+}
+
+.nivel-kinti--maestro .nivel-kinti-rango {
+  color: var(--color-accent-dark);
+}
+
+.nivel-kinti-descripcion {
+  font-size: var(--texto-base);
+  color: var(--color-texto-secundario);
+  line-height: 1.55;
+}
+
+.niveles-kinti-cierre {
+  text-align: center;
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-primario);
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .niveles-kinti {
+    padding: var(--espacio-16) var(--espacio-8);
+    gap: var(--espacio-10);
+  }
+
+  .niveles-kinti-titulo {
+    font-size: var(--texto-3xl);
+  }
+
+  .niveles-kinti-lista {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--espacio-6);
+    align-items: end;
+  }
+
+  .nivel-kinti--oficial {
+    padding-top: var(--espacio-8);
+  }
+
+  .nivel-kinti--maestro {
+    padding-top: var(--espacio-10);
+  }
+}
+
+@media (min-width: 1024px) {
+  .niveles-kinti-lista {
+    gap: var(--espacio-8);
+  }
+
+  .nivel-kinti-tarjeta {
+    padding: var(--espacio-8);
+  }
+}

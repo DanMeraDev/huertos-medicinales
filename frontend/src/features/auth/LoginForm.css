@@ -44,10 +44,16 @@
   }
 
   .login-kinti {
-    width: 160px;
+    width: 180px;
   }
 
   .login-saludo {
     font-size: var(--texto-xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .login-kinti {
+    width: 220px;
   }
 }

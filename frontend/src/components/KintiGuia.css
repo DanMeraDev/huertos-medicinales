@@ -1,0 +1,48 @@
+.kinti-guia {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (min-width: 768px) {
+  .kinti-guia--sm {
+    width: 76px;
+    height: 76px;
+  }
+
+  .kinti-guia--md {
+    width: 144px;
+    height: 144px;
+  }
+
+  .kinti-guia--lg {
+    width: 224px;
+    height: 224px;
+  }
+
+  .kinti-guia--xl {
+    width: 310px;
+    height: 310px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .kinti-guia--sm {
+    width: 92px;
+    height: 92px;
+  }
+
+  .kinti-guia--md {
+    width: 176px;
+    height: 176px;
+  }
+
+  .kinti-guia--lg {
+    width: 272px;
+    height: 272px;
+  }
+
+  .kinti-guia--xl {
+    width: 360px;
+    height: 360px;
+  }
+}

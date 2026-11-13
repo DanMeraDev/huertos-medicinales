@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError } from '../../api/client'
+import { guardarSesion } from '../../api/sesion'
 import { Boton } from '../../components/Boton'
 import { CampoTexto } from '../../components/CampoTexto'
 import { KintiGuia } from '../../components/KintiGuia'
@@ -31,7 +32,11 @@ export function LoginForm() {
     setError(null)
     try {
       const sesion = await iniciarSesion({ correo, password })
-      localStorage.setItem('token', sesion.token)
+      guardarSesion({
+        token: sesion.token,
+        rol: sesion.rol,
+        nombreCompleto: sesion.nombreCompleto,
+      })
       navegar(rutaDespuesDelIngreso(sesion))
     } catch (falla) {
       if (!(falla instanceof ApiError)) {

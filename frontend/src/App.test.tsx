@@ -14,11 +14,14 @@ function renderizarEn(ruta: string) {
 }
 
 describe('App', () => {
-  it('muestra la página de inicio en /', async () => {
+  it('muestra la página de inicio en /', () => {
     renderizarEn('/')
 
-    expect(screen.getByRole('heading', { name: 'Huertos Medicinales Comunitarios' })).toBeInTheDocument()
-    expect(await screen.findByText('11.4.8-MariaDB')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Hampi Muyu' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Solicitar creación de comunidad' })).toHaveAttribute(
+      'href',
+      '/solicitar-comunidad',
+    )
   })
 
   it('muestra la página no encontrada en una ruta inexistente', () => {
@@ -68,8 +71,8 @@ describe('App', () => {
 
     await userEvent.click(screen.getByRole('link', { name: 'Volver al inicio' }))
 
-    expect(screen.getByRole('heading', { name: 'Huertos Medicinales Comunitarios' })).toBeInTheDocument()
-    expect(await screen.findByText('11.4.8-MariaDB')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Hampi Muyu' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Solicitar creación de comunidad' })).toBeInTheDocument()
   })
 
   it('muestra el registro de plantas en /admin/plantas/nueva', () => {

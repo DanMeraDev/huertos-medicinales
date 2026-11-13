@@ -68,3 +68,15 @@
     min-width: 12rem;
   }
 }
+
+@media (min-width: 768px) {
+  .crear-usuario-kinti {
+    width: 180px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .crear-usuario-kinti {
+    width: 220px;
+  }
+}

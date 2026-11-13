@@ -1,8 +1,10 @@
 import type { ComponentProps } from 'react'
+import './KintiGuia.css'
 
 export type KintiVariante =
   | 'lunar'
   | 'celebracion'
+  | 'dorado'
   | 'vacio'
   | 'sabiduria'
   | 'alerta'
@@ -46,6 +48,11 @@ function obtenerConfiguracionVariante(variante?: KintiVariante | string): Config
       return {
         archivo: 'kinti-celebracion.svg',
         altPorDefecto: 'Kinti Guía celebrando logro',
+      }
+    case 'dorado':
+      return {
+        archivo: 'kinti-dorado.svg',
+        altPorDefecto: 'Kinti Guía Maestro dorado',
       }
     case 'vacio':
       return {
@@ -103,7 +110,14 @@ export function KintiGuia({
 
   const anchoFinal = resolverDimension(tamano, width)
   const altoFinal = resolverDimension(tamano, height)
-  const clasesFinales = className ? `kinti-guia ${className}` : 'kinti-guia'
+  const clasePreset =
+    width === undefined &&
+    height === undefined &&
+    typeof tamano === 'string' &&
+    tamano in PRESETS_TAMANO
+      ? `kinti-guia--${tamano}`
+      : undefined
+  const clasesFinales = ['kinti-guia', clasePreset, className].filter(Boolean).join(' ')
 
   return (
     <img
