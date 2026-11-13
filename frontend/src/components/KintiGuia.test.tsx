@@ -53,6 +53,30 @@ describe('KintiGuia', () => {
     expect(img).toHaveAttribute('alt', 'Kinti Guía en estado de alerta')
   })
 
+  it('renderiza la variante aprendiz con kinti-aprendiz.svg', () => {
+    render(<KintiGuia variante="aprendiz" />)
+
+    const img = screen.getByRole('img')
+    expect(img).toHaveAttribute('src', '/kinti/kinti-aprendiz.svg')
+    expect(img).toHaveAttribute('alt', 'Kinti Guía nivel Aprendiz')
+  })
+
+  it('renderiza la variante oficial con kinti-oficial.svg', () => {
+    render(<KintiGuia variante="oficial" />)
+
+    const img = screen.getByRole('img')
+    expect(img).toHaveAttribute('src', '/kinti/kinti-oficial.svg')
+    expect(img).toHaveAttribute('alt', 'Kinti Guía nivel Oficial')
+  })
+
+  it('renderiza la variante maestro con kinti-maestro.svg', () => {
+    render(<KintiGuia variante="maestro" />)
+
+    const img = screen.getByRole('img')
+    expect(img).toHaveAttribute('src', '/kinti/kinti-maestro.svg')
+    expect(img).toHaveAttribute('alt', 'Kinti Guía nivel Maestro')
+  })
+
   it('soporta el alias "dia" mapeándolo al SVG de sabiduría', () => {
     render(<KintiGuia variante="dia" />)
 
