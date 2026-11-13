@@ -122,64 +122,12 @@
   margin-bottom: var(--espacio-5);
 }
 
-.huerto-visor-mapa {
-  position: relative;
-  height: 220px;
-  border-radius: var(--radius-md);
-  border: 1px solid #c9dbb9;
-  background:
-    linear-gradient(to right, rgba(76, 122, 38, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(76, 122, 38, 0.12) 1px, transparent 1px),
-    radial-gradient(circle at 30% 35%, #eef7e3, #e0ead8);
-  background-size: 28px 28px, 28px 28px, 100% 100%;
-  margin-bottom: var(--espacio-5);
-  overflow: hidden;
-  cursor: crosshair;
-  user-select: none;
-  touch-action: none;
-}
-
-.huerto-visor-etiqueta {
-  position: absolute;
-  top: var(--espacio-3);
-  left: var(--espacio-3);
-  background-color: rgba(255, 255, 255, 0.94);
-  border: 1px solid #d2dfc8;
-  border-radius: var(--radius-pill);
-  padding: var(--espacio-1) var(--espacio-3);
-  font-size: var(--texto-xs);
-  font-weight: var(--peso-seminegrita);
-  color: var(--color-texto);
-}
-
-.huerto-pin {
-  position: absolute;
-  transform: translate(-50%, -100%);
+.huerto-mapa {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-}
-
-.huerto-pin-cabeza {
-  width: 26px;
-  height: 26px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-accent);
-  border: 3px solid var(--color-superficie);
-  box-shadow: var(--sombra-md);
-}
-
-.huerto-pin-punta {
-  width: 3px;
-  height: 10px;
-  background-color: var(--color-accent-dark);
-}
-
-.huerto-visor-pie {
-  position: absolute;
-  bottom: var(--espacio-3);
-  right: var(--espacio-3);
+  align-items: flex-end;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-5);
 }
 
 .huerto-coordenadas-grid {
@@ -349,10 +297,6 @@
 @media (min-width: 1024px) {
   .huerto-tabs {
     display: none;
-  }
-
-  .huerto-visor-mapa {
-    height: 250px;
   }
 
   .huerto-superficie-grid {

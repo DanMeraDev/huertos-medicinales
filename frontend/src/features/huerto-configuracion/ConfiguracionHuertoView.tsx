@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { ApiError } from '../../api/client'
 import { Boton } from '../../components/Boton'
 import { CampoTexto } from '../../components/CampoTexto'
+import { MapaUbicacion } from '../../components/MapaUbicacion'
 import { Notificacion } from '../../components/Notificacion'
 import { Selector } from '../../components/Selector'
 import {
@@ -71,9 +72,6 @@ const OPCIONES_CERCA: OpcionVisual<TipoCerca>[] = [
   { valor: 'CONVENCIONAL', etiqueta: 'Convencional', descripcion: 'Postes y alambre tradicional' },
 ]
 
-const LATITUD_BASE = -0.180653
-const LONGITUD_BASE = -78.467834
-
 const ETIQUETA_TIPO_HUERTO: Record<string, string> = {
   BASICO: 'Básico',
   INTERMEDIO: 'Intermedio',
@@ -83,17 +81,6 @@ const ETIQUETA_TIPO_HUERTO: Record<string, string> = {
 
 function formatearTipoHuerto(tipoHuerto: string): string {
   return ETIQUETA_TIPO_HUERTO[tipoHuerto] ?? tipoHuerto
-}
-
-function calcularPosicionPin(latitudTexto: string, longitudTexto: string) {
-  const lat = Number(latitudTexto)
-  const lon = Number(longitudTexto)
-  if (Number.isNaN(lat) || Number.isNaN(lon)) {
-    return { x: 50, y: 50 }
-  }
-  const x = Math.min(92, Math.max(8, 50 + (lon - LONGITUD_BASE) * 900))
-  const y = Math.min(88, Math.max(18, 50 - (lat - LATITUD_BASE) * 900))
-  return { x, y }
 }
 
 export function ConfiguracionHuertoView() {
@@ -114,9 +101,6 @@ export function ConfiguracionHuertoView() {
   const [tipoAbono, setTipoAbono] = useState<TipoAbono | null>(null)
   const [tipoCerca, setTipoCerca] = useState<TipoCerca | null>(null)
   const [detalleCerca, setDetalleCerca] = useState('')
-
-  const [arrastrandoPin, setArrastrandoPin] = useState(false)
-  const visorRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     let activo = true
@@ -161,33 +145,9 @@ export function ConfiguracionHuertoView() {
     ? 0
     : Math.min(100, Math.max(0, (areaNumerica / 400) * 100))
 
-  function actualizarCoordenadasDesdeVisor(clienteX: number, clienteY: number) {
-    const visor = visorRef.current
-    if (!visor) return
-    const rect = visor.getBoundingClientRect()
-    if (rect.width === 0 || rect.height === 0) return
-
-    const proporcionX = Math.min(1, Math.max(0, (clienteX - rect.left) / rect.width))
-    const proporcionY = Math.min(1, Math.max(0, (clienteY - rect.top) / rect.height))
-    const nuevaLongitud = LONGITUD_BASE + (proporcionX - 0.5) / 9
-    const nuevaLatitud = LATITUD_BASE - (proporcionY - 0.5) / 9
-
+  function marcarEnMapa(nuevaLatitud: number, nuevaLongitud: number) {
     setLatitud(nuevaLatitud.toFixed(6))
     setLongitud(nuevaLongitud.toFixed(6))
-  }
-
-  function manejarPointerDown(evento: PointerEvent<HTMLDivElement>) {
-    setArrastrandoPin(true)
-    actualizarCoordenadasDesdeVisor(evento.clientX, evento.clientY)
-  }
-
-  function manejarPointerMove(evento: PointerEvent<HTMLDivElement>) {
-    if (!arrastrandoPin) return
-    actualizarCoordenadasDesdeVisor(evento.clientX, evento.clientY)
-  }
-
-  function manejarPointerUp() {
-    setArrastrandoPin(false)
   }
 
   function sincronizarGps() {
@@ -271,7 +231,6 @@ export function ConfiguracionHuertoView() {
     }
   }
 
-  const posicionPin = calcularPosicionPin(latitud, longitud)
 
   if (cargando) {
     return (
@@ -341,31 +300,14 @@ export function ConfiguracionHuertoView() {
             <span className="huerto-seccion-paso">Sección 01 · Ubicación</span>
             <h2 className="huerto-tarjeta-titulo">Georreferenciación del Terreno</h2>
             <p className="huerto-tarjeta-descripcion">
-              Arrastra el marcador sobre el visor o sincroniza el GPS en sitio
+              Marca el punto del huerto en el mapa o sincroniza el GPS en sitio
             </p>
 
-            <div
-              ref={visorRef}
-              className="huerto-visor-mapa"
-              role="application"
-              aria-label="Mapa interactivo de ubicación del huerto"
-              onPointerDown={manejarPointerDown}
-              onPointerMove={manejarPointerMove}
-              onPointerUp={manejarPointerUp}
-              onPointerLeave={manejarPointerUp}
-            >
-              <span className="huerto-visor-etiqueta">
-                {latitud}°, {longitud}°
-              </span>
-              <div className="huerto-pin" style={{ left: `${posicionPin.x}%`, top: `${posicionPin.y}%` }}>
-                <span className="huerto-pin-cabeza" />
-                <span className="huerto-pin-punta" />
-              </div>
-              <div className="huerto-visor-pie" onPointerDown={(e) => e.stopPropagation()}>
-                <Boton variante="secundario" onClick={sincronizarGps}>
-                  Capturar GPS
-                </Boton>
-              </div>
+            <div className="huerto-mapa">
+              <MapaUbicacion latitud={latitud} longitud={longitud} alSeleccionar={marcarEnMapa} />
+              <Boton variante="secundario" onClick={sincronizarGps}>
+                Capturar GPS
+              </Boton>
             </div>
 
             <div className="huerto-coordenadas-grid">
