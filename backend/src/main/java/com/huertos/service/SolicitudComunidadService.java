@@ -35,7 +35,7 @@ public interface SolicitudComunidadService {
     /**
      * Aprueba una solicitud pendiente en una sola transacción: crea la cuenta del responsable con una
      * contraseña temporal aleatoria (US-CU03), la comunidad con su huerto base (US-CU06) y registra al técnico
-     * que la revisó. Si alguna parte falla, no se guarda nada.
+     * que la revisó. Si alguna parte falla, no se guarda nada. Al confirmarse, envía las credenciales por correo (US-CU07).
      *
      * @throws com.huertos.exception.RecursoNoEncontradoException si la solicitud o el técnico no existen
      * @throws com.huertos.exception.ConflictoException si la solicitud ya fue resuelta
@@ -43,7 +43,8 @@ public interface SolicitudComunidadService {
     ResolucionSolicitudResponse aprobarSolicitud(Long id, String correoTecnico);
 
     /**
-     * Rechaza una solicitud pendiente guardando el motivo y el técnico que la revisó.
+     * Rechaza una solicitud pendiente guardando el motivo y el técnico que la revisó. Al confirmarse, envía el
+     * motivo por correo al solicitante (US-CU07).
      *
      * @throws com.huertos.exception.RecursoNoEncontradoException si la solicitud o el técnico no existen
      * @throws com.huertos.exception.ConflictoException si la solicitud ya fue resuelta
