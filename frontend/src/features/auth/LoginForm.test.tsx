@@ -36,6 +36,23 @@ describe('LoginForm', () => {
     expect(screen.getByRole('button', { name: 'Iniciar sesión' })).toHaveClass('login-boton')
   })
 
+  it('permite mostrar y ocultar la contraseña con el botón de ojo', async () => {
+    const usuario = userEvent.setup()
+    renderizarLogin()
+
+    const campoClave = screen.getByLabelText('Contraseña')
+    expect(campoClave).toHaveAttribute('type', 'password')
+
+    const botonMostrar = screen.getByRole('button', { name: 'Mostrar contraseña' })
+    await usuario.click(botonMostrar)
+
+    expect(campoClave).toHaveAttribute('type', 'text')
+    const botonOcultar = screen.getByRole('button', { name: 'Ocultar contraseña' })
+    await usuario.click(botonOcultar)
+
+    expect(campoClave).toHaveAttribute('type', 'password')
+  })
+
   it('guarda el token y lleva al panel del rol', async () => {
     renderizarLogin()
 

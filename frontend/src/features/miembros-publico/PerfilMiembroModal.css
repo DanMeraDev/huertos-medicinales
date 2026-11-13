@@ -14,16 +14,17 @@
 .perfil-miembro-kinti {
   display: flex;
   align-items: center;
-  gap: var(--espacio-3);
-  padding: var(--espacio-3);
-  background-color: var(--color-primary-light);
-  border-radius: var(--radio-md);
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+  background: linear-gradient(135deg, #ecf6e0 0%, #d8ecc2 100%);
+  border: 1px solid #b4d592;
+  border-radius: 14px;
 }
 
 .perfil-miembro-kinti-saludo {
-  font-size: var(--texto-sm);
+  font-size: var(--texto-base);
   font-weight: var(--peso-seminegrita);
-  color: var(--color-primario);
+  color: #244310;
 }
 
 .perfil-miembro-cabecera {

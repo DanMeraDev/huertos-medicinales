@@ -1,39 +1,79 @@
+.formulario-ingreso-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  width: 100%;
+  max-width: 54rem;
+  margin: 0 auto;
+}
+
+.formulario-ingreso-kinti-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5) var(--espacio-6);
+  background: linear-gradient(135deg, #ecf5e2 0%, #f8fbf4 60%, #fff6ea 100%);
+  border: 1px solid #d5e4ca;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.formulario-ingreso-kinti {
+  flex-shrink: 0;
+}
+
+.formulario-ingreso-kinti-mensaje {
+  margin: 0;
+  font-size: var(--texto-base);
+  font-weight: var(--peso-seminegrita);
+  color: #244310;
+  line-height: 1.5;
+}
+
 .formulario-ingreso {
   display: flex;
   flex-direction: column;
   gap: var(--espacio-4);
   width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
   box-sizing: border-box;
-  padding: var(--espacio-4);
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
-  border-radius: var(--radio-lg);
+  padding: var(--espacio-5);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #dce6d5;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .formulario-ingreso-titulo {
-  font-size: var(--texto-xl);
+  font-size: var(--texto-2xl);
   font-weight: var(--peso-negrita);
-  color: var(--color-texto);
-  margin: 0 0 var(--espacio-2) 0;
+  color: #243b15;
+  margin: 0;
 }
 
 .formulario-ingreso-descripcion {
   font-size: var(--texto-sm);
   color: var(--color-texto-secundario);
-  margin: 0 0 var(--espacio-3) 0;
+  margin: 0 0 var(--espacio-2) 0;
+}
+
+.formulario-ingreso-campos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-4);
 }
 
 .formulario-ingreso-acciones {
   display: flex;
-  flex-direction: column;
-  gap: var(--espacio-2);
+  justify-content: flex-end;
+  padding-top: var(--espacio-3);
+  border-top: 1px solid #e1ebd9;
   margin-top: var(--espacio-2);
 }
 
 .formulario-ingreso-acciones .boton {
-  min-height: 44px;
+  min-height: 46px;
   width: 100%;
 }
 
@@ -43,7 +83,26 @@
 }
 
 @media (min-width: 640px) {
+  .formulario-ingreso-kinti-banner {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .formulario-ingreso-kinti-mensaje {
+    font-size: var(--texto-lg);
+  }
+
   .formulario-ingreso {
-    padding: var(--espacio-6);
+    padding: var(--espacio-8);
+  }
+
+  .formulario-ingreso-campos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--espacio-5);
+  }
+
+  .formulario-ingreso-acciones .boton {
+    width: auto;
+    min-width: 14rem;
   }
 }

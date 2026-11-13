@@ -68,6 +68,7 @@ export function LoginForm() {
         etiqueta="Contraseña"
         type="password"
         autoComplete="current-password"
+        alternarVisibilidadClave
         required
         valor={password}
         alCambiar={setPassword}

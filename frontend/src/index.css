@@ -22,6 +22,23 @@ a {
   text-decoration: none;
 }
 
+input[type='date'] {
+  font-family: inherit;
+  accent-color: var(--color-primario);
+}
+
+input[type='file']::file-selector-button {
+  padding: 0.45rem 0.95rem;
+  margin-right: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #d7cabe;
+  background: linear-gradient(135deg, #f8f5f0 0%, #ede6dc 100%);
+  color: #543e29;
+  font-size: var(--texto-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* =========================================
    2. MODO CLARO (Light Theme por defecto)
    ========================================= */

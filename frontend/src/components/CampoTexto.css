@@ -7,32 +7,106 @@
 
 .campo-etiqueta {
   font-size: var(--texto-sm);
-  font-weight: var(--peso-medio);
-  color: var(--color-texto);
+  font-weight: var(--peso-seminegrita);
+  color: #2b421c;
+}
+
+.campo-clave-envoltorio {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .campo-control {
   width: 100%;
   min-width: 0;
+  min-height: 44px;
   padding: var(--espacio-2) var(--espacio-3);
-  border: var(--borde-ancho) solid var(--color-borde);
-  border-radius: var(--radio-md);
+  border: 1.5px solid #cfd8c8;
+  border-radius: 10px;
   font-size: var(--texto-base);
   color: var(--color-texto);
-  background-color: var(--color-superficie);
+  background: linear-gradient(180deg, #ffffff 0%, #fafcf8 100%);
+  box-shadow: inset 0 1px 2px rgba(36, 59, 21, 0.04);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.campo-control-con-ojo {
+  padding-right: 2.85rem;
+}
+
+.campo-control:hover:not(:disabled) {
+  border-color: #a9bf99;
 }
 
 .campo-control:focus {
   border-color: var(--color-primario);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(76, 122, 38, 0.14);
   outline: none;
 }
 
 .campo-control[aria-invalid='true'] {
-  border-color: var(--color-error);
+  border-color: #d64545;
+  background: linear-gradient(180deg, #fffafa 0%, #fdf2f2 100%);
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.08);
+}
+
+.campo-ojo-boton {
+  position: absolute;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #4f683d;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.campo-ojo-boton:hover {
+  background-color: #ebf5df;
+  color: #2b4f12;
+}
+
+.campo-ojo-boton:focus-visible {
+  outline: 2px solid var(--color-primario);
+}
+
+input[type='date'].campo-control {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  accent-color: var(--color-primario);
+  color: #263a19;
+  cursor: pointer;
+}
+
+input[type='date'].campo-control::-webkit-calendar-picker-indicator {
+  padding: 5px 7px;
+  border-radius: 7px;
+  background-color: #edf6e3;
+  border: 1px solid #c2dba5;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+input[type='date'].campo-control::-webkit-calendar-picker-indicator:hover {
+  background-color: #dcecc9;
+  border-color: #a6c97f;
 }
 
 .campo-error {
-  margin: 0;
-  font-size: var(--texto-sm);
-  color: var(--color-error);
+  margin: 2px 0 0;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #fdf2f2 0%, #fae4e4 100%);
+  border-left: 3px solid #d64545;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-seminegrita);
+  color: #9b2222;
 }

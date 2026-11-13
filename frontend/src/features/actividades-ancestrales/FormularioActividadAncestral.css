@@ -1,24 +1,25 @@
 .formulario-actividad-ancestral-contenedor {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-4);
+  gap: var(--espacio-5);
   width: 100%;
 }
 
 .formulario-actividad-ancestral-grilla {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--espacio-4);
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
-  border-radius: var(--radio-lg);
+  gap: var(--espacio-5);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #dce6d5;
+  border-radius: var(--radius-lg);
   padding: var(--espacio-6);
-  box-shadow: var(--sombra-sm);
+  box-shadow: var(--shadow-card);
 }
 
 @media (min-width: 640px) {
   .formulario-actividad-ancestral-grilla {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: var(--espacio-8);
   }
 }
 
@@ -27,6 +28,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border-radius: 12px;
+  border: 1px solid #d5e4ca;
+  background: linear-gradient(135deg, #f8fbf4 0%, #eef6e4 100%);
 }
 
 .lista-participantes-agregar {
@@ -49,13 +54,45 @@
 .campo-foto {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-2);
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border-radius: 12px;
+  border: 1.5px dashed #b4cf96;
+  background: linear-gradient(135deg, #fafcf7 0%, #eff7e6 100%);
+}
+
+.campo-foto input[type='file'] {
+  width: 100%;
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+}
+
+.campo-foto input[type='file']::file-selector-button {
+  padding: 0.5rem 1rem;
+  margin-right: var(--espacio-3);
+  border-radius: 10px;
+  border: 1px solid #d7cabe;
+  background: linear-gradient(135deg, #f8f5f0 0%, #ede6dc 100%);
+  color: #543e29;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-negrita);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(100, 75, 48, 0.08);
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+
+.campo-foto input[type='file']::file-selector-button:hover {
+  background: linear-gradient(135deg, #f1ebe3 0%, #e3d9cb 100%);
+  border-color: #c4b3a3;
+  transform: translateY(-1px);
 }
 
 .campo-ayuda {
   margin: 0;
-  font-size: var(--texto-sm);
-  color: var(--color-texto-secundario);
+  font-size: var(--texto-xs);
+  color: #466927;
+  font-weight: var(--peso-medio);
 }
 
 .formulario-actividad-foto-boton {
@@ -70,16 +107,19 @@
   grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
+  padding-top: var(--espacio-3);
+  border-top: 1px solid #e1ebd9;
   margin-top: var(--espacio-2);
 }
 
 .formulario-actividad-ancestral-boton {
   width: 100%;
+  min-height: 46px;
 }
 
 @media (min-width: 640px) {
   .formulario-actividad-ancestral-boton {
     width: auto;
-    min-width: 14rem;
+    min-width: 15rem;
   }
 }

@@ -1,26 +1,58 @@
 .modal-baja-cuerpo {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-sm, 0.75rem);
+  gap: var(--espacio-4);
+}
+
+.modal-baja-banner-triste {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: 12px;
+  border: 1px solid #ebd0c8;
+  background: linear-gradient(135deg, #fff5f5 0%, #fdf2ea 100%);
+}
+
+.modal-baja-icono-contenedor {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(198, 40, 40, 0.08);
+  border: 1.5px solid #dfa9a9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9b2222;
+}
+
+.modal-baja-mensaje-triste {
+  margin: 0;
+  font-size: var(--texto-base);
+  font-weight: var(--peso-seminegrita);
+  color: #7b2323;
+  line-height: 1.4;
 }
 
 .modal-baja-pregunta {
-  font-size: 1rem;
-  color: var(--color-texto, #2d3748);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
   margin: 0;
 }
 
 .modal-baja-aviso {
-  font-size: 0.875rem;
-  color: var(--color-texto-secundario, #718096);
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .modal-baja-textarea {
   width: 100%;
   resize: vertical;
-  min-height: 80px;
+  min-height: 88px;
   font-family: inherit;
   box-sizing: border-box;
 }
@@ -28,6 +60,6 @@
 .modal-baja-conteo {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.75rem;
-  color: var(--color-texto-secundario, #718096);
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
 }

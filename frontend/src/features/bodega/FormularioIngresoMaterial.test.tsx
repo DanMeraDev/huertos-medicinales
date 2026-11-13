@@ -14,6 +14,13 @@ describe('FormularioIngresoMaterial', () => {
   it('renderiza todos los campos obligatorios y el botón de acción', () => {
     render(<FormularioIngresoMaterial plantasDisponibles={PLANTAS_PRUEBA} />)
 
+    expect(screen.getByAltText('Kinti Guía en estado de alerta')).toHaveAttribute(
+      'src',
+      '/kinti/kinti-alerta.svg',
+    )
+    expect(
+      screen.getByText(/¡qué alegría que haya llegado más material para el cultivo!/i),
+    ).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Ingreso de Material Vegetal' })).toBeInTheDocument()
     expect(screen.getByLabelText(/planta del catálogo/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/tipo de material/i)).toBeInTheDocument()
