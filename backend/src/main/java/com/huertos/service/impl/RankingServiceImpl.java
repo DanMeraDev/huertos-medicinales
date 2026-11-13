@@ -1,9 +1,12 @@
 package com.huertos.service.impl;
 
 import com.huertos.dto.RankingComunidadResponse;
+import com.huertos.dto.RankingMiembroResponse;
 import com.huertos.mapper.RankingMapper;
 import com.huertos.model.Comunidad;
 import com.huertos.repository.ComunidadRepository;
+import com.huertos.repository.MiembroInsigniaRepository;
+import com.huertos.repository.MiembroRepository;
 import com.huertos.service.RankingService;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class RankingServiceImpl implements RankingService {
 
     private final ComunidadRepository comunidadRepository;
+    private final MiembroRepository miembroRepository;
+    private final MiembroInsigniaRepository miembroInsigniaRepository;
     private final RankingMapper rankingMapper;
 
     @Override
@@ -27,5 +32,11 @@ public class RankingServiceImpl implements RankingService {
             resultado.add(rankingMapper.toResponse(comunidades.get(i), i + 1));
         }
         return resultado;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RankingMiembroResponse> obtenerRankingMiembros() {
+        return List.of();
     }
 }

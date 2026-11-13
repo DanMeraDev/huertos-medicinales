@@ -10,5 +10,7 @@ public interface MiembroInsigniaRepository extends JpaRepository<MiembroInsignia
 
     boolean existsByMiembroIdAndTalentoComunidadId(Long miembroId, Long talentoComunidadId);
 
+    long countByMiembroId(Long miembroId);
+
     List<MiembroInsignia> findByMiembroIdOrderByFechaObtencionDesc(Long miembroId);
 }
