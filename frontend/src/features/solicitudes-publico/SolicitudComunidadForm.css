@@ -8,8 +8,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--espacio-2);
+  gap: var(--espacio-3);
   text-align: center;
+  padding: var(--espacio-5) var(--espacio-6);
+  background: linear-gradient(135deg, #ecf5e2 0%, #f8fbf4 60%, #fff6ea 100%);
+  border: 1px solid #d5e4ca;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .solicitud-kinti {
@@ -20,8 +25,9 @@
 .solicitud-frase {
   margin: 0;
   font-size: var(--texto-base);
-  font-weight: var(--peso-medio);
-  color: var(--color-primario);
+  font-weight: var(--peso-seminegrita);
+  color: #244310;
+  line-height: 1.5;
 }
 
 .solicitud-tarjeta {
@@ -29,20 +35,23 @@
   grid-template-columns: 1fr;
   gap: var(--espacio-4);
   margin: 0;
-  padding: var(--espacio-5) var(--espacio-4);
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-sm);
+  padding: var(--espacio-6);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #dce6d5;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .solicitud-titulo {
   float: left;
   width: 100%;
-  margin-bottom: var(--espacio-2);
-  font-size: var(--texto-lg);
-  font-weight: var(--peso-seminegrita);
-  color: var(--color-primario);
+  margin-bottom: var(--espacio-3);
+  padding: var(--espacio-1) var(--espacio-3);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #eef6e4 0%, #e1efd2 100%);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-negrita);
+  color: #2b4f12;
 }
 
 .solicitud .campo-control {
@@ -68,11 +77,17 @@
   align-items: center;
   gap: var(--espacio-2);
   min-height: 44px;
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: 10px;
+  border: 1px solid #d9e2d4;
+  background-color: var(--color-superficie);
+  cursor: pointer;
 }
 
 .solicitud-subtipo input {
   width: 20px;
   height: 20px;
+  accent-color: var(--color-primario);
 }
 
 .solicitud-acciones .boton,

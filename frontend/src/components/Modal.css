@@ -13,15 +13,17 @@
   width: 100%;
   max-width: var(--ancho-lectura);
   padding: var(--espacio-6);
-  background-color: var(--color-superficie);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #d5e4ca;
   border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-lg);
+  box-shadow: 0 18px 42px rgba(24, 42, 14, 0.2);
 }
 
 .modal-titulo {
   margin: 0 0 var(--espacio-4);
   font-size: var(--texto-xl);
-  font-weight: var(--peso-seminegrita);
+  font-weight: var(--peso-negrita);
+  color: #243b15;
 }
 
 .modal-acciones {

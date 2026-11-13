@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { Boton } from '../../components/Boton'
 import { CampoTexto } from '../../components/CampoTexto'
+import { KintiGuia } from '../../components/KintiGuia'
 import { Notificacion } from '../../components/Notificacion'
 import { Selector, type OpcionSelector } from '../../components/Selector'
 import { ApiError } from '../../api/client'
@@ -154,90 +155,101 @@ export function FormularioIngresoMaterial({
   }
 
   return (
-    <form className="formulario-ingreso" onSubmit={manejarEnvio} noValidate>
-      <h2 className="formulario-ingreso-titulo">Ingreso de Material Vegetal</h2>
-      <p className="formulario-ingreso-descripcion">
-        Registra semillas, estacas, esquejes o plántulas para el inventario de la bodega comunitaria.
-      </p>
-
-      {notificacion && (
-        <Notificacion tipo={notificacion.tipo} mensaje={notificacion.mensaje} />
-      )}
-
-      <Selector
-        etiqueta="Planta del Catálogo"
-        opciones={opcionesPlantas}
-        valor={plantaId}
-        alCambiar={(nuevoValor) => {
-          setPlantaId(nuevoValor)
-          setErrores((prev) => ({ ...prev, plantaId: '' }))
-        }}
-        error={errores.plantaId}
-        required
-      />
-
-      <Selector
-        etiqueta="Tipo de Material"
-        opciones={OPCIONES_TIPO_MATERIAL}
-        valor={tipoMaterial}
-        alCambiar={(nuevoValor) => {
-          setTipoMaterial(nuevoValor as TipoMaterialVegetal)
-          setErrores((prev) => ({ ...prev, tipoMaterial: '' }))
-        }}
-        error={errores.tipoMaterial}
-        required
-      />
-
-      <CampoTexto
-        etiqueta="Cantidad Ingresada"
-        type="number"
-        step="0.01"
-        min="0.01"
-        valor={cantidad}
-        alCambiar={(nuevoValor) => {
-          setCantidad(nuevoValor)
-          setErrores((prev) => ({ ...prev, cantidad: '' }))
-        }}
-        error={errores.cantidad}
-        required
-      />
-
-      <Selector
-        etiqueta="Unidad de Medida"
-        opciones={OPCIONES_UNIDAD_MEDIDA}
-        valor={unidadMedida}
-        alCambiar={(nuevoValor) => {
-          setUnidadMedida(nuevoValor as UnidadMedida)
-          setErrores((prev) => ({ ...prev, unidadMedida: '' }))
-        }}
-        error={errores.unidadMedida}
-        required
-      />
-
-      <CampoTexto
-        etiqueta="Lote u Origen"
-        placeholder="Ej. Donación vivero local"
-        valor={loteOrigen}
-        alCambiar={(nuevoValor) => setLoteOrigen(nuevoValor)}
-      />
-
-      <CampoTexto
-        etiqueta="Fecha de Ingreso"
-        type="date"
-        valor={fechaIngreso}
-        alCambiar={(nuevoValor) => {
-          setFechaIngreso(nuevoValor)
-          setErrores((prev) => ({ ...prev, fechaIngreso: '' }))
-        }}
-        error={errores.fechaIngreso}
-        required
-      />
-
-      <div className="formulario-ingreso-acciones">
-        <Boton type="submit" disabled={cargando}>
-          {cargando ? 'Registrando...' : 'Registrar Ingreso'}
-        </Boton>
+    <div className="formulario-ingreso-contenedor">
+      <div className="formulario-ingreso-kinti-banner">
+        <KintiGuia variante="alerta" tamano="md" className="formulario-ingreso-kinti" />
+        <p className="formulario-ingreso-kinti-mensaje">
+          ¡Qué alegría que haya llegado más material para el cultivo! Gracias por cuidar de la comunidad.
+        </p>
       </div>
-    </form>
+
+      <form className="formulario-ingreso" onSubmit={manejarEnvio} noValidate>
+        <h2 className="formulario-ingreso-titulo">Ingreso de Material Vegetal</h2>
+        <p className="formulario-ingreso-descripcion">
+          Registra semillas, estacas, esquejes o plántulas para el inventario de la bodega comunitaria.
+        </p>
+
+        {notificacion && (
+          <Notificacion tipo={notificacion.tipo} mensaje={notificacion.mensaje} />
+        )}
+
+        <div className="formulario-ingreso-campos">
+          <Selector
+            etiqueta="Planta del Catálogo"
+            opciones={opcionesPlantas}
+            valor={plantaId}
+            alCambiar={(nuevoValor) => {
+              setPlantaId(nuevoValor)
+              setErrores((prev) => ({ ...prev, plantaId: '' }))
+            }}
+            error={errores.plantaId}
+            required
+          />
+
+          <Selector
+            etiqueta="Tipo de Material"
+            opciones={OPCIONES_TIPO_MATERIAL}
+            valor={tipoMaterial}
+            alCambiar={(nuevoValor) => {
+              setTipoMaterial(nuevoValor as TipoMaterialVegetal)
+              setErrores((prev) => ({ ...prev, tipoMaterial: '' }))
+            }}
+            error={errores.tipoMaterial}
+            required
+          />
+
+          <CampoTexto
+            etiqueta="Cantidad Ingresada"
+            type="number"
+            step="0.01"
+            min="0.01"
+            valor={cantidad}
+            alCambiar={(nuevoValor) => {
+              setCantidad(nuevoValor)
+              setErrores((prev) => ({ ...prev, cantidad: '' }))
+            }}
+            error={errores.cantidad}
+            required
+          />
+
+          <Selector
+            etiqueta="Unidad de Medida"
+            opciones={OPCIONES_UNIDAD_MEDIDA}
+            valor={unidadMedida}
+            alCambiar={(nuevoValor) => {
+              setUnidadMedida(nuevoValor as UnidadMedida)
+              setErrores((prev) => ({ ...prev, unidadMedida: '' }))
+            }}
+            error={errores.unidadMedida}
+            required
+          />
+
+          <CampoTexto
+            etiqueta="Lote u Origen"
+            placeholder="Ej. Donación vivero local"
+            valor={loteOrigen}
+            alCambiar={(nuevoValor) => setLoteOrigen(nuevoValor)}
+          />
+
+          <CampoTexto
+            etiqueta="Fecha de Ingreso"
+            type="date"
+            valor={fechaIngreso}
+            alCambiar={(nuevoValor) => {
+              setFechaIngreso(nuevoValor)
+              setErrores((prev) => ({ ...prev, fechaIngreso: '' }))
+            }}
+            error={errores.fechaIngreso}
+            required
+          />
+        </div>
+
+        <div className="formulario-ingreso-acciones">
+          <Boton type="submit" disabled={cargando}>
+            {cargando ? 'Registrando...' : 'Registrar Ingreso'}
+          </Boton>
+        </div>
+      </form>
+    </div>
   )
 }

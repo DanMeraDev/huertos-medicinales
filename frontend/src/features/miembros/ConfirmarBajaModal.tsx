@@ -54,6 +54,29 @@ export function ConfirmarBajaModal({
       }
     >
       <div className="modal-baja-cuerpo">
+        <div className="modal-baja-banner-triste">
+          <div className="modal-baja-icono-contenedor" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="44" height="44" fill="none" className="modal-baja-icono">
+              <circle cx="32" cy="22" r="12" stroke="currentColor" strokeWidth="2.5" />
+              <circle cx="27.5" cy="20" r="1.5" fill="currentColor" />
+              <circle cx="36.5" cy="20" r="1.5" fill="currentColor" />
+              <path
+                d="M27 27c1.6-2.1 8.4-2.1 10 0"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+              />
+              <path
+                d="M14 52c2.5-9.5 9.8-14 18-14s15.5 4.5 18 14"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+          <p className="modal-baja-mensaje-triste">Da mucha pena que un voluntario se haya ido</p>
+        </div>
+
         <p className="modal-baja-pregunta">
           {`¿Está seguro de dar de baja a ${miembro.nombreCompleto}?`}
         </p>

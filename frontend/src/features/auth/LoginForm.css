@@ -3,10 +3,10 @@
   flex-direction: column;
   gap: var(--espacio-4);
   padding: var(--espacio-6) var(--espacio-4);
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #d5e4ca;
   border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-md);
+  box-shadow: var(--shadow-card);
 }
 
 .login-cabecera {

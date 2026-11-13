@@ -1,17 +1,23 @@
 .notificacion {
   padding: var(--espacio-3) var(--espacio-4);
-  border-radius: var(--radio-md);
-  border-left: var(--espacio-1) solid;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  border-left: 4px solid;
   font-size: var(--texto-sm);
+  font-weight: var(--peso-seminegrita);
   color: var(--color-texto);
 }
 
 .notificacion-exito {
-  border-color: var(--color-exito);
-  background-color: color-mix(in srgb, var(--color-exito) 10%, var(--color-superficie));
+  border-color: #b7d99a;
+  border-left-color: var(--color-exito);
+  background: linear-gradient(135deg, #f1f8e8 0%, #e4f1d4 100%);
+  color: #244a13;
 }
 
 .notificacion-error {
-  border-color: var(--color-error);
-  background-color: color-mix(in srgb, var(--color-error) 10%, var(--color-superficie));
+  border-color: #ebb9b9;
+  border-left-color: var(--color-error);
+  background: linear-gradient(135deg, #fdf2f2 0%, #fae2e2 100%);
+  color: #8f1d1d;
 }

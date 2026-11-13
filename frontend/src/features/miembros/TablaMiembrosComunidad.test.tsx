@@ -69,6 +69,7 @@ describe('TablaMiembrosComunidad', () => {
     const botonBaja = screen.getByRole('button', { name: /dar de baja a maría tránsito amaguaña alba/i })
     await user.click(botonBaja)
 
+    expect(screen.getByText('Da mucha pena que un voluntario se haya ido')).toBeInTheDocument()
     expect(
       screen.getByText((_content, element) => {
         return (
