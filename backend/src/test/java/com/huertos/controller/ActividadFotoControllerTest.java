@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.JwtService;
 import com.huertos.config.SecurityConfig;
 import com.huertos.exception.GlobalExceptionHandler;
@@ -30,6 +31,9 @@ class ActividadFotoControllerTest {
 
     @MockitoBean
     private AlmacenamientoService almacenamientoService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @MockitoBean
     private JwtService jwtService;

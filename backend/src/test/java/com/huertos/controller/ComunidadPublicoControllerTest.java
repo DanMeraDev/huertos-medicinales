@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.DirectorioComunidadResponse;
 import com.huertos.exception.GlobalExceptionHandler;
@@ -28,6 +29,9 @@ class ComunidadPublicoControllerTest {
 
     @MockitoBean
     private ComunidadService comunidadService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void obtenerDirectorioRetorna200SinAutenticacionConListado() throws Exception {

@@ -1,5 +1,6 @@
 package com.huertos;
 
+import com.huertos.repository.UsuarioRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,6 +57,9 @@ class PlantaActualizacionIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     private Long tecnicoId;
 
@@ -136,7 +140,7 @@ class PlantaActualizacionIntegrationTest {
     }
 
     private ResultActions actualizar(Long id, String solicitud) throws Exception {
-        String token = jwtService.generarToken(CORREO_TECNICO, "TECNICO_MSP");
+        String token = jwtService.generarToken(usuarioRepository.findByCorreo(CORREO_TECNICO).orElseThrow());
         return mockMvc.perform(put("/api/msp/plantas/{id}", id)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -1,5 +1,9 @@
 package com.huertos.controller;
 
+import java.util.Optional;
+import com.huertos.repository.UsuarioRepository;
+import com.huertos.model.Usuario;
+import com.huertos.model.Rol;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,15 +53,28 @@ class BodegaControllerTest {
     @MockitoBean
     private BodegaService bodegaService;
 
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
+
     private String tokenResponsable;
     private String tokenMiembro;
     private String tokenTecnico;
 
     @BeforeEach
     void setUp() {
-        tokenResponsable = jwtService.generarToken("responsable@correo.com", "RESPONSABLE_COMUNIDAD");
-        tokenMiembro = jwtService.generarToken("miembro@correo.com", "MIEMBRO");
-        tokenTecnico = jwtService.generarToken("tecnico@msp.gob.ec", "TECNICO_MSP");
+        tokenResponsable = tokenPara("responsable@correo.com", Rol.RESPONSABLE_COMUNIDAD);
+        tokenMiembro = tokenPara("sistemas@correo.com", Rol.TECNICO_SIS);
+        tokenTecnico = tokenPara("tecnico@msp.gob.ec", Rol.TECNICO_MSP);
+    }
+
+    private String tokenPara(String correo, Rol rol) {
+        Usuario usuario = new Usuario();
+        usuario.setCorreo(correo);
+        usuario.setPasswordHash("hash");
+        usuario.setRol(rol);
+        usuario.setActivo(true);
+        when(usuarioRepository.findByCorreo(correo)).thenReturn(Optional.of(usuario));
+        return jwtService.generarToken(usuario);
     }
 
     @Test

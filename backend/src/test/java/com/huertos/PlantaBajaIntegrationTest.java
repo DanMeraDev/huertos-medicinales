@@ -1,5 +1,6 @@
 package com.huertos;
 
+import com.huertos.repository.UsuarioRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -44,6 +45,9 @@ class PlantaBajaIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     private Long tecnicoId;
 
@@ -129,7 +133,7 @@ class PlantaBajaIntegrationTest {
     }
 
     private ResultActions darDeBaja(Long id) throws Exception {
-        String token = jwtService.generarToken(CORREO_TECNICO, "TECNICO_MSP");
+        String token = jwtService.generarToken(usuarioRepository.findByCorreo(CORREO_TECNICO).orElseThrow());
         return mockMvc.perform(patch("/api/msp/plantas/{id}/baja", id)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)

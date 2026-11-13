@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.CrearTalentoComunidadRequest;
 import com.huertos.dto.TalentoComunidadResponse;
@@ -38,6 +39,9 @@ class TalentoComunidadControllerTest {
 
     @MockitoBean
     private TalentoComunidadService talentoComunidadService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")

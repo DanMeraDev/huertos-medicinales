@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.PingResponse;
 import com.huertos.service.PingService;
@@ -25,6 +26,9 @@ class PingControllerTest {
 
     @MockitoBean
     private PingService pingService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void pingEsPublicoYDevuelve200() throws Exception {

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.RechazarSolicitudRequest;
 import com.huertos.dto.ResolucionSolicitudResponse;
@@ -40,6 +41,9 @@ class SolicitudComunidadControllerTest {
 
     @MockitoBean
     private SolicitudComunidadService solicitudComunidadService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void listaLasSolicitudesPendientes() throws Exception {

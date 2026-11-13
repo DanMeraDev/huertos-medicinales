@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.FiltrosPlantaRequest;
 import com.huertos.dto.PaginaResponse;
@@ -43,6 +44,9 @@ class PlantaPublicoControllerTest {
 
     @MockitoBean
     private PlantaService plantaService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void listaElCatalogoSinTokenConLaPaginacionPorDefecto() throws Exception {

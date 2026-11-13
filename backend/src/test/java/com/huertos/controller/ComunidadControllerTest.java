@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.ActualizarComunidadRequest;
 import com.huertos.dto.ComunidadDetalleResponse;
@@ -36,6 +37,9 @@ class ComunidadControllerTest {
 
     @MockitoBean
     private ComunidadService comunidadService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")

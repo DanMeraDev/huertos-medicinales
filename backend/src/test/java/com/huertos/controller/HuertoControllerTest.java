@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.ActualizarHuertoRequest;
 import com.huertos.dto.HuertoDetalleResponse;
@@ -42,6 +43,9 @@ class HuertoControllerTest {
     @MockitoBean
     private HuertoService huertoService;
 
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
+
     @Test
     @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
     void obtenerHuertoRetorna200ConDetalle() throws Exception {
@@ -57,12 +61,18 @@ class HuertoControllerTest {
 
     @Test
     @WithMockUser(username = "tecnico@huertos.gob.ec", roles = "TECNICO_MSP")
-    void obtenerHuertoConRolTecnicoRetorna200() throws Exception {
-        when(huertoService.obtenerPorCorreo("tecnico@huertos.gob.ec"))
-                .thenReturn(detalleResponse());
-
+    void obtenerHuertoConRolTecnicoRetorna403() throws Exception {
         mockMvc.perform(get("/api/comunidad/huerto"))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "tecnico@huertos.gob.ec", roles = "TECNICO_MSP")
+    void actualizarHuertoConRolTecnicoRetorna403() throws Exception {
+        mockMvc.perform(put("/api/comunidad/huerto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestValido())))
+                .andExpect(status().isForbidden());
     }
 
     @Test

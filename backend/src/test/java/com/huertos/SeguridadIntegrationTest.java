@@ -23,7 +23,7 @@ class SeguridadIntegrationTest {
 
     @Test
     void unaRutaPublicaConservaSuEstadoDeErrorSinSesion() throws Exception {
-        assertThat(estadoDe("/api/auth/inexistente")).isEqualTo(404);
+        assertThat(estadoDe("/api/publico/inexistente")).isEqualTo(404);
     }
 
     @Test
