@@ -35,6 +35,16 @@ const FASES_LUNARES: { clave: FaseLunar; etiqueta: string; descripcion: string }
   { clave: 'WANUK_KILLA_MENGUANTE', etiqueta: 'Wañuk', descripcion: 'Luna Menguante' },
 ]
 
+const ETIQUETA_SUBTIPO: Record<string, string> = {
+  SURCOS_WACHU: 'Surcos (Wachu)',
+  TERRAZAS_ANTI: 'Terrazas (Anti)',
+  CAMELLONES_INKA_WACHU: 'Camellones (Inka Wachu)',
+  VERTICAL_PARED: 'Vertical en Pared',
+  COLGANTE_TECHO: 'Colgante en Techo',
+  MACETAS_PISO: 'Macetas en Piso',
+  LLANTAS_RECICLADAS: 'Llantas Recicladas',
+}
+
 export function FormularioSiembra({
   huerto,
   subhuertos,
@@ -206,7 +216,7 @@ export function FormularioSiembra({
                     onClick={() => setSubhuertoSeleccionadoId(s.id)}
                   >
                     <span className="siembra-opcion-nombre">{s.nombreZona}</span>
-                    <span className="siembra-opcion-meta">{s.areaM2} m² • {s.subtipo}</span>
+                    <span className="siembra-opcion-meta">{s.areaM2} m² • {ETIQUETA_SUBTIPO[s.subtipo] ?? s.subtipo}</span>
                   </button>
                 )
               })}
