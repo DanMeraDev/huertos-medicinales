@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { Notificacion } from '../components/Notificacion'
 import { FormularioSubsanarEvidencias } from '../features/actividades-ancestrales/FormularioSubsanarEvidencias'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 
 export function SubsanarEvidenciaPage() {
   const { id } = useParams()
@@ -41,6 +42,10 @@ export function SubsanarEvidenciaPage() {
       >
         Subsanar Evidencias
       </h1>
+      <ConsejoKinti
+        variante="alerta"
+        mensaje="Lee las observaciones del Técnico MSP y vuelve a subir las evidencias corregidas."
+      />
       <FormularioSubsanarEvidencias idActividad={Number(id)} alReenviar={manejarReenvio} />
     </div>
   )

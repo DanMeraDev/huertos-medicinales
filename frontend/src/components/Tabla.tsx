@@ -1,4 +1,5 @@
 import type { Key, ReactNode } from 'react'
+import { KintiGuia } from './KintiGuia'
 import './Tabla.css'
 
 export interface ColumnaTabla<T> {
@@ -17,33 +18,36 @@ export function Tabla<T>({ columnas, filas, claveFila, cargando = false }: Tabla
   const mensaje = cargando ? 'Cargando…' : filas.length === 0 ? 'No hay registros.' : null
 
   return (
-    <table className="tabla">
-      <thead>
-      <tr>
-        {columnas.map((columna) => (
-          <th key={columna.titulo} scope="col">
-            {columna.titulo}
-          </th>
-        ))}
-      </tr>
-      </thead>
-      <tbody>
-      {mensaje ? (
+    <div className="tabla-contenedor">
+      <table className="tabla">
+        <thead>
         <tr>
-          <td colSpan={columnas.length} className="tabla-mensaje">
-            {mensaje}
-          </td>
+          {columnas.map((columna) => (
+            <th key={columna.titulo} scope="col">
+              {columna.titulo}
+            </th>
+          ))}
         </tr>
-      ) : (
-        filas.map((fila) => (
-          <tr key={claveFila(fila)}>
-            {columnas.map((columna) => (
-              <td key={columna.titulo}>{columna.celda(fila)}</td>
-            ))}
+        </thead>
+        <tbody>
+        {mensaje ? (
+          <tr>
+            <td colSpan={columnas.length} className="tabla-mensaje">
+              {!cargando && <KintiGuia variante="vacio" tamano={80} alt="" aria-hidden="true" />}
+              <p>{mensaje}</p>
+            </td>
           </tr>
-        ))
-      )}
-      </tbody>
-    </table>
+        ) : (
+          filas.map((fila) => (
+            <tr key={claveFila(fila)}>
+              {columnas.map((columna) => (
+                <td key={columna.titulo}>{columna.celda(fila)}</td>
+              ))}
+            </tr>
+          ))
+        )}
+        </tbody>
+      </table>
+    </div>
   )
 }

@@ -5,6 +5,7 @@ import { PodioVoluntarios } from '../features/ranking/PodioVoluntarios'
 import { TablaRankingMiembros } from '../features/ranking/TablaRankingMiembros'
 import { obtenerRankingMiembros } from '../features/ranking/rankingApi'
 import type { RankingMiembro } from '../features/ranking/types'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 import './RankingVoluntariosPage.css'
 
 export function RankingVoluntariosPage() {
@@ -46,6 +47,11 @@ export function RankingVoluntariosPage() {
           Reconocimiento a los miembros y voluntarios más activos en la preservación de huertos y saberes ancestrales en Ecuador.
         </p>
       </header>
+
+      <ConsejoKinti
+        variante="celebracion"
+        mensaje="Estos voluntarios son el corazón de los huertos. ¡Cada labor registrada los acerca al podio!"
+      />
 
       <nav className="ranking-pestanas" aria-label="Selector de ranking">
         <Link to="/ranking/comunidades" className="ranking-pestana">

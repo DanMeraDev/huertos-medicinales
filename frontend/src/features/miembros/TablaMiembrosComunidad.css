@@ -62,7 +62,12 @@
 
 .miembro-acciones {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--espacio-3, 0.75rem);
+  flex-wrap: nowrap;
+  gap: var(--espacio-2);
   align-items: center;
+}
+
+.miembro-acciones .boton {
+  padding: var(--espacio-2) var(--espacio-3);
+  white-space: nowrap;
 }

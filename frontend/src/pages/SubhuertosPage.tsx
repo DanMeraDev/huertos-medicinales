@@ -7,6 +7,7 @@ import {
   obtenerSubhuertos,
   type Subhuerto,
 } from '../features/huerto-subhuertos/subhuertosApi'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 
 export function SubhuertosPage() {
   const [subhuertos, setSubhuertos] = useState<Subhuerto[]>([])
@@ -44,10 +45,16 @@ export function SubhuertosPage() {
   }
 
   return (
-    <GestionSubhuertosView
-      areaTotalHuertoM2={areaTotalM2}
-      subhuertosIniciales={subhuertos}
-      alCrear={crearSubhuerto}
-    />
+    <>
+      <ConsejoKinti
+        variante="dia"
+        mensaje="Divide tu huerto en zonas según cómo siembras. La suma de sus áreas no puede pasar el área total del huerto."
+      />
+      <GestionSubhuertosView
+        areaTotalHuertoM2={areaTotalM2}
+        subhuertosIniciales={subhuertos}
+        alCrear={crearSubhuerto}
+      />
+    </>
   )
 }

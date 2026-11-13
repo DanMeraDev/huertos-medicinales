@@ -1,4 +1,5 @@
 import { TablaMiembrosComunidad } from '../features/miembros/TablaMiembrosComunidad'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 
 export function MiembrosComunidadPage() {
   return (
@@ -11,6 +12,10 @@ export function MiembrosComunidadPage() {
         padding: 'var(--espacio-4)',
       }}
     >
+      <ConsejoKinti
+        variante="oficial"
+        mensaje="Cada voluntario cuenta. Mantén sus datos al día y revisa su ficha antes de darlo de baja."
+      />
       <TablaMiembrosComunidad />
     </div>
   )

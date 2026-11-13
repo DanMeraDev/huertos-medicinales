@@ -1,0 +1,46 @@
+.consejo-kinti {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto var(--espacio-6);
+}
+
+.consejo-kinti .kinti-guia {
+  flex-shrink: 0;
+}
+
+.consejo-kinti-mensaje {
+  position: relative;
+  flex: 1;
+  margin: 0;
+  padding: var(--espacio-3) var(--espacio-4);
+  background-color: var(--color-primary-light);
+  border: 1px solid #cfe3bb;
+  border-radius: var(--radius-md);
+  color: #2f5515;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  line-height: 1.5;
+}
+
+.consejo-kinti-mensaje::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-primary-light);
+  border-left: 1px solid #cfe3bb;
+  border-bottom: 1px solid #cfe3bb;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@media (max-width: 767px) {
+  .consejo-kinti .kinti-guia {
+    width: 64px;
+    height: 64px;
+  }
+}

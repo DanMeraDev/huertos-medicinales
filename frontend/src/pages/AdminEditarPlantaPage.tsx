@@ -6,6 +6,7 @@ import { AvisoFormulario } from '../features/catalogo-admin/PartesFormularioPlan
 import { obtenerPlantaParaEditar } from '../features/catalogo-admin/plantasAdminApi'
 import type { PlantaDetalleResponse } from '../features/catalogo-admin/types'
 import { leerIdPlanta } from '../features/catalogo-plantas/leerIdPlanta'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 import './AdminEditarPlantaPage.css'
 
 const PLANTA_NO_DISPONIBLE = 'La planta no existe o fue dada de baja'
@@ -47,6 +48,10 @@ export function AdminEditarPlantaPage() {
   return (
     <div className="admin-editar-planta-pagina">
       <h1>Editar ficha técnica</h1>
+      <ConsejoKinti
+        variante="sabiduria"
+        mensaje="Revisa cada dato antes de guardar: las comunidades consultan esta ficha antes de sembrar."
+      />
       <ContenidoEdicion id={id} resultado={resultado} />
     </div>
   )

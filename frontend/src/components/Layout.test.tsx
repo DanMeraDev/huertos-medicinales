@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { guardarSesion } from '../api/sesion'
@@ -76,10 +76,13 @@ describe('Layout', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByText('Rosa Quishpe')).toBeInTheDocument()
+    expect(screen.queryByText('Rosa Quishpe')).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Mi Comunidad' })).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: /mi panel/i }))
+
+    expect(screen.getByText('Rosa Quishpe')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cerrar sesión' })).toBeInTheDocument()
 
     expect(screen.getByRole('link', { name: 'Mi Comunidad' })).toHaveAttribute(
       'href',
@@ -162,6 +165,23 @@ describe('Layout', () => {
     expect(localStorage.getItem('token')).toBeNull()
     expect(screen.getByRole('link', { name: 'Iniciar sesión' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /mi panel/i })).not.toBeInTheDocument()
+  })
+
+  it('en modo público abre un menú con las opciones públicas', async () => {
+    render(
+      <MemoryRouter>
+        <Layout>Contenido</Layout>
+      </MemoryRouter>,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Abrir menú' }))
+
+    const menu = screen.getByRole('navigation', { name: 'Navegación pública' })
+    expect(within(menu).getByRole('link', { name: 'Catálogo de Plantas' })).toHaveAttribute(
+      'href',
+      '/catalogo-plantas',
+    )
+    expect(screen.queryByRole('button', { name: 'Cerrar sesión' })).not.toBeInTheDocument()
   })
 
   it('renderiza el contenido hijo', () => {

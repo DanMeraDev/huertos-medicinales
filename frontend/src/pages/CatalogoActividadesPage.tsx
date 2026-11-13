@@ -7,6 +7,7 @@ import {
   type ActividadCatalogo,
 } from '../features/comunidad-actividades/actividadesCatalogoApi'
 import { CatalogoActividadesView } from '../features/comunidad-actividades/CatalogoActividadesView'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 
 export function CatalogoActividadesPage() {
   const navigate = useNavigate()
@@ -41,12 +42,18 @@ export function CatalogoActividadesPage() {
   }
 
   return (
-    <CatalogoActividadesView
-      key={cargando ? 'cargando' : 'listo'}
-      actividadesIniciales={actividades}
-      cargando={cargando}
-      alCrear={crearActividad}
-      alNavegarRegistroLabor={() => navigate('/comunidad/actividades-miembros/nueva')}
-    />
+    <>
+      <ConsejoKinti
+        variante="sabiduria"
+        mensaje="Define las labores de tu huerto y cuántos puntos por hora suma cada una para tus voluntarios."
+      />
+      <CatalogoActividadesView
+        key={cargando ? 'cargando' : 'listo'}
+        actividadesIniciales={actividades}
+        cargando={cargando}
+        alCrear={crearActividad}
+        alNavegarRegistroLabor={() => navigate('/comunidad/actividades-miembros/nueva')}
+      />
+    </>
   )
 }
