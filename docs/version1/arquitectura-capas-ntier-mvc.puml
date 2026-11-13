@@ -1,0 +1,51 @@
+@startuml Arquitectura_Capas_NTier_MVC_Huertos_Medicinales
+top to bottom direction
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam packageStyle rectangle
+skinparam defaultFontName "Segoe UI", "Helvetica", sans-serif
+skinparam defaultFontSize 13
+skinparam ArrowColor #1B4F72
+skinparam ArrowThickness 1.5
+
+title Arquitectura Lógica (N-Tier + MVC) - Huertos Medicinales Comunitarios
+
+package "1. Capa de Presentación — Frontend (React + TypeScript)" as tier_front #EBF5FB {
+    component "Páginas y Rutas\n(Pages / React Router)" as pages
+    component "Módulos por Funcionalidad\n(Features: Bodega, Huerto, Comunidades, Catálogo...)" as features
+    component "Componentes UI Reutilizables\n(Components)" as ui
+    component "Cliente HTTP Centralizado\n(API Client + Token JWT)" as client
+
+    pages -down-> features
+    features -right-> ui
+    features -down-> client
+}
+
+package "2. Capa de Borde — Proxy Inverso (Nginx)" as tier_edge #FEF9E7 {
+    component "Servidor Web y Proxy\nSirve el Frontend y redirige /api al Backend" as nginx
+}
+
+package "3. Capa de Negocio — Backend (Spring Boot / MVC en Capas)" as tier_back #EAFAF1 {
+    component "Seguridad y Errores (Transversal)\nAutenticación JWT, Roles y Manejo Global de Errores" as sec
+    component "Controladores REST (Controller + DTOs)\nReciben peticiones, validan datos y responden JSON" as ctrl
+    component "Servicios (Service + Mappers)\nLógica de negocio, transacciones, correos y archivos" as srv
+    component "Repositorios y Entidades (Repository + Model)\nAcceso a datos con Spring Data JPA" as repo
+
+    sec -right-> ctrl
+    ctrl -down-> srv
+    srv -down-> repo
+}
+
+package "4. Capa de Datos y Servicios Externos" as tier_data #F4ECF7 {
+    database "Base de Datos\n(MariaDB + Migraciones Flyway)" as db
+    folder "Almacenamiento de Fotos\n(Volumen de Archivos)" as fs
+    cloud "Servidor de Correo\n(SMTP Externo)" as smtp
+}
+
+client -down-> nginx : "HTTPS / JSON"
+nginx -down-> sec : "HTTP (/api)"
+repo -down-> db : "SQL"
+srv -down-> fs : "Imágenes"
+srv -down-> smtp : "Correos"
+
+@enduml

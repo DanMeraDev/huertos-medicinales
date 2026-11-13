@@ -1,0 +1,632 @@
+@startuml Diagrama_Clases_Dominio_Huertos_Medicinales_V1
+' ==========================================================
+' MODELO DE DOMINIO - REPRESENTACIÓN CONCEPTUAL
+' Sistema de Huertos Medicinales Comunitarios del Ecuador
+' Versión 1.0 (MVP)
+'
+' Describe la realidad del negocio: qué conceptos existen en
+' el huerto comunitario, cómo se relacionan entre sí y qué
+' reglas los gobiernan. No incluye detalles técnicos de
+' programación, persistencia, servicios ni infraestructura.
+'
+' Fuentes: docs/version1/MER.puml
+'         docs/version1/casos_de_uso/CU_Version1.puml
+' ==========================================================
+!theme plain
+hide circle
+skinparam linetype ortho
+skinparam roundcorner 6
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", "Helvetica", sans-serif
+skinparam defaultFontSize 12
+
+skinparam class {
+    BackgroundColor #F8FBFE
+    BorderColor #2980B9
+    HeaderBackgroundColor #D4E6F1
+    FontColor #0B172A
+}
+skinparam classAttribute {
+    FontSize 11
+}
+skinparam package {
+    BackgroundColor #F2F7FB
+    BorderColor #5DADE2
+    FontColor #154360
+    FontStyle bold
+}
+skinparam note {
+    BackgroundColor #FEF9E7
+    BorderColor #B7950B
+    FontColor #7D6608
+}
+skinparam stereotype {
+    BackgroundColor #D4E6F1
+    BorderColor #2980B9
+    FontColor #154360
+}
+
+' ==========================================================
+' 1. ORGANIZACIÓN COMUNITARIA
+' ==========================================================
+package "Organización comunitaria" {
+
+    abstract class "Usuario" as Usuario {
+        + nombre completo
+        + identificación
+        + fecha de nacimiento
+        + género
+        + correo
+        + teléfono
+        + activo : booleano
+        + debe cambiar su clave : booleano
+    }
+
+    class "Responsable de comunidad" as Responsable
+    class "Técnico MSP" as TecnicoMSP
+    class "Técnico SIS" as TecnicoSIS
+
+    class "Solicitud de creación de comunidad" as Solicitud {
+        + nombre de la comunidad
+        + tipo de organización : Tipo de organización
+        + provincia
+        + parroquia
+        + dirección
+        + latitud
+        + longitud
+        + altitud (msnm)
+        + diseño principal : Diseño principal
+        + subtipos solicitados
+        + nombre del solicitante
+        + cédula del solicitante
+        + fecha de nacimiento del solicitante
+        + género del solicitante
+        + correo del solicitante
+        + celular del solicitante
+        + consentimiento de datos : booleano
+        + estado : Estado de la solicitud
+        + motivo del rechazo
+        + fecha de la revisión
+    }
+
+    class "Estado de la solicitud" as EstadoSolicitud <<enumeracion>> {
+        Pendiente
+        Aprobada
+        Rechazada
+    }
+
+    class "Comunidad" as Comunidad {
+        + nombre
+        + tipo de organización : Tipo de organización
+        + provincia
+        + parroquia
+        + dirección
+        + teléfono de contacto
+        + correo de contacto
+        + puntos acumulados
+        + activa : booleano
+    }
+
+    class "Tipo de organización" as TipoOrganizacion <<enumeracion>> {
+        Individual
+        Familia
+        Condominio
+        Barrio
+        Comité local
+    }
+
+    class "Miembro (voluntario)" as Miembro {
+        + cédula
+        + nombres
+        + apellidos
+        + fecha de nacimiento
+        + género
+        + teléfono
+        + nivel : Nivel del miembro
+        + puntos acumulados
+        + consentimiento de datos : booleano
+        + activo : booleano
+    }
+
+    class "Nivel del miembro" as NivelMiembro <<enumeracion>> {
+        Aprendiz
+        Oficial
+        Maestro
+    }
+
+    class "Pertenencia a la comunidad" as Pertenencia {
+        + fecha de ingreso
+        + fecha de baja
+        + motivo de la baja
+        + activo en la comunidad : booleano
+    }
+}
+
+' ==========================================================
+' 2. HUERTO Y CULTIVO
+' ==========================================================
+package "Huerto y cultivo" {
+
+    class "Huerto" as Huerto {
+        + nombre
+        + latitud
+        + longitud
+        + altitud (msnm)
+        + orientación
+        + área total (m²)
+        + tipo de huerto : Tipo de huerto
+        + diseño principal : Diseño principal
+        + tipo de suelo : Tipo de suelo
+        + fuente de agua : Fuente de agua
+        + tipo de abono : Tipo de abono
+        + tipo de cerca : Tipo de cerca
+        + detalle de la cerca
+        + puntos acumulados
+        + activo : booleano
+    }
+
+    class "Subhuerto (zona de cultivo)" as Subhuerto {
+        + nombre de la zona
+        + subtipo : Subtipo de subhuerto
+        + área (m²)
+        + activo : booleano
+    }
+
+    class "Siembra" as Siembra {
+        + cantidad sembrada
+        + fecha de siembra
+        + fase lunar de la siembra : Fase lunar
+        + hubo alerta por altitud : booleano
+        + estado del cultivo : Estado del cultivo
+        + causa de la pérdida : Causa de la pérdida
+        + observación de la pérdida
+    }
+
+    class "Estado del cultivo" as EstadoCultivo <<enumeracion>> {
+        Sembrado
+        En crecimiento
+        Cosechado
+        Perdido
+    }
+
+    class "Causa de la pérdida" as CausaFracaso <<enumeracion>> {
+        Helada o clima extremo
+        Plaga o enfermedad
+        Sequía o falta de riego
+        Suelo inadecuado
+        Daño externo
+        Caducidad o pudrición
+    }
+}
+
+' ==========================================================
+' 3. CATÁLOGOS OPERATIVOS DEL HUERTO
+' ==========================================================
+package "Catálogos operativos del huerto" {
+
+    class "Tipo de huerto" as TipoHuerto <<enumeracion>> {
+        Básico
+        Integral
+    }
+
+    class "Diseño principal" as DisenoPrincipal <<enumeracion>> {
+        En tierra
+        Vertical
+        Colgante
+        En piso
+    }
+
+    class "Tipo de suelo" as TipoSuelo <<enumeracion>> {
+        Arcilloso
+        Limoso
+        Arenoso
+        Margoso
+        Gredoso
+        Pantanoso
+    }
+
+    class "Fuente de agua" as FuenteAgua <<enumeracion>> {
+        Río
+        Canal
+        Goteo
+        Vertiente de lluvia
+        Grifo reposado
+    }
+
+    class "Tipo de abono" as TipoAbono <<enumeracion>> {
+        Barbecho
+        Restos vegetales
+        Hojas con nitrógeno
+        Compost
+        Purín líquido
+        Estiércol secado
+    }
+
+    class "Tipo de cerca" as TipoCerca <<enumeracion>> {
+        Cerca viva
+        Material natural
+        Material reciclado
+        Material metálico
+        Convencional
+    }
+
+    class "Subtipo de subhuerto" as SubtipoSubhuerto <<enumeracion>> {
+        Surcos Wachu
+        Terrazas Anti
+        Camellones Inka Wachu
+        Vertical de pared
+        Colgante de techo
+        Macetas de piso
+        Llantas recicladas
+    }
+}
+
+' ==========================================================
+' 4. CATÁLOGO DE PLANTAS Y BODEGA
+' ==========================================================
+package "Catálogo de plantas y bodega" {
+
+    class "Planta" as Planta {
+        + nombre común
+        + nombre kichwa
+        + nombre científico
+        + familia botánica
+        + cualidad térmica
+        + ciclo de cultivo
+        + origen
+        + altitud mínima (msnm)
+        + altitud máxima (msnm)
+        + regiones de distribución
+        + usos medicinales
+        + preparación y dosificación
+        + contraindicaciones
+        + fotografía
+        + activa : booleano
+        + motivo de la baja
+        + fecha de la baja
+    }
+
+    class "Categoría de uso medicinal" as CategoriaUso <<enumeracion>> {
+        Antiespasmódica
+        Antiinflamatoria
+        Antioxidante
+        Antiparasitaria
+        Antipirética
+        Astringente
+        Cicatrizante
+        Diurética
+        Energética
+        Depurativa
+        Descongestionante
+        Estimulante
+        Expectorante
+        Sedante
+    }
+
+    class "Lote de material vegetal" as Lote {
+        + tipo de material : Tipo de material vegetal
+        + cantidad disponible
+        + unidad de medida : Unidad de medida
+        + lote de origen
+        + fecha de ingreso
+        + activo : booleano
+    }
+
+    class "Tipo de material vegetal" as TipoMaterial <<enumeracion>> {
+        Semillas
+        Estacas
+        Esquejes
+        Plántulas
+    }
+
+    class "Unidad de medida" as UnidadMedida <<enumeracion>> {
+        Unidades
+        Gramos
+        Manojos
+    }
+
+    class "Baja de material vegetal" as Baja {
+        + cantidad dada de baja
+        + causa
+        + observación
+        + fecha de la baja
+    }
+}
+
+' ==========================================================
+' 5. SABERES ANCESTRALES Y CALENDARIO LUNAR
+' ==========================================================
+package "Saberes ancestrales y calendario lunar" {
+
+    class "Saber ancestral (hito)" as Saber {
+        + orden del paso
+        + código del hito
+        + título
+        + título en kichwa
+        + categoría : Categoría del saber ancestral
+        + fase lunar ideal : Fase lunar
+        + horario energético
+        + contenido educativo
+        + ingredientes y herramientas
+        + puntos base para la comunidad
+        + nombre de la insignia oficial
+    }
+
+    class "Categoría del saber ancestral" as CategoriaSaber <<enumeracion>> {
+        Preparación de tierra
+        Abono natural
+        Ritual de siembra
+        Siembra señalética
+        Cuidado y riego
+        Ritual de cosecha
+        Secado y empaquetado
+    }
+
+    class "Actividad ancestral (minka)" as ActividadAncestral {
+        + fecha de realización
+        + fase lunar de la ejecución : Fase lunar
+        + bitácora (descripción)
+        + número de intento
+        + estado de verificación : Estado de verificación
+        + observación del MSP
+        + puntos a acreditar a la comunidad
+        + fecha de la verificación
+    }
+
+    class "Evidencia de la actividad" as Evidencia {
+        + fotografía
+        + videoregistro
+    }
+
+    class "Estado de verificación" as EstadoVerificacion <<enumeracion>> {
+        Pendiente
+        Observada para corregir
+        Aprobada
+        Rechazada definitivamente
+    }
+
+    class "Participante de la actividad ancestral" as Participante {
+        + horas trabajadas
+        + puntos acreditados
+    }
+
+    class "Calendario lunar" as CalendarioLunar
+
+    class "Fase lunar" as FaseLunar {
+        + nombre en kichwa
+        + nombre en español
+        + fecha de inicio
+        + fecha de fin
+        + prácticas recomendadas
+        + consejo del Kinti
+    }
+}
+
+' ==========================================================
+' 6. GAMIFICACIÓN Y RECONOCIMIENTO
+' ==========================================================
+package "Gamificación y reconocimiento" {
+
+    class "Actividad cotidiana de la comunidad" as ActividadCotidiana {
+        + nombre
+        + categoría : Categoría de la actividad cotidiana
+        + puntos por hora
+        + activa : booleano
+    }
+
+    class "Categoría de la actividad cotidiana" as CategoriaActividad <<enumeracion>> {
+        Limpieza y deshierbe
+        Riego
+        Abono y compost
+        Replante y aporque
+        Cuidado general
+    }
+
+    class "Registro de actividad de miembro" as RegistroActividad {
+        + fecha de la actividad
+        + horas trabajadas
+        + puntos otorgados
+        + observación
+    }
+
+    class "Talento comunitario" as Talento {
+        + nombre de la insignia
+        + descripción
+        + meta de repeticiones
+        + activo : booleano
+    }
+
+    abstract class "Insignia" as Insignia {
+        + nombre
+        + descripción
+        + fecha de obtención
+    }
+
+    class "Insignia oficial del saber ancestral" as InsigniaOficial
+
+    class "Medalla de talento comunitario" as MedallaTalento
+}
+
+' ==========================================================
+' RELACIONES
+' ==========================================================
+
+' --- Herencia de los tipos de usuario
+Usuario <|-- Responsable
+Usuario <|-- TecnicoMSP
+Usuario <|-- TecnicoSIS
+
+' --- Organización comunitaria
+Responsable "0..1" -- "1" Comunidad : "> lidera"
+TecnicoMSP "0..*" -- "0..*" Solicitud : "> revisa"
+TecnicoSIS "0..*" -- "0..*" Solicitud : "> revisa"
+Solicitud "0..1" -- "0..1" Comunidad : "> origina al aprobarse"
+Miembro "1" -- "0..*" Pertenencia : >
+Comunidad "1" -- "0..*" Pertenencia : >
+
+' --- Huerto y cultivo
+Comunidad "1" *-- "0..1" Huerto : "> huerto"
+Huerto "1" -- "0..*" Subhuerto : "> subdivide"
+Subhuerto "1" -- "0..*" Siembra : "> aloja"
+Lote "1" -- "0..*" Siembra : "> se siembra desde"
+
+' --- Catálogo de plantas y bodega
+Planta "1" -- "0..*" Lote : "> se conserva como"
+Comunidad "1" -- "0..*" Lote : "> almacena"
+Lote "1" -- "0..*" Baja : "> registra"
+
+' --- Saberes ancestrales
+Comunidad "1" -- "0..*" ActividadAncestral : "> reporta"
+Huerto "1" -- "0..*" ActividadAncestral : "> se realiza en"
+Saber "1" -- "0..*" ActividadAncestral : "> guía el paso"
+ActividadAncestral "1" -- "0..1" Evidencia : "> evidencia"
+ActividadAncestral "1" -- "0..*" Participante : "> acredita"
+Miembro "1" -- "0..*" Participante : "> participa"
+TecnicoMSP "0..*" -- "0..*" ActividadAncestral : "> verifica"
+CalendarioLunar "1" -- "4" FaseLunar : "> publica"
+
+' --- Fases lunares
+FaseLunar "1" <-- "0..*" Siembra : "> fase de la siembra"
+FaseLunar "1" <-- "0..*" ActividadAncestral : "> fase de la ejecución"
+FaseLunar "1" <-- "0..*" Saber : "> fase ideal"
+
+' --- Gamificación y reconocimiento
+Comunidad "1" -- "0..*" ActividadCotidiana : "> define"
+ActividadCotidiana "1" -- "0..*" Talento : "> premia con"
+Comunidad "1" -- "0..*" RegistroActividad : "> registra"
+Miembro "1" -- "0..*" RegistroActividad : "> ejecuta"
+ActividadCotidiana "1" -- "0..*" RegistroActividad : "> clasifica"
+Insignia <|-- InsigniaOficial
+Insignia <|-- MedallaTalento
+Miembro "1" -- "0..*" Insignia : "> obtiene"
+Comunidad "1" -- "0..*" Insignia : "> reconoce"
+Saber "0..1" -- "0..*" InsigniaOficial : "> otorga"
+Talento "0..1" -- "0..*" MedallaTalento : "> otorga"
+
+' --- Catálogos que clasifican los conceptos
+EstadoSolicitud ..> Solicitud : > estados
+TipoOrganizacion ..> Comunidad : > tipo
+NivelMiembro ..> Miembro : > nivel
+TipoHuerto ..> Huerto : > tipo
+DisenoPrincipal ..> Huerto : > diseño
+TipoSuelo ..> Huerto : > suelo
+FuenteAgua ..> Huerto : > agua
+TipoAbono ..> Huerto : > abono
+TipoCerca ..> Huerto : > cerca
+SubtipoSubhuerto ..> Subhuerto : > subtipo
+EstadoCultivo ..> Siembra : > estado
+CausaFracaso ..> Siembra : > causa
+CategoriaUso ..> Planta : > usos
+TipoMaterial ..> Lote : > tipo
+UnidadMedida ..> Lote : > unidad
+CategoriaSaber ..> Saber : > categoría
+EstadoVerificacion ..> ActividadAncestral : > estado
+CategoriaActividad ..> ActividadCotidiana : > categoría
+
+' ==========================================================
+' REGLAS DEL NEGOCIO
+' ==========================================================
+
+note left of Solicitud
+  * El solicitante debe ser mayor de 18 años.
+  * No puede existir otra solicitud pendiente ni una
+    comunidad registrada con el mismo nombre o con la
+    misma cédula del responsable.
+  * Al aprobarse, origina la comunidad, la cuenta de su
+    responsable y el huerto declarado.
+  * Al rechazarse, se registra el motivo.
+end note
+
+note right of Comunidad
+  * El nombre de la comunidad es único.
+  * Cada comunidad tiene un único responsable y un
+    único huerto.
+  * Sus puntos se acreditan cuando el MSP aprueba
+    una minka.
+end note
+
+note left of Miembro
+  * La cédula es válida y única.
+  * Edad mínima de 10 años.
+  * El consentimiento de datos es obligatorio.
+  * Un miembro no puede estar activo dos veces en la
+    misma comunidad.
+  * La baja exige motivo y fecha.
+end note
+
+note bottom of NivelMiembro
+  * Aprendiz → Oficial: 50 puntos acumulados.
+  * Oficial → Maestro: 150 puntos acumulados.
+  * El nivel Maestro no se pierde al descender
+    la puntuación.
+end note
+
+note right of Huerto
+  * Área total entre 16 y 400 m² (lineamientos MSP).
+  * La suma de las áreas de los subhuertos no puede
+    superar el área total del huerto.
+end note
+
+note left of Subhuerto
+  * Máximo 3 subtipos de siembra por huerto (norma MSP).
+end note
+
+note right of Siembra
+  * Solo material activo de la misma comunidad.
+  * La cantidad sembrada no puede superar el stock
+    disponible; el stock se descuenta al sembrar.
+  * Si la altitud del huerto queda fuera del rango
+    óptimo de la planta, el responsable debe aceptar
+    el riesgo de forma expresa; la alerta queda
+    registrada en la siembra.
+end note
+
+note right of Lote
+  * La cantidad dada de baja no puede superar el
+    stock disponible.
+end note
+
+note left of Saber
+  * Cada saber define una fase lunar ideal, un horario
+    energético y los puntos base para la comunidad.
+  * Los hitos se completan en orden.
+end note
+
+note right of ActividadAncestral
+  * Requiere evidencia (fotografía o video) y al menos
+    un participante activo de la comunidad.
+  * Un participante no puede repetirse en la misma minka.
+  * Solo una minka aprobada acredita puntos.
+  * Máximo 2 intentos: tras ser observada, la comunidad
+    puede corregir y reenviar la evidencia una vez.
+end note
+
+note left of FaseLunar
+  * El calendario lunar publica las cuatro fases del
+    ciclo con sus periodos, prácticas recomendadas
+    y el consejo del Kinti.
+end note
+
+note right of RegistroActividad
+  * Solo el miembro recibe puntos; la comunidad y su
+    huerto no suman puntos en este tipo de actividad.
+end note
+
+note left of Talento
+  * Se otorga cuando el miembro alcanza la meta de
+    repeticiones de la actividad cotidiana asociada.
+  * Una insignia no se otorga dos veces.
+end note
+
+note bottom of Insignia
+  * La insignia oficial proviene de un saber ancestral
+    verificado por el MSP.
+  * La medalla de talento comunitario proviene del
+    cumplimiento de una meta de repeticiones.
+end note
+
+note "PUNTUACIÓN Y RECONOCIMIENTO\n\n* 1 hora trabajada = 1 punto.\n* La minka aprobada acredita a la comunidad y a su\n  huerto los puntos base del saber; en el segundo\n  intento se acreditan el 70%.\n* El ranking público ordena a las comunidades por\n  puntos acumulados.\n* El medallero muestra las insignias obtenidas\n  por cada miembro." as NotaPuntos
+
+note "RESPONSABILIDADES EN EL DOMINIO\n\n* El Responsable de comunidad organiza el trabajo\n  diario del huerto, su bodega y sus miembros.\n* El Técnico MSP valida las minkas y sus evidencias,\n  verifica el catálogo de plantas y audita en sitio.\n* El Técnico SIS administra las cuentas de usuario y\n  el proceso de admisión de comunidades.\n* El Visitante consulta el catálogo de plantas, el\n  calendario lunar, el directorio de comunidades, los\n  perfiles públicos y los rankings sin cuenta." as NotaRoles
+
+@enduml

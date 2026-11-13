@@ -1,0 +1,24 @@
+@startuml C4_Context_Huertos_Medicinales
+!include <C4/C4_Context>
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Contexto (C4 Nivel 1) - Huertos Medicinales Comunitarios
+
+Person(ciudadano, "Ciudadano / Visitante", "Consulta información pública y postula nuevas comunidades.")
+Person(responsable, "Responsable de Comunidad", "Gestiona su comunidad, huerto, bodega y actividades.")
+Person(tecnico_msp, "Técnico del MSP", "Aprueba comunidades, revisa evidencias y gestiona el catálogo.")
+Person(tecnico_sis, "Técnico de Sistemas", "Administra los usuarios del sistema.")
+
+System(huertos_sys, "Huertos Medicinales Comunitarios", "Plataforma web gamificada para gestionar huertos medicinales según lineamientos del MSP.")
+
+System_Ext(smtp_ext, "Servidor de Correo (SMTP)", "Envío de credenciales y notificaciones.")
+
+Rel(ciudadano, huertos_sys, "Consulta y postula", "Web")
+Rel(responsable, huertos_sys, "Gestiona huerto y comunidad", "Web")
+Rel(tecnico_msp, huertos_sys, "Evalúa y supervisa", "Web")
+Rel(tecnico_sis, huertos_sys, "Administra cuentas", "Web")
+
+Rel(huertos_sys, smtp_ext, "Envía correos", "SMTP")
+
+@enduml

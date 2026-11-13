@@ -1,0 +1,32 @@
+@startuml C4_Container_Huertos_Medicinales
+!include <C4/C4_Container>
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Contenedores (C4 Nivel 2) - Huertos Medicinales Comunitarios
+
+Person(usuarios, "Usuarios del Sistema", "Ciudadano, Responsable de Comunidad, Técnico MSP y Técnico de Sistemas.")
+
+System_Boundary(huertos_boundary, "Huertos Medicinales Comunitarios") {
+
+    Container(spa, "Aplicación Web (Frontend)", "React + TypeScript", "Interfaz web modular por funcionalidades.")
+
+    Container(nginx, "Servidor Web / Proxy", "Nginx", "Sirve la aplicación web y redirige /api al backend.")
+
+    Container(api, "API REST (Backend)", "Java 21 + Spring Boot", "Seguridad JWT, reglas de negocio, gamificación y acceso a datos.")
+
+    ContainerDb(mariadb, "Base de Datos", "MariaDB + Flyway", "Almacena usuarios, comunidades, huertos, bodega, actividades e insignias.")
+
+    ContainerDb(fotos_fs, "Almacenamiento de Fotos", "Sistema de Archivos", "Guarda fotografías de plantas y evidencias.")
+}
+
+System_Ext(smtp_ext, "Servidor de Correo", "SMTP", "Notificaciones por correo electrónico.")
+
+Rel(usuarios, spa, "Usa la aplicación", "HTTPS")
+Rel(spa, nginx, "Solicita vistas y datos", "HTTP / JSON")
+Rel(nginx, api, "Redirige peticiones /api", "HTTP")
+Rel(api, mariadb, "Lee y guarda datos", "JDBC")
+Rel(api, fotos_fs, "Guarda y entrega imágenes", "Archivos")
+Rel(api, smtp_ext, "Envía notificaciones", "SMTP")
+
+@enduml
