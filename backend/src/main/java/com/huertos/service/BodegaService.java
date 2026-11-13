@@ -6,7 +6,6 @@ import com.huertos.dto.RegistrarBajaMaterialRequest;
 import com.huertos.dto.RegistrarMaterialVegetalRequest;
 import java.math.BigDecimal;
 import java.util.List;
-import org.springframework.security.core.Authentication;
 
 /**
  * Servicio para la administración del material vegetal en las bodegas comunitarias.
@@ -18,10 +17,10 @@ public interface BodegaService {
      *
      * @param bodegaMaterialId identificador del lote en bodega
      * @param request datos de la baja a registrar
-     * @param authentication datos del usuario autenticado
+     * @param correoResponsable correo del responsable de la comunidad dueña del lote
      * @return información de la baja registrada
      */
-    BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request, Authentication authentication);
+    BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request, String correoResponsable);
 
     /**
      * Registra el ingreso de nuevo material vegetal a la bodega de la comunidad.
@@ -47,14 +46,6 @@ public interface BodegaService {
      * @return lista de material vegetal disponible ordenada alfabéticamente por planta
      */
     List<MaterialVegetalResponse> listarMaterialPorComunidad(Long comunidadId);
-
-    /**
-     * Valida que el usuario autenticado tenga autorización para consultar la comunidad solicitada.
-     *
-     * @param comunidadId identificador de la comunidad solicitada
-     * @param authentication credenciales del usuario autenticado
-     */
-    void validarAccesoComunidad(Long comunidadId, Authentication authentication);
 
     /**
      * Valida que el usuario tenga autorización para consultar la comunidad solicitada.

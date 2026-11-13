@@ -37,7 +37,7 @@ public class BodegaController {
             @PathVariable Long id,
             @Valid @RequestBody RegistrarBajaMaterialRequest request,
             Authentication authentication) {
-        return bodegaService.registrarBajaMaterial(id, request, authentication);
+        return bodegaService.registrarBajaMaterial(id, request, authentication.getName());
     }
 
     @Operation(summary = "Registra el ingreso de nuevo material vegetal a la bodega comunitaria")
@@ -57,7 +57,9 @@ public class BodegaController {
     public List<MaterialVegetalResponse> listarMaterialPorComunidad(
             @PathVariable Long comunidadId,
             Authentication authentication) {
-        bodegaService.validarAccesoComunidad(comunidadId, authentication);
+        boolean esTecnico = authentication.getAuthorities().stream()
+                .anyMatch(autoridad -> autoridad.getAuthority().equals("ROLE_TECNICO_MSP"));
+        bodegaService.validarAccesoComunidad(comunidadId, authentication.getName(), esTecnico);
         return bodegaService.listarMaterialPorComunidad(comunidadId);
     }
 }
