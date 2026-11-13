@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router'
 import { FichaTecnicaView } from './FichaTecnicaView'
 import { achicoriaSinDatosDetalle, colaDeCaballoDetalle } from './plantasMockHandlers'
@@ -17,10 +18,10 @@ function simularPantalla(esEscritorio: boolean) {
   })
 }
 
-function renderizar(planta: PlantaDetalle) {
+function renderizar(planta: PlantaDetalle, pie?: ReactNode) {
   return render(
     <MemoryRouter>
-      <FichaTecnicaView planta={planta} />
+      <FichaTecnicaView planta={planta} pie={pie} />
     </MemoryRouter>,
   )
 }
@@ -152,6 +153,24 @@ describe('FichaTecnicaView', () => {
 
       expect(container.querySelector('.ficha-tecnica-parametros-fila')).toBeInTheDocument()
     })
+
+    it('dibuja el pie al final de la ficha, antes del botón inferior de volver', () => {
+      renderizar(colaDeCaballoDetalle, <p>Pie de la ficha</p>)
+
+      const pie = screen.getByText('Pie de la ficha')
+      expect(pie.previousElementSibling).toBe(
+        screen.getByRole('complementary', { name: 'Contraindicaciones y precauciones' }),
+      )
+      expect(pie.nextElementSibling).toHaveClass('ficha-tecnica-volver-inferior')
+    })
+
+    it('sin pie deja las contraindicaciones justo antes del botón inferior de volver', () => {
+      renderizar(colaDeCaballoDetalle)
+
+      expect(
+        screen.getByRole('complementary', { name: 'Contraindicaciones y precauciones' }).nextElementSibling,
+      ).toHaveClass('ficha-tecnica-volver-inferior')
+    })
   })
 
   describe('en escritorio', () => {
@@ -188,6 +207,22 @@ describe('FichaTecnicaView', () => {
       expect(
         within(derecha).getByRole('complementary', { name: 'Contraindicaciones y precauciones' }),
       ).toBeInTheDocument()
+    })
+
+    it('dibuja el pie al final de la columna derecha', () => {
+      const { container } = renderizar(colaDeCaballoDetalle, <p>Pie de la ficha</p>)
+
+      const derecha = container.querySelectorAll<HTMLElement>('.ficha-tecnica-columna')[1]
+      expect(derecha.lastElementChild).toBe(screen.getByText('Pie de la ficha'))
+    })
+
+    it('sin pie termina la columna derecha con las contraindicaciones', () => {
+      const { container } = renderizar(colaDeCaballoDetalle)
+
+      const derecha = container.querySelectorAll<HTMLElement>('.ficha-tecnica-columna')[1]
+      expect(derecha.lastElementChild).toBe(
+        screen.getByRole('complementary', { name: 'Contraindicaciones y precauciones' }),
+      )
     })
   })
 })

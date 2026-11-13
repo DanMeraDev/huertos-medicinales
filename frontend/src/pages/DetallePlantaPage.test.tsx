@@ -142,6 +142,48 @@ describe('DetallePlantaPage', () => {
     expect(screen.queryByRole('heading', { level: 1, name: 'Cola de caballo' })).not.toBeInTheDocument()
   })
 
+  describe('Kinti en la ficha', () => {
+    const TITULO_KINTI = 'Funda tu comunidad y siembra: Cola de caballo'
+
+    afterEach(() => localStorage.clear())
+
+    it('muestra el título con el nombre de la planta y el mensaje con sus datos', async () => {
+      renderizarEn('/catalogo-plantas/17')
+
+      expect(await screen.findByRole('heading', { level: 2, name: TITULO_KINTI })).toBeInTheDocument()
+      expect(
+        screen.getByText('Crece entre 0 y 3.500 msnm en la Sierra y la Amazonía. Es de ciclo largo.'),
+      ).toBeInTheDocument()
+    })
+
+    it('en escritorio también muestra el título con el nombre de la planta', async () => {
+      simularPantalla(true)
+      renderizarEn('/catalogo-plantas/17')
+
+      expect(await screen.findByRole('heading', { level: 2, name: TITULO_KINTI })).toBeInTheDocument()
+    })
+
+    it('sin sesión ofrece solicitar la creación de una comunidad', async () => {
+      renderizarEn('/catalogo-plantas/17')
+
+      expect(await screen.findByRole('link', { name: 'Solicitar creación de comunidad' })).toHaveAttribute(
+        'href',
+        '/solicitar-comunidad',
+      )
+    })
+
+    it.each(['TECNICO_MSP', 'TECNICO_SIS', 'RESPONSABLE_COMUNIDAD'])(
+      'con sesión de %s muestra a Kinti sin el botón de solicitud',
+      async (rol) => {
+        iniciarSesionComo(rol)
+        renderizarEn('/catalogo-plantas/17')
+
+        expect(await screen.findByRole('heading', { level: 2, name: TITULO_KINTI })).toBeInTheDocument()
+        expect(screen.queryByRole('link', { name: 'Solicitar creación de comunidad' })).not.toBeInTheDocument()
+      },
+    )
+  })
+
   describe('acceso a la edición de la ficha', () => {
     afterEach(() => localStorage.clear())
 

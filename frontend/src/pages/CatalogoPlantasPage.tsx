@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { esTecnicoMsp } from '../features/catalogo-admin/sesionTecnicoMsp'
 import { BuscadorPlantas } from '../features/catalogo-plantas/BuscadorPlantas'
 import { CatalogoPlantasGrid } from '../features/catalogo-plantas/CatalogoPlantasGrid'
+import { KintiCatalogo } from '../features/catalogo-plantas/KintiCatalogo'
 import { MensajeDeNavegacion } from '../features/catalogo-plantas/MensajeDeNavegacion'
 import { PanelFiltrosPlantas } from '../features/catalogo-plantas/PanelFiltrosPlantas'
 import { ResultadosBusquedaPlantas } from '../features/catalogo-plantas/ResultadosBusquedaPlantas'
@@ -43,6 +44,7 @@ export function CatalogoPlantasPage() {
             </Link>
           )}
         </div>
+        <KintiCatalogo />
         <BuscadorPlantas key={reinicioBuscador} alBuscar={setCriterio} />
       </header>
       <div className="catalogo-pagina-cuerpo">

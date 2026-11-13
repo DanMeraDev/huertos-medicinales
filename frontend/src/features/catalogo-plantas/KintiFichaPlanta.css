@@ -1,0 +1,62 @@
+.kinti-ficha {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+}
+
+.kinti-ficha-imagen {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.kinti-ficha-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  min-width: 0;
+}
+
+.kinti-ficha-titulo {
+  font-size: var(--texto-lg);
+  line-height: var(--interlineado-apretado);
+  color: var(--color-primario);
+}
+
+.kinti-ficha-mensaje {
+  color: var(--color-texto-secundario);
+  line-height: 1.5;
+}
+
+.kinti-ficha-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: var(--espacio-1);
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .kinti-ficha {
+    gap: var(--espacio-5);
+    padding: var(--espacio-5);
+  }
+
+  .kinti-ficha-imagen {
+    align-self: center;
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .kinti-ficha-titulo {
+    font-size: var(--texto-xl);
+  }
+}

@@ -131,6 +131,33 @@ describe('CatalogoPlantasPage', () => {
     expect(screen.getByRole('button', { name: 'Filtros (1 activo)' })).toBeInTheDocument()
   })
 
+  describe('Kinti en el catálogo', () => {
+    const MENSAJE_KINTI = 'Aquí puedes conocer sobre las plantas medicinales. ¿Por qué no sembrar las tuyas?'
+
+    afterEach(() => localStorage.clear())
+
+    it('muestra a Kinti con su mensaje como texto sin sesión', () => {
+      renderizar()
+
+      expect(screen.getByText(MENSAJE_KINTI)).toBeInTheDocument()
+    })
+
+    it('muestra a Kinti con su mensaje junto a Registrar planta al técnico MSP', () => {
+      iniciarSesionComo('TECNICO_MSP')
+      renderizar()
+
+      expect(screen.getByText(MENSAJE_KINTI)).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Registrar planta' })).toBeInTheDocument()
+    })
+
+    it('en móvil también muestra el mensaje de Kinti', () => {
+      simularPantalla(false)
+      renderizar()
+
+      expect(screen.getByText(MENSAJE_KINTI)).toBeInTheDocument()
+    })
+  })
+
   describe('acceso al registro de plantas', () => {
     afterEach(() => localStorage.clear())
 
