@@ -6,19 +6,42 @@
 
 .solicitudes-kinti {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
   gap: var(--espacio-3);
+  padding: var(--espacio-4) var(--espacio-5);
+  background: linear-gradient(135deg, #ecf5e2 0%, #f8fbf4 60%, #fff6ea 100%);
+  border: 1px solid #d5e4ca;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .solicitudes-kinti p {
   margin: 0;
+  font-size: var(--texto-base);
   font-weight: var(--peso-seminegrita);
-  color: var(--color-primario);
+  color: #244310;
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  .solicitudes-kinti {
+    flex-direction: row;
+    text-align: left;
+    gap: var(--espacio-4);
+    padding: var(--espacio-5) var(--espacio-6);
+  }
+
+  .solicitudes-kinti p {
+    font-size: var(--texto-lg);
+  }
 }
 
 .solicitudes-desplazable {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border-radius: var(--radio-md);
 }
 
 .solicitudes-ver-mas {
@@ -35,14 +58,16 @@
 }
 
 .solicitud-bloque {
-  padding: var(--espacio-3);
-  background-color: var(--color-superficie-alt);
+  padding: var(--espacio-4);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #dce6d5;
   border-radius: var(--radio-md);
 }
 
 .solicitud-bloque h3 {
   margin: 0 0 var(--espacio-2);
   font-size: var(--texto-lg);
+  color: #243b15;
 }
 
 .solicitud-bloque dl {

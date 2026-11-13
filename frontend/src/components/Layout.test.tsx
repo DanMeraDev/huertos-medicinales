@@ -19,6 +19,8 @@ describe('Layout', () => {
     const encabezado = screen.getByRole('banner')
     expect(encabezado).toHaveTextContent('Hampi Muyu')
     expect(encabezado).toHaveTextContent('Huertos Medicinales Comunitarios')
+    const logo = encabezado.querySelector('img[src$="/favicon.svg"]')
+    expect(logo).toBeInTheDocument()
   })
 
   it('en modo público muestra solo las opciones públicas y el botón Iniciar sesión', () => {

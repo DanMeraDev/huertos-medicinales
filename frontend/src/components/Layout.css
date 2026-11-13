@@ -31,9 +31,18 @@
   flex-shrink: 0;
 }
 
-.layout-logo {
-  font-size: var(--texto-2xl);
-  line-height: var(--interlineado-apretado);
+.layout-logo-imagen {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: block;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .layout-logo-imagen {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
 }
 
 .layout-marca-textos {

@@ -88,15 +88,19 @@ export function Layout({ children }: LayoutProps) {
   }
 
   const opcionesRol = sesion ? OPCIONES_POR_ROL[sesion.rol] : []
+  const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')
 
   return (
     <div className="layout">
       <header className="layout-encabezado">
         <div className="layout-barra">
           <Link to="/" className="layout-marca">
-            <span className="layout-logo" aria-hidden="true">
-              🌿
-            </span>
+            <img
+              src={`${base}/favicon.svg`}
+              alt=""
+              aria-hidden="true"
+              className="layout-logo-imagen"
+            />
             <span className="layout-marca-textos">
               <span className="layout-titulo">Hampi Muyu</span>
               <span className="layout-subtitulo">Huertos Medicinales Comunitarios</span>

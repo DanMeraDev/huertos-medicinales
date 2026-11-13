@@ -1,9 +1,12 @@
 .tabla {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
+  border: 1px solid #d5e4ca;
   border-radius: var(--radio-md);
+  overflow: hidden;
+  box-shadow: var(--sombra-sm);
   font-size: var(--texto-sm);
 }
 
@@ -11,16 +14,30 @@
 .tabla td {
   padding: var(--espacio-3) var(--espacio-4);
   text-align: left;
-  border-bottom: var(--borde-ancho) solid var(--color-borde);
+  border-bottom: 1px solid #e3eedb;
 }
 
 .tabla th {
-  background-color: var(--color-superficie-alt);
+  background: linear-gradient(135deg, #ecf5e2 0%, #e1efd2 100%);
   font-weight: var(--peso-seminegrita);
-  color: var(--color-texto);
+  color: #244310;
+  border-bottom: 1px solid #cce0bd;
+}
+
+.tabla tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.tabla tbody tr:hover {
+  background-color: #f6faf2;
+}
+
+.tabla tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .tabla-mensaje {
   text-align: center;
-  color: var(--color-texto-secundario);
+  color: #35581b;
+  padding: var(--espacio-5) var(--espacio-4);
 }
