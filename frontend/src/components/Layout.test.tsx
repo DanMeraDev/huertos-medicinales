@@ -101,6 +101,10 @@ describe('Layout', () => {
       'href',
       '/comunidad/talentos',
     )
+    expect(screen.getByRole('link', { name: 'Subsanar Evidencias' })).toHaveAttribute(
+      'href',
+      '/actividades-ancestrales/observadas',
+    )
     expect(screen.queryByRole('link', { name: 'Solicitudes' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Crear Usuario' })).not.toBeInTheDocument()
 
