@@ -6,6 +6,7 @@ import { rankingMockHandlers } from '../../features/ranking/rankingMockHandlers'
 import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
 import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { miembrosHandlers } from '../../features/miembros/miembrosMockHandlers'
+import { miembrosPublicoMockHandlers } from '../../features/miembros-publico/miembrosPublicoMockHandlers'
 import { talentosMockHandlers } from '../../features/talentos/talentosMockHandlers'
 import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
 import { catalogoAdminHandlers } from '../../features/catalogo-admin/catalogoAdminMockHandlers'
@@ -59,6 +60,7 @@ export const handlers = [
   ...rankingMockHandlers,
   ...calendarioLunarMockHandlers,
   ...miembrosHandlers,
+  ...miembrosPublicoMockHandlers,
   ...talentosMockHandlers,
   ...saberesMockHandlers,
   ...actividadesAncestralesMockHandlers,
