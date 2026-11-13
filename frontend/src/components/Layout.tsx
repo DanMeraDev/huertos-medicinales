@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router'
 import { cerrarSesion, useSesion, type RolUsuario } from '../api/sesion'
+import { KintiGuia } from './KintiGuia'
 import './Layout.css'
 
 interface LayoutProps {
@@ -85,6 +86,14 @@ export function Layout({ children }: LayoutProps) {
     navegar('/')
   }
 
+  function alternarPanel() {
+    setRutaPanel((actual) => (actual === ubicacion.pathname ? null : ubicacion.pathname))
+  }
+
+  function cerrarPanel() {
+    setRutaPanel(null)
+  }
+
   const opcionesRol = sesion ? OPCIONES_POR_ROL[sesion.rol] : []
   const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')
 
@@ -119,91 +128,114 @@ export function Layout({ children }: LayoutProps) {
 
           <div className="layout-acciones">
             {sesion ? (
-              <div className="layout-sesion">
-                <button
-                  type="button"
-                  className="layout-boton-panel"
-                  aria-expanded={panelAbierto}
-                  aria-controls="drawer-panel-rol"
-                  onClick={() =>
-                    setRutaPanel((actual) =>
-                      actual === ubicacion.pathname ? null : ubicacion.pathname,
-                    )
-                  }
-                >
-                  <span className="layout-panel-icono" aria-hidden="true">
-                    ☰
-                  </span>
-                  <span>Mi Panel</span>
-                </button>
-                <div className="layout-usuario">
-                  <span className="layout-usuario-nombre">
-                    {sesion.nombreCompleto ?? ETIQUETA_ROL[sesion.rol]}
-                  </span>
-                  <span className="layout-usuario-rol">{ETIQUETA_ROL[sesion.rol]}</span>
-                </div>
-                <button
-                  type="button"
-                  className="layout-boton-salir"
-                  onClick={manejarCerrarSesion}
-                >
-                  Cerrar sesión
-                </button>
-              </div>
+              <button
+                type="button"
+                className="layout-boton-panel"
+                aria-expanded={panelAbierto}
+                aria-controls="drawer-panel"
+                onClick={alternarPanel}
+              >
+                <span className="layout-panel-icono" aria-hidden="true">
+                  ☰
+                </span>
+                <span>Mi Panel</span>
+              </button>
             ) : (
-              <Link to="/login" className="layout-boton-login">
-                Iniciar sesión
-              </Link>
+              <>
+                <Link to="/login" className="layout-boton-login">
+                  Iniciar sesión
+                </Link>
+                <button
+                  type="button"
+                  className="layout-boton-menu"
+                  aria-label="Abrir menú"
+                  aria-expanded={panelAbierto}
+                  aria-controls="drawer-panel"
+                  onClick={alternarPanel}
+                >
+                  ☰
+                </button>
+              </>
             )}
           </div>
         </div>
       </header>
 
-      {sesion && panelAbierto && opcionesRol.length > 0 && (
-        <div
-          className="layout-drawer-fondo"
-          onClick={() => setRutaPanel(null)}
-        >
+      {panelAbierto && (
+        <div className="layout-drawer-fondo" onClick={cerrarPanel}>
           <aside
-            id="drawer-panel-rol"
-            className="layout-drawer"
+            id="drawer-panel"
+            className={sesion ? 'layout-drawer' : 'layout-drawer layout-drawer-publico'}
             role="dialog"
             aria-modal="true"
-            aria-label={`Panel de ${ETIQUETA_ROL[sesion.rol]}`}
+            aria-label={sesion ? `Panel de ${ETIQUETA_ROL[sesion.rol]}` : 'Menú'}
             onClick={(evento) => evento.stopPropagation()}
           >
             <div className="layout-drawer-cabecera">
+              <KintiGuia variante="sabiduria" tamano={64} alt="" aria-hidden="true" />
               <div className="layout-drawer-identidad">
-                <span className="layout-drawer-rol">{ETIQUETA_ROL[sesion.rol]}</span>
-                <p className="layout-drawer-usuario">
-                  {sesion.nombreCompleto ?? ETIQUETA_ROL[sesion.rol]}
-                </p>
+                {sesion ? (
+                  <>
+                    <span className="layout-drawer-rol">{ETIQUETA_ROL[sesion.rol]}</span>
+                    <p className="layout-drawer-usuario">
+                      {sesion.nombreCompleto ?? ETIQUETA_ROL[sesion.rol]}
+                    </p>
+                  </>
+                ) : (
+                  <p className="layout-drawer-usuario">Hampi Muyu</p>
+                )}
               </div>
               <button
                 type="button"
                 className="layout-drawer-cerrar"
                 aria-label="Cerrar menú"
-                onClick={() => setRutaPanel(null)}
+                onClick={cerrarPanel}
               >
                 ×
               </button>
             </div>
 
-            <nav className="layout-drawer-nav" aria-label="Navegación por rol">
-              <ul className="layout-drawer-lista">
-                {opcionesRol.map((opcion) => (
-                  <li key={opcion.ruta}>
-                    <NavLink
-                      to={opcion.ruta}
-                      className={claseEnlaceDrawer}
-                      onClick={() => setRutaPanel(null)}
-                    >
-                      {opcion.nombre}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+            <div className="layout-drawer-cuerpo">
+              {opcionesRol.length > 0 && (
+                <nav className="layout-drawer-nav" aria-label="Navegación por rol">
+                  <ul className="layout-drawer-lista">
+                    {opcionesRol.map((opcion) => (
+                      <li key={opcion.ruta}>
+                        <NavLink to={opcion.ruta} className={claseEnlaceDrawer} onClick={cerrarPanel}>
+                          {opcion.nombre}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              )}
+
+              <nav className="layout-drawer-nav layout-drawer-nav-publica" aria-label="Navegación pública">
+                <p className="layout-drawer-seccion">Explorar</p>
+                <ul className="layout-drawer-lista">
+                  {OPCIONES_PUBLICAS.map((opcion) => (
+                    <li key={opcion.ruta}>
+                      <NavLink
+                        to={opcion.ruta}
+                        end={opcion.ruta === '/'}
+                        className={claseEnlaceDrawer}
+                        onClick={cerrarPanel}
+                      >
+                        {opcion.nombre}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+
+            {sesion && (
+              <div className="layout-drawer-pie">
+                <button type="button" className="layout-boton-salir" onClick={manejarCerrarSesion}>
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
           </aside>
         </div>
       )}
