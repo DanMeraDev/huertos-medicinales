@@ -1,0 +1,127 @@
+.podio-voluntarios-seccion {
+  margin-bottom: var(--espacio-8);
+}
+
+.podio-voluntarios-titulo {
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-texto);
+  margin-bottom: var(--espacio-4);
+  text-align: center;
+}
+
+.podio-voluntarios-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+}
+
+.podio-voluntarios-contenedor .podio-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--espacio-5);
+  border-radius: var(--radius-md);
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.podio-voluntarios-contenedor .podio-tarjeta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.podio-voluntarios-contenedor .podio-tarjeta.podio-oro {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, #fffbeb 0%, var(--color-superficie) 35%);
+}
+
+.podio-voluntarios-contenedor .podio-tarjeta.podio-plata {
+  border-color: #94a3b8;
+  background: linear-gradient(180deg, #f8fafc 0%, var(--color-superficie) 35%);
+}
+
+.podio-voluntarios-contenedor .podio-tarjeta.podio-bronce {
+  border-color: #d97706;
+  background: linear-gradient(180deg, #fef3c7 0%, var(--color-superficie) 35%);
+}
+
+.podio-voluntarios-contenedor .podio-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  margin-bottom: var(--espacio-3);
+}
+
+.podio-voluntarios-contenedor .podio-medalla {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.podio-voluntarios-contenedor .podio-nombre {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
+  margin-bottom: var(--espacio-2);
+}
+
+.podio-rango-nivel {
+  margin-bottom: var(--espacio-4);
+}
+
+.podio-estadisticas {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-top: var(--espacio-3);
+  border-top: 1px solid var(--color-borde);
+  width: 100%;
+}
+
+.podio-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.podio-stat-valor {
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-negrita);
+  color: var(--color-primario);
+}
+
+.podio-stat-label {
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
+}
+
+@media (min-width: 640px) {
+  .podio-voluntarios-contenedor {
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+  }
+
+  .podio-voluntarios-contenedor .podio-tarjeta {
+    flex: 1;
+    max-width: 20rem;
+  }
+
+  .podio-voluntarios-contenedor .podio-tarjeta.podio-oro {
+    order: 2;
+    transform: translateY(-8px);
+  }
+
+  .podio-voluntarios-contenedor .podio-tarjeta.podio-plata {
+    order: 1;
+  }
+
+  .podio-voluntarios-contenedor .podio-tarjeta.podio-bronce {
+    order: 3;
+  }
+}
+

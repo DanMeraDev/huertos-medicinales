@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router'
 import { Notificacion } from '../components/Notificacion'
 import { PodioComunidades } from '../features/ranking/PodioComunidades'
 import { TablaRankingComunidades } from '../features/ranking/TablaRankingComunidades'
@@ -45,6 +46,15 @@ export function RankingComunidadesPage() {
           Tabla de posiciones de comunidades de huertos medicinales en Ecuador, visualizando los puntos acumulados por actividades oficiales y saberes ancestrales.
         </p>
       </header>
+
+      <nav className="ranking-pestanas" aria-label="Selector de ranking">
+        <Link to="/ranking/comunidades" className="ranking-pestana ranking-pestana-activa">
+          🏡 Ranking de Comunidades
+        </Link>
+        <Link to="/ranking/voluntarios" className="ranking-pestana">
+          🏅 Ranking de Voluntarios
+        </Link>
+      </nav>
 
       {error && <Notificacion tipo="error" mensaje={error} />}
 
