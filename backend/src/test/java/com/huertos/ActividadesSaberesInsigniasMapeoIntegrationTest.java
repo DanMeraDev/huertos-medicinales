@@ -158,7 +158,7 @@ class ActividadesSaberesInsigniasMapeoIntegrationTest {
 
         assertThat(insigniaLeida.getTipoOrigen()).isEqualTo(TipoOrigenInsignia.OFICIAL_SABER_MSP);
         assertThat(insigniaLeida.getIconoCodigo()).isEqualTo("medalla-kinti");
-        assertThat(insigniaLeida.getSaberAncestral().getOrdenPaso()).isEqualTo(1);
+        assertThat(insigniaLeida.getSaberAncestral().getOrdenPaso()).isEqualTo(901);
         assertThat(insigniaLeida.getTalentoComunidad()).isNull();
         assertThat(faseLeida.getFaseLunar()).isEqualTo(FaseLunar.PURA_KILLA_LLENA);
     }
@@ -224,8 +224,9 @@ class ActividadesSaberesInsigniasMapeoIntegrationTest {
 
     private SaberAncestral saber() {
         SaberAncestral nuevo = new SaberAncestral();
-        nuevo.setOrdenPaso(1);
-        nuevo.setCodigoHito("PREP-TIERRA");
+        // Paso ficticio: los pasos 1 a 11 los carga la V11.
+        nuevo.setOrdenPaso(901);
+        nuevo.setCodigoHito("PRUEBA-PASO-901");
         nuevo.setTitulo("Preparación de la tierra");
         nuevo.setCategoria(CategoriaSaber.PREPARACION_TIERRA);
         nuevo.setFaseLunarIdeal(FaseLunar.WINAK_KILLA_CRECIENTE);

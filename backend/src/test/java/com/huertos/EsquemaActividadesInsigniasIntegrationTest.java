@@ -52,14 +52,15 @@ class EsquemaActividadesInsigniasIntegrationTest {
                 VALUES ('1711111111', 'Ana', 'Guamán', '2000-01-15', 'FEMENINO', TRUE, '2026-11-09 10:00:00')
                 """);
         miembroId = id("SELECT id FROM miembros WHERE cedula = '1711111111'");
+        // Paso ficticio: los pasos 1 a 11 los carga la V11.
         jdbcTemplate.update("""
                 INSERT INTO saberes_ancestrales
                     (orden_paso, codigo_hito, titulo, categoria, fase_lunar_ideal, horario_energetico,
                      contenido_educativo, nombre_insignia_oficial)
-                VALUES (1, 'PREP-TIERRA', 'Preparación de la tierra', 'PREPARACION_TIERRA', 'WINAK_KILLA_CRECIENTE',
+                VALUES (901, 'PRUEBA-PASO-901', 'Preparación de la tierra', 'PREPARACION_TIERRA', 'WINAK_KILLA_CRECIENTE',
                         '05:00 a 07:00', 'Se afloja la tierra con herramientas tradicionales.', 'Guardián de la Allpa')
                 """);
-        saberId = id("SELECT id FROM saberes_ancestrales WHERE orden_paso = 1");
+        saberId = id("SELECT id FROM saberes_ancestrales WHERE orden_paso = 901");
     }
 
     @Test
