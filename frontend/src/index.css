@@ -189,7 +189,54 @@ a {
    4. CLASES UTILITARIAS BÁSICAS
    ========================================= */
 .inicio {
-  max-width: var(--ancho-lectura);
+  max-width: var(--ancho-maximo);
   margin: 0 auto;
-  padding: var(--espacio-12) var(--espacio-4);
+  padding: var(--espacio-8) var(--espacio-4);
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 17px;
+  }
+
+  :root {
+    --texto-sm: 0.92rem;
+    --texto-base: 1.05rem;
+    --texto-lg: 1.2rem;
+    --texto-xl: 1.375rem;
+    --texto-2xl: 1.65rem;
+    --texto-3xl: 2.05rem;
+    --texto-4xl: 2.5rem;
+    --ancho-maximo: min(94vw, 88rem);
+    --ancho-lectura: 52rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
+  }
+
+  :root {
+    --texto-sm: 0.95rem;
+    --texto-base: 1.08rem;
+    --texto-lg: 1.24rem;
+    --texto-xl: 1.44rem;
+    --texto-2xl: 1.75rem;
+    --texto-3xl: 2.2rem;
+    --texto-4xl: 2.75rem;
+    --ancho-maximo: min(94vw, 96rem);
+    --ancho-lectura: 58rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  html {
+    font-size: 19px;
+  }
+
+  :root {
+    --ancho-maximo: min(95vw, 102rem);
+    --ancho-lectura: 62rem;
+  }
 }
