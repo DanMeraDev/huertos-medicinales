@@ -39,7 +39,7 @@ const OPCIONES_CUALIDAD = opcionesDe('Todas', {
   FRIA: INSIGNIAS_TERMICAS.FRIA.texto,
 })
 const OPCIONES_CICLO = opcionesDe('Todos', ETIQUETAS_CICLO)
-const OPCIONES_REGION = opcionesDe('Todas', { Costa: 'Costa', Sierra: 'Sierra', Amazonía: 'Amazonía' })
+const OPCIONES_REGION = opcionesDe('Todas', { Costa: 'Costa', Sierra: 'Sierra', Amazonía: 'Amazonía', Galápagos: 'Galápagos' })
 const OPCIONES_CATEGORIA = opcionesDe('Todas', ETIQUETAS_CATEGORIA)
 
 function leerAltitud(texto: string) {
