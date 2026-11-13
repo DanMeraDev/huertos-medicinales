@@ -2,6 +2,7 @@ package com.huertos.controller;
 
 import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
+import com.huertos.dto.DarBajaPlantaRequest;
 import com.huertos.dto.FotografiaSubidaResponse;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.service.AlmacenamientoService;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,5 +59,13 @@ public class PlantaAdminController {
     public PlantaDetalleResponse actualizarPlanta(@PathVariable Long id,
             @Valid @RequestBody ActualizarPlantaRequest request, Authentication authentication) {
         return plantaAdminService.actualizarPlanta(id, request, authentication.getName());
+    }
+
+    @PatchMapping("/{id}/baja")
+    @Operation(summary = "Da de baja una planta del catálogo con un borrado lógico y guarda el motivo")
+    public ResponseEntity<Void> darDeBajaPlanta(@PathVariable Long id,
+            @Valid @RequestBody DarBajaPlantaRequest request, Authentication authentication) {
+        plantaAdminService.darDeBajaPlanta(id, request, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -3,6 +3,7 @@ import { server } from '../../test/mocks/server'
 import { plantaEditableHandler, plantaEditableMock } from './catalogoAdminMockHandlers'
 import {
   actualizarPlanta,
+  darDeBajaPlanta,
   mensajeErrorFotografia,
   obtenerPlantaParaEditar,
   registrarPlanta,
@@ -144,5 +145,37 @@ describe('plantasAdminApi', () => {
     expect(ruta).toBe('/api/msp/plantas/7')
     expect(metodo).toBe('PUT')
     expect(cuerpo).toEqual(solicitud)
+  })
+
+  it('darDeBajaPlanta envía el motivo con PATCH y termina sin contenido', async () => {
+    let ruta = ''
+    let metodo = ''
+    let cuerpo: unknown = null
+    server.use(
+      http.patch('*/api/msp/plantas/:id/baja', async ({ request }) => {
+        ruta = new URL(request.url).pathname
+        metodo = request.method
+        cuerpo = await request.clone().json()
+        return undefined
+      }),
+    )
+
+    await expect(darDeBajaPlanta(7, { motivo: 'Registro duplicado' })).resolves.toBeUndefined()
+    expect(ruta).toBe('/api/msp/plantas/7/baja')
+    expect(metodo).toBe('PATCH')
+    expect(cuerpo).toEqual({ motivo: 'Registro duplicado' })
+  })
+
+  it('darDeBajaPlanta rechaza con el detalle del back si la planta ya está dada de baja', async () => {
+    server.use(
+      http.patch('*/api/msp/plantas/:id/baja', () =>
+        HttpResponse.json({ status: 400, detail: 'La planta ya está dada de baja' }, { status: 400 }),
+      ),
+    )
+
+    await expect(darDeBajaPlanta(7, { motivo: 'Registro duplicado' })).rejects.toMatchObject({
+      status: 400,
+      detalle: 'La planta ya está dada de baja',
+    })
   })
 })

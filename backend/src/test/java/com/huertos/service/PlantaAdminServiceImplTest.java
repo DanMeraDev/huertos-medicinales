@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
+import com.huertos.dto.DarBajaPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -353,6 +354,74 @@ class PlantaAdminServiceImplTest {
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessage("La altitud mínima no puede ser mayor que la altitud máxima");
         verifyNoInteractions(plantaRepository, usuarioRepository);
+    }
+
+    @Test
+    void daDeBajaLaPlantaConElMotivoRecortadoLaFechaDelRelojYElTecnico() {
+        Usuario tecnico = prepararBaja(plantaExistente());
+
+        servicio.darDeBajaPlanta(7L, new DarBajaPlantaRequest("  Registro duplicado  "), CORREO_TECNICO);
+
+        verify(plantaRepository).save(plantaGuardada.capture());
+        Planta planta = plantaGuardada.getValue();
+        assertThat(planta.isActiva()).isFalse();
+        assertThat(planta.getMotivoBaja()).isEqualTo("Registro duplicado");
+        assertThat(planta.getFechaBaja()).isEqualTo(FECHA_DEL_RELOJ);
+        assertThat(planta.getDadoDeBajaPor()).isSameAs(tecnico);
+    }
+
+    @Test
+    void noCambiaLosDemasDatosDeLaPlantaAlDarlaDeBaja() {
+        prepararBaja(plantaExistente());
+
+        servicio.darDeBajaPlanta(7L, new DarBajaPlantaRequest("Registro duplicado"), CORREO_TECNICO);
+
+        verify(plantaRepository).save(plantaGuardada.capture());
+        Planta planta = plantaGuardada.getValue();
+        assertThat(planta.getId()).isEqualTo(7L);
+        assertThat(planta.getNombreComun()).isEqualTo("Hierba de prueba");
+        assertThat(planta.getNombreCientifico()).isEqualTo("Herba ficticia");
+        assertThat(planta.getUsosMedicinales()).isEqualTo("Alivia el dolor de estómago");
+        assertThat(planta.getCategorias()).containsExactlyInAnyOrder(CategoriaUso.SEDANTE, CategoriaUso.DIURETICA);
+        assertThat(planta.getFotografiaUrl()).isEqualTo("plantas/anterior.jpg");
+        assertThat(planta.getCreadoEn()).isEqualTo(FECHA_DE_CREACION);
+        assertThat(planta.getActualizadoEn()).isEqualTo(FECHA_DE_CREACION);
+        assertThat(planta.getActualizadoPor()).isNull();
+    }
+
+    @Test
+    void rechazaDarDeBajaUnaPlantaInexistente() {
+        when(plantaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> servicio.darDeBajaPlanta(99L, new DarBajaPlantaRequest("Registro duplicado"),
+                CORREO_TECNICO))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessage("La planta no existe");
+        verify(plantaRepository, never()).save(any());
+    }
+
+    @Test
+    void rechazaDarDeBajaUnaPlantaQueYaEstaDadaDeBajaSinGuardar() {
+        Planta inactiva = plantaExistente();
+        inactiva.setActiva(false);
+        when(plantaRepository.findById(7L)).thenReturn(Optional.of(inactiva));
+
+        assertThatThrownBy(() -> servicio.darDeBajaPlanta(7L, new DarBajaPlantaRequest("Registro duplicado"),
+                CORREO_TECNICO))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessage("La planta ya está dada de baja");
+        verify(plantaRepository, never()).save(any());
+        verifyNoInteractions(usuarioRepository);
+    }
+
+    private Usuario prepararBaja(Planta planta) {
+        Usuario tecnico = new Usuario();
+        tecnico.setId(3L);
+        tecnico.setCorreo(CORREO_TECNICO);
+        when(plantaRepository.findById(7L)).thenReturn(Optional.of(planta));
+        when(usuarioRepository.findByCorreo(CORREO_TECNICO)).thenReturn(Optional.of(tecnico));
+        when(plantaRepository.save(any(Planta.class))).thenAnswer(invocacion -> invocacion.getArgument(0));
+        return tecnico;
     }
 
     private Usuario prepararActualizacion() {

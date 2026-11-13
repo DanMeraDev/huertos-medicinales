@@ -40,4 +40,6 @@ export const catalogoAdminHandlers = [
     const planta: PlantaDetalleResponse = { id: Number(params.id), ...datos }
     return HttpResponse.json(planta)
   }),
+
+  http.patch('*/api/msp/plantas/:id/baja', () => new HttpResponse(null, { status: 204 })),
 ]

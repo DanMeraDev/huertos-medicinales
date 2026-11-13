@@ -2,6 +2,7 @@ package com.huertos.service.impl;
 
 import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
+import com.huertos.dto.DarBajaPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -57,6 +58,22 @@ public class PlantaAdminServiceImpl implements PlantaAdminService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario")));
         planta.setActualizadoEn(LocalDateTime.now(clock));
         return plantaMapper.aDetalle(plantaRepository.save(planta));
+    }
+
+    @Override
+    @Transactional
+    public void darDeBajaPlanta(Long id, DarBajaPlantaRequest request, String correo) {
+        Planta planta = plantaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("La planta no existe"));
+        if (!planta.isActiva()) {
+            throw new ReglaNegocioException("La planta ya está dada de baja");
+        }
+        planta.setActiva(false);
+        planta.setMotivoBaja(request.motivo().strip());
+        planta.setFechaBaja(LocalDateTime.now(clock));
+        planta.setDadoDeBajaPor(usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario")));
+        plantaRepository.save(planta);
     }
 
     private void validarRangoAltitud(Integer altitudMinima, Integer altitudMaxima) {

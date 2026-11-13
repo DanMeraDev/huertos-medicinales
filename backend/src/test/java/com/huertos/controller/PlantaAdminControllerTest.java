@@ -5,10 +5,13 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -19,9 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
+import com.huertos.dto.DarBajaPlantaRequest;
 import com.huertos.dto.PlantaDetalleResponse;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
+import com.huertos.exception.ReglaNegocioException;
 import com.huertos.model.CategoriaUso;
 import com.huertos.model.CicloCultivo;
 import com.huertos.model.CualidadTermica;
@@ -54,6 +59,7 @@ class PlantaAdminControllerTest {
     private static final String RUTA = "/api/msp/plantas/fotografia";
     private static final String RUTA_PLANTAS = "/api/msp/plantas";
     private static final String RUTA_PLANTA = "/api/msp/plantas/{id}";
+    private static final String RUTA_BAJA = "/api/msp/plantas/{id}/baja";
     private static final String CORREO_TECNICO = "tecnico.msp@huertos.gob.ec";
     private static final byte[] JPEG = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, 0x00, 0x10, 0x4A, 0x46};
 
@@ -280,6 +286,95 @@ class PlantaAdminControllerTest {
                         .content(objectMapper.writeValueAsString(solicitudDeActualizacion())))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("Nombre científico ya registrado en otra planta"));
+    }
+
+    @Test
+    @WithMockUser(username = CORREO_TECNICO, roles = "TECNICO_MSP")
+    void daDeBajaLaPlantaCon204ConElCorreoDelTecnico() throws Exception {
+        mockMvc.perform(patch(RUTA_BAJA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("Registro duplicado"))))
+                .andExpect(status().isNoContent());
+        verify(plantaAdminService).darDeBajaPlanta(50L, new DarBajaPlantaRequest("Registro duplicado"),
+                CORREO_TECNICO);
+    }
+
+    @Test
+    void rechazaLaBajaSinToken() throws Exception {
+        mockMvc.perform(patch(RUTA_BAJA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("Registro duplicado"))))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    void niegaLaBajaAlResponsableDeComunidad() throws Exception {
+        mockMvc.perform(patch(RUTA_BAJA, 50)
+                        .with(user("rosa@huertos.gob.ec").roles("RESPONSABLE_COMUNIDAD"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("Registro duplicado"))))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    void niegaLaBajaAlTecnicoSis() throws Exception {
+        mockMvc.perform(patch(RUTA_BAJA, 50)
+                        .with(user("tecnico.sis@huertos.gob.ec").roles("TECNICO_SIS"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("Registro duplicado"))))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    @WithMockUser(roles = "TECNICO_MSP")
+    void rechazaLaBajaConMotivoVacioCon400() throws Exception {
+        mockMvc.perform(patch(RUTA_BAJA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("   "))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.motivo").value("El motivo de la baja es obligatorio"));
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    @WithMockUser(roles = "TECNICO_MSP")
+    void rechazaLaBajaConMotivoDeMasDe300CaracteresCon400() throws Exception {
+        mockMvc.perform(patch(RUTA_BAJA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("a".repeat(301)))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.motivo")
+                        .value("El motivo de la baja no puede superar los 300 caracteres"));
+        verifyNoInteractions(plantaAdminService);
+    }
+
+    @Test
+    @WithMockUser(roles = "TECNICO_MSP")
+    void respondeNoEncontradoSiLaPlantaADarDeBajaNoExiste() throws Exception {
+        doThrow(new RecursoNoEncontradoException("La planta no existe"))
+                .when(plantaAdminService).darDeBajaPlanta(eq(99L), any(DarBajaPlantaRequest.class), any());
+
+        mockMvc.perform(patch(RUTA_BAJA, 99)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("Registro duplicado"))))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("La planta no existe"));
+    }
+
+    @Test
+    @WithMockUser(roles = "TECNICO_MSP")
+    void rechazaDarDeBajaUnaPlantaYaDadaDeBajaCon400() throws Exception {
+        doThrow(new ReglaNegocioException("La planta ya está dada de baja"))
+                .when(plantaAdminService).darDeBajaPlanta(eq(50L), any(DarBajaPlantaRequest.class), any());
+
+        mockMvc.perform(patch(RUTA_BAJA, 50)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new DarBajaPlantaRequest("Registro duplicado"))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("La planta ya está dada de baja"));
     }
 
     private static MockMultipartFile archivo(byte[] contenido) {
