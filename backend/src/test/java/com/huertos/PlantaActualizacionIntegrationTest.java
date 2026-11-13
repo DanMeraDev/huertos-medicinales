@@ -66,8 +66,8 @@ class PlantaActualizacionIntegrationTest {
     @BeforeEach
     void insertarTecnico() {
         jdbcTemplate.update("""
-                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol)
-                VALUES ('Técnico de edición', '1799999906', '1990-05-14', 'MASCULINO', ?, 'hash', 'TECNICO_MSP')
+                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol, requiere_cambio_clave)
+                VALUES ('Técnico de edición', '1799999906', '1990-05-14', 'MASCULINO', ?, 'hash', 'TECNICO_MSP', FALSE)
                 """, CORREO_TECNICO);
         tecnicoId = jdbcTemplate.queryForObject("SELECT id FROM usuarios WHERE correo = ?", Long.class, CORREO_TECNICO);
     }

@@ -25,14 +25,14 @@ public class HuertoController {
     private final HuertoService huertoService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('RESPONSABLE_COMUNIDAD', 'TECNICO_MSP')")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
     @Operation(summary = "Obtiene la configuración operativa actual del huerto")
     public ResponseEntity<HuertoDetalleResponse> obtenerHuerto(Authentication authentication) {
         return ResponseEntity.ok(huertoService.obtenerPorCorreo(authentication.getName()));
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyRole('RESPONSABLE_COMUNIDAD', 'TECNICO_MSP')")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
     @Operation(summary = "Actualiza los datos operativos y agronómicos del huerto")
     public ResponseEntity<HuertoDetalleResponse> actualizarHuerto(
             Authentication authentication,

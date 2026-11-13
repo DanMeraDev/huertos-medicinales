@@ -1,5 +1,7 @@
 package com.huertos.config;
 
+import com.huertos.model.Rol;
+import com.huertos.model.Usuario;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Clock;
@@ -29,7 +31,13 @@ class JwtServiceTest {
 
     @Test
     void generaUnTokenConIdYRequiereCambioClave() {
-        String token = jwtService.generarToken(15L, "rosa@correo.com", "RESPONSABLE_COMUNIDAD", true);
+        Usuario usuario = new Usuario();
+        usuario.setId(15L);
+        usuario.setCorreo("rosa@correo.com");
+        usuario.setRol(Rol.RESPONSABLE_COMUNIDAD);
+        usuario.setRequiereCambioClave(true);
+        usuario.setPasswordHash("$2a$10$hashDeLaClave");
+        String token = jwtService.generarToken(usuario);
 
         Jwt jwt = jwtService.validar(token).orElseThrow();
 
@@ -37,6 +45,7 @@ class JwtServiceTest {
         assertThat(jwt.<Long>getClaim("id")).isEqualTo(15L);
         assertThat(jwt.getClaimAsString("rol")).isEqualTo("RESPONSABLE_COMUNIDAD");
         assertThat(jwt.<Boolean>getClaim("requiereCambioClave")).isTrue();
+        assertThat(jwt.getClaimAsString("huella")).isEqualTo(jwtService.huellaDe("$2a$10$hashDeLaClave"));
     }
 
     @Test

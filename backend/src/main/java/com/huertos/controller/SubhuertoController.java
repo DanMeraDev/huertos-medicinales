@@ -28,7 +28,7 @@ public class SubhuertoController {
 
     @Operation(summary = "Lista los subhuertos del huerto de la comunidad")
     @GetMapping
-    @PreAuthorize("hasAnyRole('RESPONSABLE_COMUNIDAD', 'TECNICO_MSP')")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
     public ResponseEntity<List<SubhuertoResponse>> listar(Authentication authentication) {
         return ResponseEntity.ok(subhuertoService.listarPorUsuario(authentication.getName()));
     }

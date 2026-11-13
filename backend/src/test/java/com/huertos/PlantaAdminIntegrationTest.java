@@ -61,8 +61,8 @@ class PlantaAdminIntegrationTest {
     @BeforeEach
     void insertarTecnico() {
         jdbcTemplate.update("""
-                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol)
-                VALUES ('Técnico de catálogo', '1799999904', '1990-05-14', 'FEMENINO', ?, 'hash', 'TECNICO_MSP')
+                INSERT INTO usuarios (nombre_completo, identificacion, fecha_nacimiento, genero, correo, password_hash, rol, requiere_cambio_clave)
+                VALUES ('Técnico de catálogo', '1799999904', '1990-05-14', 'FEMENINO', ?, 'hash', 'TECNICO_MSP', FALSE)
                 """, CORREO_TECNICO);
     }
 
