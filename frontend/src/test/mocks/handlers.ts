@@ -6,6 +6,7 @@ import { rankingMockHandlers } from '../../features/ranking/rankingMockHandlers'
 import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
 import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { miembrosHandlers } from '../../features/miembros/miembrosMockHandlers'
+import { talentosMockHandlers } from '../../features/talentos/talentosMockHandlers'
 import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
 import { catalogoAdminHandlers } from '../../features/catalogo-admin/catalogoAdminMockHandlers'
 import { solicitudesMockHandlers } from '../../features/solicitudes/solicitudesMockHandlers'
@@ -58,6 +59,7 @@ export const handlers = [
   ...rankingMockHandlers,
   ...calendarioLunarMockHandlers,
   ...miembrosHandlers,
+  ...talentosMockHandlers,
   ...saberesMockHandlers,
   ...actividadesAncestralesMockHandlers,
   ...solicitudesMockHandlers,
@@ -126,6 +128,78 @@ export const handlers = [
         faseLunarSiembra: payload.faseLunarSiembra,
         tuvoAlertaAltitud: payload.aceptaRiesgoAltitud,
         estadoCultivo: 'SEMBRADO',
+      },
+      { status: 201 },
+    )
+  }),
+
+  http.get('*/api/comunidad/actividades-catalogo', () =>
+    HttpResponse.json([
+      {
+        id: 1,
+        nombre: 'Riego matutino de eras',
+        categoria: 'RIEGO',
+        puntosPorHora: 1,
+        activa: true,
+      },
+      {
+        id: 2,
+        nombre: 'Deshierbe manual',
+        categoria: 'LIMPIEZA_DESHIERBE',
+        puntosPorHora: 1,
+        activa: true,
+      },
+    ]),
+  ),
+
+  http.post('*/api/comunidad/actividades-catalogo', async ({ request }) => {
+    const payload = (await request.json()) as { nombre: string; categoria: string }
+    return HttpResponse.json(
+      {
+        id: 3,
+        nombre: payload.nombre,
+        categoria: payload.categoria,
+        puntosPorHora: 1,
+        activa: true,
+      },
+      { status: 201 },
+    )
+  }),
+
+  http.get('*/api/comunidad/actividades-miembros/miembros/:id/insignias', () =>
+    HttpResponse.json([
+      {
+        id: 1,
+        codigo: 'TALENTO_RIEGO_1',
+        nombre: 'Guardián del Agua',
+        tipo: 'TALENTO_COMUNIDAD',
+        descripcion: 'Realizó labores de riego',
+        fechaObtencion: '2026-11-12',
+      },
+    ]),
+  ),
+
+  http.post('*/api/comunidad/actividades-miembros', async ({ request }) => {
+    const payload = (await request.json()) as {
+      miembroId: number
+      actividadId: number
+      horasTrabajadas: number
+      fechaLabor: string
+      observaciones?: string
+    }
+    const puntos = Math.round(payload.horasTrabajadas * 1)
+    return HttpResponse.json(
+      {
+        registroId: 10,
+        miembroId: payload.miembroId,
+        nombreMiembro: 'Segundo Tránsito Amaguaña',
+        rangoActual: 'OFICIAL',
+        rangoAnterior: 'APRENDIZ',
+        subioDeNivel: true,
+        puntosAcreditados: puntos,
+        puntosTotalesActuales: 50,
+        nuevosTalentosDesbloqueados: [],
+        mensajeCelebracion: '¡Felicitaciones! Has ascendido al rango OFICIAL.',
       },
       { status: 201 },
     )

@@ -31,12 +31,14 @@ export interface CatalogoActividadesViewProps {
   actividadesIniciales: ActividadCatalogo[]
   cargando?: boolean
   alCrear: (payload: CrearActividadCatalogoPayload) => Promise<ActividadCatalogo>
+  alNavegarRegistroLabor?: () => void
 }
 
 export function CatalogoActividadesView({
   actividadesIniciales,
   cargando = false,
   alCrear,
+  alNavegarRegistroLabor,
 }: CatalogoActividadesViewProps) {
   const [actividades, setActividades] = useState<ActividadCatalogo[]>(actividadesIniciales)
   const [filtroCategoria, setFiltroCategoria] = useState<CategoriaActividad | 'TODAS'>('TODAS')
@@ -149,6 +151,12 @@ export function CatalogoActividadesView({
           </p>
         </div>
         <div className="catalogo-actividades__accion-pc">
+          <Boton
+            variante="secundario"
+            onClick={alNavegarRegistroLabor ?? (() => { window.location.assign('/comunidad/actividades-miembros/nueva') })}
+          >
+            Registrar Labor de Voluntario
+          </Boton>
           <Boton variante="primario" onClick={abrirDialogo}>
             + Nueva Actividad Cotidiana
           </Boton>
