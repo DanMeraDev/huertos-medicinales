@@ -13,7 +13,12 @@ import com.huertos.dto.RechazoSolicitudEmailDto;
 import com.huertos.service.impl.EmailServiceImpl;
 import jakarta.mail.Message;
 import jakarta.mail.Session;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Multipart;
+import jakarta.mail.Part;
 import jakarta.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,6 +77,28 @@ class EmailServiceImplTest {
     }
 
     @Test
+    void incluyeAKintiCelebrandoEnElCorreoDeAprobacion() throws Exception {
+        servicio.enviarCredencialesAprobacion(new CredencialesEmailDto(DESTINATARIO, "Segundo Tránsito Amaguaña",
+                "Huerto Comunitario Allpa Viva", "Tm4kQz7RwP2nXa9e"));
+
+        MimeMessage enviado = mensajeEnviado();
+        assertThat(cuerpo(enviado)).contains("src=\"cid:kinti\"", "alt=\"Kinti\"");
+        BodyPart kinti = imagenIncrustada(enviado);
+        assertThat(kinti.getFileName()).isEqualTo("kinti-celebracion.png");
+        assertThat(kinti.getContentType()).startsWith("image/png");
+    }
+
+    @Test
+    void incluyeAKintiEnElCorreoDeRechazo() throws Exception {
+        servicio.enviarNotificacionRechazo(new RechazoSolicitudEmailDto(DESTINATARIO, "Segundo Tránsito Amaguaña",
+                "Huerto Comunitario Allpa Viva", "Motivo de rechazo suficientemente largo"));
+
+        MimeMessage enviado = mensajeEnviado();
+        assertThat(cuerpo(enviado)).contains("src=\"cid:kinti\"");
+        assertThat(imagenIncrustada(enviado).getFileName()).isEqualTo("kinti-sabiduria.png");
+    }
+
+    @Test
     void registraLaFallaDelServidorSinPropagarla() {
         doThrow(new MailSendException("SMTP no disponible")).when(mailSender).send(any(MimeMessage.class));
 
@@ -80,13 +107,41 @@ class EmailServiceImplTest {
                 .doesNotThrowAnyException();
     }
 
-    private MimeMessage mensajeEnviado() {
+    private MimeMessage mensajeEnviado() throws Exception {
         ArgumentCaptor<MimeMessage> mensaje = ArgumentCaptor.forClass(MimeMessage.class);
         verify(mailSender).send(mensaje.capture());
+        mensaje.getValue().saveChanges();
         return mensaje.getValue();
     }
 
     private String cuerpo(MimeMessage mensaje) throws Exception {
-        return (String) mensaje.getContent();
+        for (BodyPart parte : partes(mensaje)) {
+            if (parte.isMimeType("text/html")) {
+                return (String) parte.getContent();
+            }
+        }
+        throw new AssertionError("El correo no tiene cuerpo HTML");
+    }
+
+    private BodyPart imagenIncrustada(MimeMessage mensaje) throws Exception {
+        for (BodyPart parte : partes(mensaje)) {
+            String[] identificadores = parte.getHeader("Content-ID");
+            if (parte.isMimeType("image/png") && identificadores != null && identificadores[0].equals("<kinti>")) {
+                return parte;
+            }
+        }
+        throw new AssertionError("El correo no incluye a Kinti");
+    }
+
+    private List<BodyPart> partes(Part parte) throws Exception {
+        List<BodyPart> encontradas = new ArrayList<>();
+        if (parte.getContent() instanceof Multipart multiparte) {
+            for (int i = 0; i < multiparte.getCount(); i++) {
+                BodyPart hija = multiparte.getBodyPart(i);
+                encontradas.add(hija);
+                encontradas.addAll(partes(hija));
+            }
+        }
+        return encontradas;
     }
 }
