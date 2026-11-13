@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,11 +35,11 @@ public class BodegaServiceImpl implements BodegaService {
 
     @Override
     @Transactional
-    public BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request, Authentication authentication) {
+    public BajaMaterialResponse registrarBajaMaterial(Long bodegaMaterialId, RegistrarBajaMaterialRequest request, String correoResponsable) {
         BodegaMaterialVegetal material = bodegaRepository.findById(bodegaMaterialId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("El material vegetal indicado no existe en bodega"));
 
-        validarAccesoComunidad(material.getComunidad().getId(), authentication);
+        validarAccesoComunidad(material.getComunidad().getId(), correoResponsable, false);
 
         if (request.cantidadBaja().compareTo(material.getCantidadDisponible()) > 0) {
             throw new ReglaNegocioException("La cantidad a dar de baja supera el stock disponible en bodega");
@@ -96,17 +95,6 @@ public class BodegaServiceImpl implements BodegaService {
         List<BodegaMaterialVegetal> materiales = bodegaRepository
                 .findByComunidadIdAndActivoTrueOrderByPlantaNombreComunAsc(comunidadId);
         return bodegaMapper.toListMaterialVegetalResponse(materiales);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void validarAccesoComunidad(Long comunidadId, Authentication authentication) {
-        if (authentication == null) {
-            throw new AccessDeniedException("No autenticado");
-        }
-        boolean esTecnico = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_TECNICO_MSP"));
-        validarAccesoComunidad(comunidadId, authentication.getName(), esTecnico);
     }
 
     @Override

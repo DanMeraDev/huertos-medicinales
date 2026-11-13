@@ -4,6 +4,7 @@ import com.huertos.config.ConstantesGamificacion;
 import com.huertos.dto.InsigniaMiembroResponse;
 import com.huertos.dto.RegistrarLaborMiembroRequest;
 import com.huertos.dto.ResultadoAcreditacionMiembroResponse;
+import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.model.ActividadComunidad;
@@ -32,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RegistroActividadMiembroServiceImpl implements RegistroActividadMiembroService {
 
+    private static final int HORAS_MAXIMAS_POR_DIA = 24;
+
     private final ComunidadRepository comunidadRepository;
     private final ComunidadMiembroRepository comunidadMiembroRepository;
     private final MiembroRepository miembroRepository;
@@ -59,6 +62,8 @@ public class RegistroActividadMiembroServiceImpl implements RegistroActividadMie
         if (!actividad.isActiva() || !actividad.getComunidad().getId().equals(comunidad.getId())) {
             throw new ReglaNegocioException("La actividad comunitaria no está activa o no pertenece a su comunidad");
         }
+
+        validarJornadaDelDia(miembro.getId(), actividad.getId(), request);
 
         int puntosPorHora = actividad.getPuntosPorHora() > 0 ? actividad.getPuntosPorHora() : 1;
         int puntosOtorgados = request.horasTrabajadas() * puntosPorHora;
@@ -113,6 +118,17 @@ public class RegistroActividadMiembroServiceImpl implements RegistroActividadMie
                 subioDeNivel,
                 talentosDesbloqueados
         );
+    }
+
+    private void validarJornadaDelDia(Long miembroId, Long actividadId, RegistrarLaborMiembroRequest request) {
+        if (registroActividadMiembroRepository.existsByMiembroIdAndActividadComunidadIdAndFechaActividad(
+                miembroId, actividadId, request.fechaActividad())) {
+            throw new ConflictoException("La labor ya fue registrada para este voluntario en la fecha indicada");
+        }
+        long horasDelDia = registroActividadMiembroRepository.sumarHorasDelDia(miembroId, request.fechaActividad());
+        if (horasDelDia + request.horasTrabajadas() > HORAS_MAXIMAS_POR_DIA) {
+            throw new ReglaNegocioException("La jornada máxima permitida es de 24 horas por día según norma MSP");
+        }
     }
 
     @Override
