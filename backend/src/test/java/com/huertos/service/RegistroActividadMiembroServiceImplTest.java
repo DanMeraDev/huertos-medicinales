@@ -340,4 +340,17 @@ class RegistroActividadMiembroServiceImplTest {
         assertThrows(RecursoNoEncontradoException.class,
                 () -> service.registrarLabor("resp@huertos.gob.ec", request));
     }
+
+    @Test
+    void listarInsignias_responde404_cuandoElMiembroEsDeOtraComunidad() {
+        when(comunidadRepository.findByResponsableCorreo("resp@huertos.gob.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(comunidadMiembroRepository.existsByComunidadIdAndMiembroIdAndActivoEnComunidadTrue(10L, 99L))
+                .thenReturn(false);
+
+        RecursoNoEncontradoException error = assertThrows(RecursoNoEncontradoException.class,
+                () -> service.listarInsigniasMiembro("resp@huertos.gob.ec", 99L));
+
+        assertEquals("El miembro no pertenece a la comunidad del usuario", error.getMessage());
+    }
 }

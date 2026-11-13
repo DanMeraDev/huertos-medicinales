@@ -184,6 +184,52 @@ class HuertoControllerTest {
         );
     }
 
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarHuertoFueraDelEcuadorRetorna400() throws Exception {
+        ActualizarHuertoRequest fueraDelEcuador = new ActualizarHuertoRequest(
+                new BigDecimal("89.0000000"),
+                new BigDecimal("170.0000000"),
+                2500,
+                null,
+                new BigDecimal("150.00"),
+                DisenoPrincipal.EN_TIERRA,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        mockMvc.perform(put("/api/comunidad/huerto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(fueraDelEcuador)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.latitud")
+                        .value("Las coordenadas geográficas ingresadas no corresponden al territorio ecuatoriano"))
+                .andExpect(jsonPath("$.errores.longitud")
+                        .value("Las coordenadas geográficas ingresadas no corresponden al territorio ecuatoriano"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarHuertoConJsonMalFormadoExplicaElError() throws Exception {
+        mockMvc.perform(put("/api/comunidad/huerto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"latitud\":"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("El cuerpo de la petición no es válido o tiene un formato incorrecto"));
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void actualizarHuertoConValorDeListaInexistenteExplicaElError() throws Exception {
+        mockMvc.perform(put("/api/comunidad/huerto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"disenoPrincipal\":\"NO_EXISTE\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("El cuerpo de la petición no es válido o tiene un formato incorrecto"));
+    }
+
     private ActualizarHuertoRequest requestValido() {
         return new ActualizarHuertoRequest(
                 new BigDecimal("-0.1234567"),

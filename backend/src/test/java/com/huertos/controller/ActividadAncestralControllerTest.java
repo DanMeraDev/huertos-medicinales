@@ -245,4 +245,25 @@ class ActividadAncestralControllerTest {
                                 null))))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void registrarActividadGrandeRetorna400CuandoLaFotografiaNoEsUnaRutaDeEvidencia() throws Exception {
+        RegistrarActividadAncestralRequest request = new RegistrarActividadAncestralRequest(
+                1L,
+                LocalDate.of(2026, 11, 10),
+                FaseLunar.PURA_KILLA_LLENA,
+                "Ritual de siembra con chicha de jora y sahumerio",
+                "javascript:alert(1)",
+                null,
+                List.of(new ParticipanteActividadDto(7L, 4))
+        );
+
+        mockMvc.perform(post("/api/actividades-ancestrales")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.evidenciaFotoUrl")
+                        .value("La fotografía de evidencia debe subirse desde el formulario de la actividad"));
+    }
 }
