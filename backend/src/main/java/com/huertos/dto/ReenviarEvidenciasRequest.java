@@ -10,6 +10,8 @@ public record ReenviarEvidenciasRequest(
 
         @NotBlank(message = "La fotografía de evidencia es obligatoria para la revisión del MSP")
         @Size(max = 500, message = "La ruta de la fotografía no puede superar 500 caracteres")
+        @Pattern(regexp = "^$|^actividades/[a-z0-9-]+\\.(jpg|png|webp)$",
+                message = "La fotografía de evidencia debe subirse desde el formulario de la actividad")
         String evidenciaFotoUrl,
 
         @Pattern(regexp = "^https?://\\S+$", message = "El video de evidencia debe ser una URL válida")

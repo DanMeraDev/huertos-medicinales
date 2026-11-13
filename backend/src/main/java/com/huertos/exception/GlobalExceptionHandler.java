@@ -7,11 +7,13 @@ import java.util.Objects;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
@@ -111,5 +113,19 @@ public class GlobalExceptionHandler {
                                 .findFirst()
                                 .orElse("Datos no válidos");
                 return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detalle);
+        }
+
+        @ExceptionHandler(HttpMessageNotReadableException.class)
+        ProblemDetail manejarCuerpoIlegible() {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.BAD_REQUEST,
+                                "El cuerpo de la petición no es válido o tiene un formato incorrecto");
+        }
+
+        @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+        ProblemDetail manejarTipoDeParametro(MethodArgumentTypeMismatchException ex) {
+                return ProblemDetail.forStatusAndDetail(
+                                HttpStatus.BAD_REQUEST,
+                                "El valor de " + ex.getName() + " no es válido");
         }
 }

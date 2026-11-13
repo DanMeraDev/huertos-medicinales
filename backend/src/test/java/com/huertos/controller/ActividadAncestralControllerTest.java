@@ -164,7 +164,7 @@ class ActividadAncestralControllerTest {
                 1,
                 "La fotografía no muestra el ritual completo",
                 "Bitácora inicial",
-                "https://evidencias.gob.ec/foto-inicial.jpg",
+                "actividades/foto-inicial.jpg",
                 null
         );
 
@@ -186,7 +186,7 @@ class ActividadAncestralControllerTest {
     void reenviarEvidenciasRetorna200ConActividadPendienteEIntentoDos() throws Exception {
         ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
                 "Bitácora corregida con el ritual completo",
-                "https://evidencias.gob.ec/foto-corregida.jpg",
+                "actividades/foto-corregida.jpg",
                 null
         );
         ActividadAncestralResponse response = new ActividadAncestralResponse(
@@ -217,7 +217,7 @@ class ActividadAncestralControllerTest {
     void reenviarEvidenciasRetorna409CuandoLaActividadNoEstaObservada() throws Exception {
         ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
                 "Bitácora corregida con el ritual completo",
-                "https://evidencias.gob.ec/foto-corregida.jpg",
+                "actividades/foto-corregida.jpg",
                 null
         );
 
@@ -241,8 +241,29 @@ class ActividadAncestralControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new ReenviarEvidenciasRequest(
                                 "Bitácora corregida con el ritual completo",
-                                "https://evidencias.gob.ec/foto-corregida.jpg",
+                                "actividades/foto-corregida.jpg",
                                 null))))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void registrarActividadGrandeRetorna400CuandoLaFotografiaNoEsUnaRutaDeEvidencia() throws Exception {
+        RegistrarActividadAncestralRequest request = new RegistrarActividadAncestralRequest(
+                1L,
+                LocalDate.of(2026, 11, 10),
+                FaseLunar.PURA_KILLA_LLENA,
+                "Ritual de siembra con chicha de jora y sahumerio",
+                "javascript:alert(1)",
+                null,
+                List.of(new ParticipanteActividadDto(7L, 4))
+        );
+
+        mockMvc.perform(post("/api/actividades-ancestrales")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.evidenciaFotoUrl")
+                        .value("La fotografía de evidencia debe subirse desde el formulario de la actividad"));
     }
 }
