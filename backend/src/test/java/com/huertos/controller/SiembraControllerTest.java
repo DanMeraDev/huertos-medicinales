@@ -160,4 +160,19 @@ class SiembraControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(username = "resp@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void registrarSiembra_aceptaElCuerpoSinConfirmacionDeAltitud() throws Exception {
+        when(siembraService.registrarSiembra(eq("resp@huertos.gob.ec"), any(RegistrarSiembraRequest.class)))
+                .thenReturn(null);
+
+        mockMvc.perform(post("/api/comunidad/siembras")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"subhuertoId":10,"bodegaMaterialId":25,"cantidadSembrada":4.50,
+                                 "fechaSiembra":"2026-11-10","faseLunarSiembra":"WINAK_KILLA_CRECIENTE"}
+                                """))
+                .andExpect(status().isCreated());
+    }
 }

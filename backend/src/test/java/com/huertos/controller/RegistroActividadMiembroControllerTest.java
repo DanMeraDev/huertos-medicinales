@@ -1,5 +1,6 @@
 package com.huertos.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -160,5 +161,13 @@ class RegistroActividadMiembroControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "resp@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void listarInsignias_explicaElErrorCuandoElIdNoEsNumerico() throws Exception {
+        mockMvc.perform(get("/api/comunidad/actividades-miembros/miembros/abc/insignias"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("El valor de miembroId no es válido"));
     }
 }

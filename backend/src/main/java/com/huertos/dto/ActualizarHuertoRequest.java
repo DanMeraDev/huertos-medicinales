@@ -13,8 +13,14 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record ActualizarHuertoRequest(
-        @NotNull BigDecimal latitud,
-        @NotNull BigDecimal longitud,
+        @NotNull
+        @DecimalMin(value = "-6.0", message = FUERA_DEL_ECUADOR)
+        @DecimalMax(value = "2.5", message = FUERA_DEL_ECUADOR)
+        BigDecimal latitud,
+        @NotNull
+        @DecimalMin(value = "-92.0", message = FUERA_DEL_ECUADOR)
+        @DecimalMax(value = "-75.0", message = FUERA_DEL_ECUADOR)
+        BigDecimal longitud,
         @NotNull @PositiveOrZero Integer altitudMsnm,
         String orientacion,
         @NotNull @DecimalMin("16.00") @DecimalMax("400.00") BigDecimal areaTotalM2,
@@ -24,5 +30,8 @@ public record ActualizarHuertoRequest(
         TipoAbono tipoAbono,
         TipoCerca tipoCerca,
         @Size(max = 255) String detalleCerca) {
+
+    private static final String FUERA_DEL_ECUADOR =
+            "Las coordenadas geográficas ingresadas no corresponden al territorio ecuatoriano";
 }
 

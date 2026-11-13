@@ -138,7 +138,7 @@ public class RegistroActividadMiembroServiceImpl implements RegistroActividadMie
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró una comunidad asociada al usuario"));
 
         if (!comunidadMiembroRepository.existsByComunidadIdAndMiembroIdAndActivoEnComunidadTrue(comunidad.getId(), miembroId)) {
-            throw new ReglaNegocioException("El miembro no pertenece a la comunidad del usuario");
+            throw new RecursoNoEncontradoException("El miembro no pertenece a la comunidad del usuario");
         }
 
         return miembroInsigniaRepository.findByMiembroIdOrderByFechaObtencionDesc(miembroId)

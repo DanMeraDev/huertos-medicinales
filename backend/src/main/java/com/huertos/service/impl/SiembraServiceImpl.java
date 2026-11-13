@@ -67,7 +67,7 @@ public class SiembraServiceImpl implements SiembraService {
         boolean fueraDeRango = (planta.getAltitudMinMsnm() != null && altitudHuerto < planta.getAltitudMinMsnm())
                 || (planta.getAltitudMaxMsnm() != null && altitudHuerto > planta.getAltitudMaxMsnm());
 
-        if (fueraDeRango && !request.aceptaRiesgoAltitud()) {
+        if (fueraDeRango && !Boolean.TRUE.equals(request.aceptaRiesgoAltitud())) {
             throw new ReglaNegocioException("Discrepancia de altitud: la altitud del huerto (" + altitudHuerto
                     + " msnm) se encuentra fuera del rango óptimo para " + planta.getNombreComun()
                     + " (" + planta.getAltitudMinMsnm() + " - " + planta.getAltitudMaxMsnm() + " msnm)");
