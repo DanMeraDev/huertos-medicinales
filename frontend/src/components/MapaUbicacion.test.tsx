@@ -1,0 +1,62 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import { vi } from 'vitest'
+import { MapaUbicacion } from './MapaUbicacion'
+
+describe('MapaUbicacion', () => {
+  it('entrega las coordenadas del punto que se pulsa en el mapa', () => {
+    const alSeleccionar = vi.fn()
+    render(<MapaUbicacion latitud="" longitud="" alSeleccionar={alSeleccionar} />)
+
+    fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
+      clientX: 0,
+      clientY: 0,
+    })
+
+    expect(alSeleccionar).toHaveBeenCalledTimes(1)
+    const [latitud, longitud] = alSeleccionar.mock.calls[0]
+    expect(latitud).toBeCloseTo(-1.5, 1)
+    expect(longitud).toBeCloseTo(-78.5, 1)
+  })
+
+  it('marca en el mapa la ubicación recibida', () => {
+    const { container } = render(
+      <MapaUbicacion latitud="-0.0987123" longitud="-78.4321456" alSeleccionar={vi.fn()} />,
+    )
+
+    expect(container.querySelector('.mapa-ubicacion-marcador')).toBeInTheDocument()
+  })
+
+  it('centra el mapa en los límites recibidos', () => {
+    const alSeleccionar = vi.fn()
+    render(
+      <MapaUbicacion
+        latitud=""
+        longitud=""
+        limites={[
+          [-0.721056, -79.3709027],
+          [0.3272715, -77.8397334],
+        ]}
+        alSeleccionar={alSeleccionar}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
+      clientX: 0,
+      clientY: 0,
+    })
+
+    const [latitud, longitud] = alSeleccionar.mock.calls[0]
+    expect(latitud).toBeCloseTo(-0.197, 1)
+    expect(longitud).toBeCloseTo(-78.605, 1)
+  })
+
+  it('sin alSeleccionar solo muestra la ubicación con la etiqueta recibida', () => {
+    render(<MapaUbicacion latitud="-0.0987123" longitud="-78.4321456" etiqueta="Ubicación de la comunidad en el mapa" />)
+
+    const mapa = screen.getByRole('application', { name: 'Ubicación de la comunidad en el mapa' })
+    fireEvent.click(mapa, { clientX: 0, clientY: 0 })
+
+    expect(mapa).toHaveClass('mapa-ubicacion-solo-lectura')
+    expect(mapa.querySelector('.mapa-ubicacion-marcador')).toBeInTheDocument()
+  })
+})

@@ -1,5 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { server } from '../../test/mocks/server'
 import { ConfiguracionHuertoView } from './ConfiguracionHuertoView'
 import * as huertoApi from './huertoApi'
 
@@ -42,6 +44,39 @@ describe('ConfiguracionHuertoView', () => {
     expect(screen.getByText('Nivel Básico')).toBeInTheDocument()
     expect(screen.getByTestId('layout-split-huerto')).toHaveClass('huerto-split')
     expect(screen.getByLabelText('Área Total (m²)')).toHaveValue(150)
+  })
+
+  it('actualiza latitud y longitud al marcar otro punto en el mapa del huerto', async () => {
+    render(<ConfiguracionHuertoView />)
+    await screen.findByRole('heading', { name: /Huerto Allpa Viva/i })
+
+    fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
+      clientX: 100,
+      clientY: 100,
+    })
+
+    await waitFor(() =>
+      expect(Number((screen.getByLabelText('Latitud') as HTMLInputElement).value)).toBeCloseTo(-0.1828, 3),
+    )
+    expect(Number((screen.getByLabelText('Longitud') as HTMLInputElement).value)).toBeCloseTo(-78.4657, 3)
+  })
+
+  it('no acepta un punto del mapa fuera de Ecuador', async () => {
+    server.use(
+      http.get('https://nominatim.openstreetmap.org/reverse', () => HttpResponse.json({ error: 'Unable to geocode' })),
+    )
+    render(<ConfiguracionHuertoView />)
+    await screen.findByRole('heading', { name: /Huerto Allpa Viva/i })
+
+    fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
+      clientX: 100,
+      clientY: 100,
+    })
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Ese punto está fuera de Ecuador. Elige un lugar dentro del país.',
+    )
+    expect(screen.getByLabelText('Latitud')).toHaveValue(-0.180653)
   })
 
   it('cambia entre las tres pestañas móviles correctamente', async () => {

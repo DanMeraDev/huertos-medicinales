@@ -9,6 +9,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -26,6 +27,8 @@ public class EmailServiceImpl implements EmailService {
             "¡Bienvenido/a a la Red de Huertos Medicinales! Credenciales de tu comunidad";
     private static final String ASUNTO_RECHAZO =
             "Notificación sobre tu solicitud de huerto medicinal - Ministerio de Salud Pública";
+    private static final String KINTI_CELEBRACION = "correo/kinti-celebracion.png";
+    private static final String KINTI_SABIDURIA = "correo/kinti-sabiduria.png";
 
     private static final String PLANTILLA = """
             <!doctype html>
@@ -37,6 +40,7 @@ public class EmailServiceImpl implements EmailService {
                   Huertos Medicinales Comunitarios
                 </div>
                 <div style="padding:16px;font-size:16px;line-height:1.5">
+                  <img src="cid:kinti" alt="Kinti" width="120" style="display:block;width:120px;height:auto;margin:0 auto 8px">
                   %s
                 </div>
               </div>
@@ -76,7 +80,7 @@ public class EmailServiceImpl implements EmailService {
         String cuerpo = CUERPO_CREDENCIALES.formatted(escapar(datos.nombreSolicitante()),
                 escapar(datos.nombreComunidad()), escapar(datos.destinatario()), escapar(datos.passwordTemporal()),
                 correoProperties.urlFrontend() + "/login");
-        enviar(datos.destinatario(), ASUNTO_CREDENCIALES, cuerpo, "credenciales");
+        enviar(datos.destinatario(), ASUNTO_CREDENCIALES, cuerpo, KINTI_CELEBRACION, "credenciales");
     }
 
     @Async
@@ -85,17 +89,19 @@ public class EmailServiceImpl implements EmailService {
     public void enviarNotificacionRechazo(RechazoSolicitudEmailDto datos) {
         String cuerpo = CUERPO_RECHAZO.formatted(escapar(datos.nombreSolicitante()),
                 escapar(datos.nombreComunidad()), escapar(datos.motivoRechazo()), correoProperties.urlFrontend());
-        enviar(datos.destinatario(), ASUNTO_RECHAZO, cuerpo, "rechazo");
+        enviar(datos.destinatario(), ASUNTO_RECHAZO, cuerpo, KINTI_SABIDURIA, "rechazo");
     }
 
-    private void enviar(String destinatario, String asunto, String cuerpo, String tipo) {
+    private void enviar(String destinatario, String asunto, String cuerpo, String kinti, String tipo) {
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();
-            MimeMessageHelper ayudante = new MimeMessageHelper(mensaje, StandardCharsets.UTF_8.name());
+            MimeMessageHelper ayudante = new MimeMessageHelper(mensaje, true, StandardCharsets.UTF_8.name());
             ayudante.setFrom(correoProperties.remitente());
             ayudante.setTo(destinatario);
             ayudante.setSubject(asunto);
             ayudante.setText(PLANTILLA.formatted(cuerpo), true);
+            ClassPathResource imagenKinti = new ClassPathResource(kinti);
+            ayudante.addInline("kinti", imagenKinti.getFilename(), imagenKinti, "image/png");
             mailSender.send(mensaje);
             log.info("Correo de {} enviado a {}", tipo, destinatario);
         } catch (MailException | MessagingException falla) {
