@@ -103,6 +103,21 @@ describe('FormularioSiembra', () => {
     expect(screen.getByRole('button', { name: /Confirmar Siembra/i })).toBeInTheDocument()
   })
 
+  it('muestra el tipo de cada subhuerto con su nombre legible', () => {
+    render(
+      <FormularioSiembra
+        huerto={huertoMock}
+        subhuertos={subhuertosMock}
+        materiales={materialesMock}
+        plantasDetalle={plantasDetalleMock}
+      />
+    )
+
+    expect(screen.getByText(/Surcos \(Wachu\)/)).toBeInTheDocument()
+    expect(screen.getByText(/Terrazas \(Anti\)/)).toBeInTheDocument()
+    expect(screen.queryByText(/SURCOS_WACHU/)).not.toBeInTheDocument()
+  })
+
   it('valida stock insuficiente y muestra error cuando la cantidad supera la disponible', async () => {
     render(
       <FormularioSiembra
