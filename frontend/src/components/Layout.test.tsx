@@ -56,14 +56,12 @@ describe('Layout', () => {
 
     expect(screen.getByRole('link', { name: 'Iniciar sesión' })).toHaveAttribute('href', '/login')
 
-    expect(screen.queryByRole('link', { name: 'Acceso' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /mi panel/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Mi Comunidad' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Solicitudes' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Crear Usuario' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Bodega' })).not.toBeInTheDocument()
   })
 
-  it('muestra las opciones de RESPONSABLE_COMUNIDAD cuando inicia sesión', () => {
+  it('oculta las opciones del rol hasta abrir Mi Panel para RESPONSABLE_COMUNIDAD', async () => {
     guardarSesion({
       token: 'token-responsable',
       rol: 'RESPONSABLE_COMUNIDAD',
@@ -77,6 +75,10 @@ describe('Layout', () => {
     )
 
     expect(screen.getByText('Rosa Quishpe')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Mi Comunidad' })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /mi panel/i }))
+
     expect(screen.getByRole('link', { name: 'Mi Comunidad' })).toHaveAttribute(
       'href',
       '/mi-comunidad',
@@ -99,9 +101,12 @@ describe('Layout', () => {
     )
     expect(screen.queryByRole('link', { name: 'Solicitudes' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Crear Usuario' })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cerrar menú' }))
+    expect(screen.queryByRole('link', { name: 'Mi Comunidad' })).not.toBeInTheDocument()
   })
 
-  it('muestra las opciones de TECNICO_MSP cuando inicia sesión con ese rol', () => {
+  it('muestra las opciones de TECNICO_MSP al abrir Mi Panel', async () => {
     guardarSesion({
       token: 'token-msp',
       rol: 'TECNICO_MSP',
@@ -113,6 +118,8 @@ describe('Layout', () => {
         <Layout>Contenido</Layout>
       </MemoryRouter>,
     )
+
+    await userEvent.click(screen.getByRole('button', { name: /mi panel/i }))
 
     expect(screen.getByRole('link', { name: 'Solicitudes' })).toHaveAttribute('href', '/solicitudes')
     expect(screen.getByRole('link', { name: 'Revisión Actividades' })).toHaveAttribute(
@@ -140,6 +147,7 @@ describe('Layout', () => {
       </MemoryRouter>,
     )
 
+    await userEvent.click(screen.getByRole('button', { name: /mi panel/i }))
     expect(screen.getByRole('link', { name: 'Crear Usuario' })).toHaveAttribute(
       'href',
       '/usuarios/nuevo',
@@ -149,7 +157,7 @@ describe('Layout', () => {
 
     expect(localStorage.getItem('token')).toBeNull()
     expect(screen.getByRole('link', { name: 'Iniciar sesión' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Crear Usuario' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /mi panel/i })).not.toBeInTheDocument()
   })
 
   it('renderiza el contenido hijo', () => {

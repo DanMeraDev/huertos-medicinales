@@ -1,7 +1,6 @@
 .huerto-config {
-  background-color: var(--color-fondo);
   color: var(--color-texto);
-  max-width: var(--ancho-maximo);
+  max-width: 72rem;
   margin: 0 auto;
   padding: var(--espacio-4);
 }
@@ -11,14 +10,20 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: var(--espacio-3);
-  margin-bottom: var(--espacio-5);
+  gap: var(--espacio-4);
+  margin-bottom: var(--espacio-6);
+  padding: var(--espacio-5) var(--espacio-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid #d5e4ca;
+  background: linear-gradient(135deg, #ecf5e2 0%, #f8fbf4 60%, #fff6ea 100%);
+  box-shadow: var(--shadow-card);
 }
 
 .huerto-config-titulo {
   font-size: var(--texto-2xl);
   font-weight: var(--peso-negrita);
   line-height: var(--interlineado-apretado);
+  color: #243b15;
 }
 
 .huerto-config-subtitulo {
@@ -28,28 +33,28 @@
 }
 
 .huerto-config-insignia {
-  background-color: var(--color-primary-light);
-  color: var(--color-primario);
-  border: var(--borde-ancho) solid var(--color-primary);
+  background: linear-gradient(135deg, #e7f4d7 0%, #d4e9bc 100%);
+  color: #2b4f12;
+  border: 1px solid #a9cf80;
   border-radius: var(--radius-pill);
-  padding: var(--espacio-1) var(--espacio-3);
-  font-size: var(--texto-xs);
-  font-weight: var(--peso-seminegrita);
+  padding: var(--espacio-2) var(--espacio-4);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-negrita);
 }
 
 .huerto-config-notificacion {
-  margin-bottom: var(--espacio-4);
+  margin-bottom: var(--espacio-5);
 }
 
 .huerto-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--espacio-2);
-  margin-bottom: var(--espacio-4);
+  margin-bottom: var(--espacio-5);
 }
 
 .huerto-tab {
-  background-color: var(--color-superficie);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f7f3 100%);
   border: var(--borde-ancho) solid var(--color-borde);
   border-radius: var(--radius-md);
   color: var(--color-texto-secundario);
@@ -58,25 +63,25 @@
   padding: var(--espacio-3) var(--espacio-2);
   cursor: pointer;
   min-height: 44px;
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .huerto-tab-activa {
-  background-color: var(--color-primary-light);
+  background: linear-gradient(135deg, #ebf5df 0%, #dcecc9 100%);
   border-color: var(--color-primario);
-  color: var(--color-primario);
+  color: #2b4f12;
 }
 
 .huerto-split {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-5);
+  gap: var(--espacio-6);
 }
 
 .huerto-columna {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-4);
+  gap: var(--espacio-6);
 }
 
 .huerto-seccion-oculta {
@@ -84,36 +89,50 @@
 }
 
 .huerto-tarjeta {
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
-  border-radius: var(--radius-md);
-  box-shadow: var(--sombra-sm);
-  padding: var(--espacio-5);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #dce6d5;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--espacio-6);
+}
+
+.huerto-seccion-paso {
+  display: inline-block;
+  margin-bottom: var(--espacio-2);
+  padding: 2px var(--espacio-3);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #eef6e4 0%, #e1efd2 100%);
+  color: var(--color-primario);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .huerto-tarjeta-titulo {
-  font-size: var(--texto-lg);
-  font-weight: var(--peso-seminegrita);
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-negrita);
+  color: #263a19;
   margin-bottom: var(--espacio-1);
 }
 
 .huerto-tarjeta-descripcion {
   color: var(--color-texto-secundario);
   font-size: var(--texto-sm);
-  margin-bottom: var(--espacio-4);
+  margin-bottom: var(--espacio-5);
 }
 
 .huerto-visor-mapa {
   position: relative;
-  height: 190px;
+  height: 220px;
   border-radius: var(--radius-md);
-  border: var(--borde-ancho) solid var(--color-borde);
+  border: 1px solid #c9dbb9;
   background:
     linear-gradient(to right, rgba(76, 122, 38, 0.12) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(76, 122, 38, 0.12) 1px, transparent 1px),
-    radial-gradient(circle at 30% 35%, var(--color-primary-light), var(--color-superficie-alt));
+    radial-gradient(circle at 30% 35%, #eef7e3, #e0ead8);
   background-size: 28px 28px, 28px 28px, 100% 100%;
-  margin-bottom: var(--espacio-4);
+  margin-bottom: var(--espacio-5);
   overflow: hidden;
   cursor: crosshair;
   user-select: none;
@@ -122,14 +141,15 @@
 
 .huerto-visor-etiqueta {
   position: absolute;
-  top: var(--espacio-2);
-  left: var(--espacio-2);
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
+  top: var(--espacio-3);
+  left: var(--espacio-3);
+  background-color: rgba(255, 255, 255, 0.94);
+  border: 1px solid #d2dfc8;
   border-radius: var(--radius-pill);
   padding: var(--espacio-1) var(--espacio-3);
   font-size: var(--texto-xs);
-  color: var(--color-texto-secundario);
+  font-weight: var(--peso-seminegrita);
+  color: var(--color-texto);
 }
 
 .huerto-pin {
@@ -158,26 +178,44 @@
 
 .huerto-visor-pie {
   position: absolute;
-  bottom: var(--espacio-2);
-  right: var(--espacio-2);
+  bottom: var(--espacio-3);
+  right: var(--espacio-3);
 }
 
 .huerto-coordenadas-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--espacio-3);
+  gap: var(--espacio-4);
+}
+
+.huerto-coordenadas-grid > * {
+  min-width: 0;
+}
+
+.huerto-superficie-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-6);
+}
+
+.huerto-superficie-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .huerto-medidor-caja {
-  margin-top: var(--espacio-3);
-  padding: var(--espacio-3);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-superficie-alt);
+  margin-top: var(--espacio-4);
+  padding: var(--espacio-4);
+  border-radius: var(--radius-md);
+  border: 1px solid #dce6d5;
+  background: linear-gradient(135deg, #f4f8ef 0%, #eaf2e2 100%);
 }
 
 .huerto-medidor-encabezado {
   display: flex;
   justify-content: space-between;
+  gap: var(--espacio-2);
   font-size: var(--texto-xs);
   font-weight: var(--peso-seminegrita);
   margin-bottom: var(--espacio-2);
@@ -186,7 +224,7 @@
 .huerto-medidor-pista {
   height: 10px;
   border-radius: var(--radius-pill);
-  background-color: var(--color-borde);
+  background-color: #d7e2ce;
   overflow: hidden;
 }
 
@@ -197,11 +235,11 @@
 }
 
 .huerto-medidor-valido {
-  background-color: var(--color-exito);
+  background: linear-gradient(90deg, #5c8e33 0%, #7bb342 100%);
 }
 
 .huerto-medidor-invalido {
-  background-color: var(--color-error);
+  background: linear-gradient(90deg, #d9534f 0%, #c62828 100%);
 }
 
 .huerto-medidor-texto-valido {
@@ -219,62 +257,67 @@
 }
 
 .huerto-grupo {
-  margin-top: var(--espacio-4);
+  margin-top: var(--espacio-5);
 }
 
 .huerto-grupo-etiqueta {
   display: block;
   font-size: var(--texto-sm);
-  font-weight: var(--peso-seminegrita);
-  margin-bottom: var(--espacio-2);
+  font-weight: var(--peso-negrita);
+  color: #2f4620;
+  margin-bottom: var(--espacio-3);
 }
 
 .huerto-diseno-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--espacio-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-3);
 }
 
 .huerto-chips-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--espacio-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-3);
 }
 
 .huerto-chip {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 4px;
   text-align: left;
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
-  border-radius: var(--radius-sm);
-  padding: var(--espacio-3);
-  min-height: 44px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbf7 100%);
+  border: 1px solid #d9e2d4;
+  border-radius: var(--radius-md);
+  padding: var(--espacio-4);
+  min-height: 52px;
   cursor: pointer;
   color: var(--color-texto);
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
 }
 
 .huerto-chip:hover {
   border-color: var(--color-primario);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(76, 122, 38, 0.08);
 }
 
 .huerto-chip-activo {
-  background-color: var(--color-primary-light);
+  background: linear-gradient(135deg, #eef7e3 0%, #dcecc8 100%);
   border-color: var(--color-primario);
-  box-shadow: inset 0 0 0 1px var(--color-primario);
+  box-shadow: 0 2px 8px rgba(76, 122, 38, 0.14);
 }
 
 .huerto-chip-titulo {
   font-size: var(--texto-sm);
-  font-weight: var(--peso-seminegrita);
+  font-weight: var(--peso-negrita);
+  color: #253b16;
 }
 
 .huerto-chip-detalle {
   font-size: var(--texto-xs);
   color: var(--color-texto-secundario);
+  line-height: 1.35;
 }
 
 .huerto-acciones-movil {
@@ -289,12 +332,17 @@
 }
 
 @media (min-width: 768px) {
+  .huerto-config {
+    padding: var(--espacio-6) var(--espacio-4);
+  }
+
   .huerto-coordenadas-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--espacio-4);
   }
 
   .huerto-chips-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -303,14 +351,18 @@
     display: none;
   }
 
-  .huerto-split {
-    display: grid;
-    grid-template-columns: 45% 55%;
+  .huerto-visor-mapa {
+    height: 250px;
+  }
+
+  .huerto-superficie-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacio-8);
     align-items: start;
   }
 
   .huerto-seccion-oculta {
-    display: block;
+    display: flex;
   }
 
   .huerto-acciones-movil {
@@ -320,11 +372,15 @@
   .huerto-footer-desktop {
     display: flex;
     justify-content: flex-end;
-    margin-top: var(--espacio-4);
+    padding: var(--espacio-5) var(--espacio-6);
+    border-radius: var(--radius-lg);
+    border: 1px solid #d5e4ca;
+    background: linear-gradient(135deg, #f2f8eb 0%, #e6f1da 100%);
+    box-shadow: var(--shadow-card);
   }
 
   .huerto-boton-guardar-desktop {
     min-height: 48px;
-    padding-inline: var(--espacio-6);
+    padding-inline: var(--espacio-8);
   }
 }

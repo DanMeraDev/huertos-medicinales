@@ -17,7 +17,7 @@ const NIVELES_KINTI: NivelKinti[] = [
     rango: '0 a 49 puntos',
     descripcion:
       'Das tus primeros pasos en el huerto comunitario: aprendes a preparar camas, sembrar plantas medicinales y reconocer sus propiedades curativas básicas.',
-    variante: 'sabiduria',
+    variante: 'aprendiz',
     clase: 'nivel-kinti--aprendiz',
   },
   {
@@ -26,7 +26,7 @@ const NIVELES_KINTI: NivelKinti[] = [
     rango: '50 a 149 puntos',
     descripcion:
       'Participas activamente en el cuidado, cosecha y empaque solidario de plantas gratuitas para el MSP, fortaleciendo la salud de tu comunidad.',
-    variante: 'celebracion',
+    variante: 'oficial',
     clase: 'nivel-kinti--oficial',
   },
   {
@@ -35,7 +35,7 @@ const NIVELES_KINTI: NivelKinti[] = [
     rango: '150 puntos o más',
     descripcion:
       'Lideras jornadas territoriales, transmites la sabiduría ancestral a nuevas generaciones e impulsas a tu comunidad a lo más alto del ranking.',
-    variante: 'dorado',
+    variante: 'maestro',
     clase: 'nivel-kinti--maestro',
   },
 ]

@@ -25,26 +25,26 @@ function formatearFecha(fechaIso?: string | null): string {
 }
 
 function obtenerMensajeKinti(nivel: NivelMiembro): {
-  variante: 'dia' | 'celebracion'
+  variante: 'aprendiz' | 'oficial' | 'maestro'
   mensaje: string
 } {
   switch (nivel) {
     case 'MAESTRO':
       return {
-        variante: 'celebracion',
+        variante: 'maestro',
         mensaje:
           '¡Un verdadero guardián de los saberes ancestrales! Su conocimiento y entrega son medicina viva para toda la comunidad',
       }
     case 'OFICIAL':
       return {
-        variante: 'celebracion',
+        variante: 'oficial',
         mensaje:
           '¡Ha demostrado constancia en las labores del huerto! Su compromiso florece y ya guía a los más jóvenes con su ejemplo y dedicación',
       }
     case 'APRENDIZ':
     default:
       return {
-        variante: 'dia',
+        variante: 'aprendiz',
         mensaje:
           '¡Recién inicia su siembra en el camino de las plantas medicinales! Acompañemos sus primeros pasos con paciencia y sabiduría ancestral',
       }
@@ -152,7 +152,7 @@ export function FichaMiembroModal({
 
             {kinti && (
               <div className="ficha-miembro-kinti">
-                <KintiGuia variante={kinti.variante} tamano="sm" />
+                <KintiGuia variante={kinti.variante} tamano="md" />
                 <p className="ficha-miembro-kinti-mensaje">{kinti.mensaje}</p>
               </div>
             )}
