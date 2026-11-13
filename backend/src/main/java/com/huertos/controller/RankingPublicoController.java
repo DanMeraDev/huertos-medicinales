@@ -1,6 +1,7 @@
 package com.huertos.controller;
 
 import com.huertos.dto.RankingComunidadResponse;
+import com.huertos.dto.RankingMiembroResponse;
 import com.huertos.service.RankingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/publico/ranking")
 @RequiredArgsConstructor
-@Tag(name = "Ranking público de comunidades")
+@Tag(name = "Ranking público")
 public class RankingPublicoController {
 
     private final RankingService rankingService;
@@ -22,5 +23,11 @@ public class RankingPublicoController {
     @Operation(summary = "Obtiene la tabla de posiciones y ranking general de comunidades de huertos medicinales")
     public List<RankingComunidadResponse> obtenerRankingComunidades() {
         return rankingService.obtenerRankingComunidades();
+    }
+
+    @GetMapping("/miembros")
+    @Operation(summary = "Obtiene la tabla de honor y ranking general de voluntarios y miembros")
+    public List<RankingMiembroResponse> obtenerRankingMiembros() {
+        return rankingService.obtenerRankingMiembros();
     }
 }
