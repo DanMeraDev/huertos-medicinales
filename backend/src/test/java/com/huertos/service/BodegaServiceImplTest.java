@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,8 +38,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @ExtendWith(MockitoExtension.class)
 class BodegaServiceImplTest {
@@ -241,34 +237,6 @@ class BodegaServiceImplTest {
     }
 
     @Test
-    void validarAccesoComunidadConAuthenticationTecnicoPermiteAcceso() {
-        Authentication auth = mock(Authentication.class);
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_TECNICO_MSP"))).when(auth).getAuthorities();
-
-        assertThatCode(() -> bodegaService.validarAccesoComunidad(99L, auth))
-                .doesNotThrowAnyException();
-    }
-
-    @Test
-    void validarAccesoComunidadConAuthenticationResponsableValidaComunidad() {
-        Authentication auth = mock(Authentication.class);
-        when(auth.getName()).thenReturn("responsable@correo.com");
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
-        when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
-
-        assertThatThrownBy(() -> bodegaService.validarAccesoComunidad(2L, auth))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("No tiene permisos para consultar el inventario de otra comunidad");
-    }
-
-    @Test
-    void validarAccesoComunidadConAuthenticationNullLanzaExcepcion() {
-        assertThatThrownBy(() -> bodegaService.validarAccesoComunidad(1L, (Authentication) null))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessage("No autenticado");
-    }
-
-    @Test
     void registrarBajaMaterialExitoso() {
         BodegaMaterialVegetal material = new BodegaMaterialVegetal();
         material.setId(10L);
@@ -306,12 +274,10 @@ class BodegaServiceImplTest {
         when(bajaMaterialVegetalRepository.save(any(BajaMaterialVegetal.class))).thenReturn(bajaGuardada);
         when(bodegaMapper.toBajaMaterialResponse(bajaGuardada)).thenReturn(respuestaEsperada);
 
-        Authentication auth = mock(Authentication.class);
-        when(auth.getName()).thenReturn("responsable@correo.com");
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        String correo = "responsable@correo.com";
         when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
 
-        BajaMaterialResponse resultado = bodegaService.registrarBajaMaterial(10L, bajaRequest, auth);
+        BajaMaterialResponse resultado = bodegaService.registrarBajaMaterial(10L, bajaRequest, correo);
 
         assertThat(resultado).isNotNull();
         assertThat(resultado.id()).isEqualTo(100L);
@@ -335,8 +301,8 @@ class BodegaServiceImplTest {
 
         when(bodegaRepository.findById(99L)).thenReturn(Optional.empty());
 
-        Authentication auth = mock(Authentication.class);
-        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(99L, bajaRequest, auth))
+        String correo = "responsable@correo.com";
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(99L, bajaRequest, correo))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("El material vegetal indicado no existe en bodega");
     }
@@ -357,12 +323,10 @@ class BodegaServiceImplTest {
 
         when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
 
-        Authentication auth = mock(Authentication.class);
-        when(auth.getName()).thenReturn("responsable@correo.com");
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        String correo = "responsable@correo.com";
         when(comunidadRepository.findByResponsableCorreo("responsable@correo.com")).thenReturn(Optional.of(comunidad));
 
-        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, auth))
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, correo))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessage("La cantidad a dar de baja supera el stock disponible en bodega");
     }
@@ -381,14 +345,12 @@ class BodegaServiceImplTest {
                 null
         );
 
-        Authentication auth = mock(Authentication.class);
-        when(auth.getName()).thenReturn("ajeno@correo.com");
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_RESPONSABLE_COMUNIDAD"))).when(auth).getAuthorities();
+        String correo = "ajeno@correo.com";
         when(comunidadRepository.findByResponsableCorreo("ajeno@correo.com")).thenReturn(Optional.empty());
 
         when(bodegaRepository.findById(10L)).thenReturn(Optional.of(material));
 
-        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, auth))
+        assertThatThrownBy(() -> bodegaService.registrarBajaMaterial(10L, bajaRequest, correo))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessage("No existe una comunidad asociada al usuario");
     }

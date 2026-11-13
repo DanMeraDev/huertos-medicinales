@@ -1,6 +1,7 @@
 package com.huertos.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -32,7 +33,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -175,7 +175,7 @@ class BodegaControllerTest {
                 LocalDate.of(2026, 11, 11)
         );
 
-        doNothing().when(bodegaService).validarAccesoComunidad(eq(10L), any(Authentication.class));
+        doNothing().when(bodegaService).validarAccesoComunidad(eq(10L), anyString(), eq(false));
         when(bodegaService.listarMaterialPorComunidad(10L)).thenReturn(List.of(item));
 
         mockMvc.perform(get("/api/bodega/comunidades/10/material-vegetal")
@@ -195,7 +195,7 @@ class BodegaControllerTest {
 
     @Test
     void listarMaterialPorComunidadConRolTecnicoMspDevuelve200() throws Exception {
-        doNothing().when(bodegaService).validarAccesoComunidad(eq(10L), any(Authentication.class));
+        doNothing().when(bodegaService).validarAccesoComunidad(eq(10L), anyString(), eq(true));
         when(bodegaService.listarMaterialPorComunidad(10L)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/bodega/comunidades/10/material-vegetal")
@@ -220,7 +220,7 @@ class BodegaControllerTest {
     @Test
     void listarMaterialPorComunidadDeOtraComunidadDevuelve403() throws Exception {
         doThrow(new AccessDeniedException("No tiene permisos para consultar el inventario de otra comunidad"))
-                .when(bodegaService).validarAccesoComunidad(eq(99L), any(Authentication.class));
+                .when(bodegaService).validarAccesoComunidad(eq(99L), anyString(), eq(false));
 
         mockMvc.perform(get("/api/bodega/comunidades/99/material-vegetal")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponsable))
@@ -239,7 +239,7 @@ class BodegaControllerTest {
                 LocalDateTime.of(2026, 11, 12, 10, 0)
         );
 
-        when(bodegaService.registrarBajaMaterial(eq(10L), any(RegistrarBajaMaterialRequest.class), any(Authentication.class)))
+        when(bodegaService.registrarBajaMaterial(eq(10L), any(RegistrarBajaMaterialRequest.class), anyString()))
                 .thenReturn(respuesta);
 
         String json = """
