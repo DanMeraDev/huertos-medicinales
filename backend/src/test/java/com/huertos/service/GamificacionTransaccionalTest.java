@@ -22,6 +22,8 @@ import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.HuertoRepository;
 import com.huertos.repository.MiembroInsigniaRepository;
 import com.huertos.repository.MiembroRepository;
+import com.huertos.repository.RegistroActividadMiembroRepository;
+import com.huertos.repository.TalentoComunidadRepository;
 import com.huertos.service.impl.GamificacionServiceImpl;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -81,18 +83,32 @@ class GamificacionTransaccionalTest {
         }
 
         @Bean
+        public RegistroActividadMiembroRepository registroActividadMiembroRepository() {
+            return mock(RegistroActividadMiembroRepository.class);
+        }
+
+        @Bean
+        public TalentoComunidadRepository talentoComunidadRepository() {
+            return mock(TalentoComunidadRepository.class);
+        }
+
+        @Bean
         public GamificacionService gamificacionService(
                 ComunidadRepository comunidadRepository,
                 HuertoRepository huertoRepository,
                 MiembroRepository miembroRepository,
                 ActividadAncestralMspRepository actividadMspRepository,
-                MiembroInsigniaRepository miembroInsigniaRepository) {
+                MiembroInsigniaRepository miembroInsigniaRepository,
+                RegistroActividadMiembroRepository registroActividadMiembroRepository,
+                TalentoComunidadRepository talentoComunidadRepository) {
             return new GamificacionServiceImpl(
                     comunidadRepository,
                     huertoRepository,
                     miembroRepository,
                     actividadMspRepository,
-                    miembroInsigniaRepository);
+                    miembroInsigniaRepository,
+                    registroActividadMiembroRepository,
+                    talentoComunidadRepository);
         }
     }
 
