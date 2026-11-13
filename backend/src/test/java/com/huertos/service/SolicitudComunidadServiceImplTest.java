@@ -120,6 +120,16 @@ class SolicitudComunidadServiceImplTest {
     }
 
     @Test
+    void rechazaUnCorreoQueYaTieneCuenta() {
+        when(usuarioRepository.existsByCorreo("comunidad.allpa@huertos.gob.ec")).thenReturn(true);
+
+        assertThatThrownBy(() -> servicio.registrarSolicitud(solicitud(LocalDate.of(1990, 5, 14))))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("Ya existe una cuenta registrada con el correo electrónico indicado");
+        verify(solicitudRepository, never()).save(any());
+    }
+
+    @Test
     void rechazaUnNombreConSolicitudPendiente() {
         when(solicitudRepository.existsByNombreComunidadAndEstado(NOMBRE, EstadoSolicitud.PENDIENTE)).thenReturn(true);
 
