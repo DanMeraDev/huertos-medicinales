@@ -17,14 +17,4 @@ export const solicitudesPublicoMockHandlers = [
       { status: 201 },
     ),
   ),
-  http.get('https://nominatim.openstreetmap.org/reverse', () =>
-    HttpResponse.json({
-      address: {
-        municipality: 'Calderón',
-        county: 'Distrito Metropolitano de Quito',
-        state: 'Pichincha',
-        country: 'Ecuador',
-      },
-    }),
-  ),
 ]

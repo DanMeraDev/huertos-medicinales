@@ -6,11 +6,17 @@ import './MapaUbicacion.css'
 interface MapaUbicacionProps {
   latitud: string
   longitud: string
+  limites?: [[number, number], [number, number]]
   alSeleccionar: (latitud: number, longitud: number) => void
 }
 
 const CENTRO_ECUADOR: L.LatLngTuple = [-1.5, -78.5]
 const ZOOM_PAIS = 6
+const ZOOM_MINIMO = 5
+const LIMITES_ECUADOR: L.LatLngBoundsLiteral = [
+  [-5.2, -92.4],
+  [2, -75],
+]
 const ZOOM_UBICACION = 16
 
 function aCoordenada(valor: string) {
@@ -19,7 +25,7 @@ function aCoordenada(valor: string) {
 
 const ICONO_MARCADOR = L.divIcon({ className: 'mapa-ubicacion-marcador', iconSize: [22, 22] })
 
-export function MapaUbicacion({ latitud, longitud, alSeleccionar }: MapaUbicacionProps) {
+export function MapaUbicacion({ latitud, longitud, limites, alSeleccionar }: MapaUbicacionProps) {
   const contenedorRef = useRef<HTMLDivElement>(null)
   const mapaRef = useRef<L.Map | null>(null)
   const marcadorRef = useRef<L.Marker | null>(null)
@@ -33,7 +39,13 @@ export function MapaUbicacion({ latitud, longitud, alSeleccionar }: MapaUbicacio
     if (!contenedorRef.current) {
       return
     }
-    const mapa = L.map(contenedorRef.current, { center: CENTRO_ECUADOR, zoom: ZOOM_PAIS })
+    const mapa = L.map(contenedorRef.current, {
+      center: CENTRO_ECUADOR,
+      zoom: ZOOM_PAIS,
+      minZoom: ZOOM_MINIMO,
+      maxBounds: LIMITES_ECUADOR,
+      maxBoundsViscosity: 1,
+    })
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap',
@@ -46,6 +58,12 @@ export function MapaUbicacion({ latitud, longitud, alSeleccionar }: MapaUbicacio
       marcadorRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    if (limites) {
+      mapaRef.current?.fitBounds(limites)
+    }
+  }, [limites])
 
   const latitudMarcada = aCoordenada(latitud)
   const longitudMarcada = aCoordenada(longitud)

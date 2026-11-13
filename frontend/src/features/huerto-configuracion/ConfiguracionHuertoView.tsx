@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ApiError } from '../../api/client'
+import { AVISO_FUERA_DE_ECUADOR, buscarUbicacion } from '../../api/ubicacionApi'
 import { Boton } from '../../components/Boton'
 import { CampoTexto } from '../../components/CampoTexto'
 import { MapaUbicacion } from '../../components/MapaUbicacion'
@@ -145,9 +146,19 @@ export function ConfiguracionHuertoView() {
     ? 0
     : Math.min(100, Math.max(0, (areaNumerica / 400) * 100))
 
-  function marcarEnMapa(nuevaLatitud: number, nuevaLongitud: number) {
-    setLatitud(nuevaLatitud.toFixed(6))
-    setLongitud(nuevaLongitud.toFixed(6))
+  async function marcarEnMapa(nuevaLatitud: number, nuevaLongitud: number) {
+    try {
+      const { codigoPais } = await buscarUbicacion(nuevaLatitud, nuevaLongitud)
+      if (codigoPais !== 'ec') {
+        setNotificacion({ tipo: 'error', mensaje: AVISO_FUERA_DE_ECUADOR })
+        return
+      }
+      setNotificacion(null)
+      setLatitud(nuevaLatitud.toFixed(6))
+      setLongitud(nuevaLongitud.toFixed(6))
+    } catch {
+      setNotificacion({ tipo: 'error', mensaje: 'No se pudo verificar el punto elegido. Inténtalo de nuevo.' })
+    }
   }
 
   function sincronizarGps() {

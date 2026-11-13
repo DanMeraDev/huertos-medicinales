@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError } from '../../api/client'
+import { AVISO_FUERA_DE_ECUADOR, buscarUbicacion, type Ubicacion } from '../../api/ubicacionApi'
 import { Boton } from '../../components/Boton'
 import { CampoTexto } from '../../components/CampoTexto'
 import { KintiGuia } from '../../components/KintiGuia'
@@ -11,6 +12,7 @@ import { esCedulaValida, esMayorDeEdad } from '../../components/validaciones'
 import { ModalConfirmacionSolicitud } from './ModalConfirmacionSolicitud'
 import { ModalConsentimientoLopdp } from './ModalConsentimientoLopdp'
 import {
+  LIMITES_PROVINCIA,
   MAXIMO_SUBTIPOS,
   OPCIONES_DISENO,
   OPCIONES_GENERO,
@@ -26,7 +28,6 @@ import {
   type SolicitudComunidadResponse,
   type TipoOrganizacion,
 } from './solicitudesPublicoApi'
-import { buscarDivisionPolitica } from './ubicacionApi'
 import './SolicitudComunidadForm.css'
 
 type Campos = Record<
@@ -75,8 +76,18 @@ function sinTildes(texto: string) {
   return texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
 }
 
-function provinciaDeLaLista(nombre: string) {
-  return OPCIONES_PROVINCIA.find((opcion) => sinTildes(opcion.valor) === sinTildes(nombre))?.valor
+function provinciaDeLaLista(nombre: string | null) {
+  return OPCIONES_PROVINCIA.find((opcion) => sinTildes(opcion.valor) === sinTildes(nombre ?? ''))?.valor
+}
+
+function motivoDeRechazo({ codigoPais, provincia }: Ubicacion, provinciaElegida: string) {
+  if (codigoPais !== 'ec') {
+    return AVISO_FUERA_DE_ECUADOR
+  }
+  if (provinciaElegida && provinciaDeLaLista(provincia) !== provinciaElegida) {
+    return `Ese punto está fuera de ${provinciaElegida}. Elige un lugar dentro de la provincia o cambia la provincia.`
+  }
+  return null
 }
 
 const SOLO_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/
@@ -172,27 +183,32 @@ export function SolicitudComunidadForm() {
     })
   }
 
-  async function completarDivisionPolitica(latitud: number, longitud: number) {
+  async function aplicarUbicacion(latitud: number, longitud: number) {
+    setAvisoUbicacion(null)
     const consulta = ++ultimaConsultaUbicacion.current
+    const provinciaElegida = campos.provincia
     try {
-      const { provincia, parroquia } = await buscarDivisionPolitica(latitud, longitud)
+      const ubicacion = await buscarUbicacion(latitud, longitud)
       if (consulta !== ultimaConsultaUbicacion.current) {
         return
       }
-      const provinciaElegida = provincia ? provinciaDeLaLista(provincia) : undefined
+      const rechazo = motivoDeRechazo(ubicacion, provinciaElegida)
+      if (rechazo) {
+        setAvisoUbicacion(rechazo)
+        return
+      }
+      const provincia = provinciaDeLaLista(ubicacion.provincia)
       asignar({
-        ...(provinciaElegida && { provincia: provinciaElegida }),
-        ...(parroquia && { parroquia }),
+        latitud: latitud.toFixed(7),
+        longitud: longitud.toFixed(7),
+        ...(provincia && { provincia }),
+        ...(ubicacion.parroquia && { parroquia: ubicacion.parroquia }),
       })
     } catch {
-      setAvisoUbicacion('No se pudo identificar la provincia y la parroquia. Complétalas a mano.')
+      if (consulta === ultimaConsultaUbicacion.current) {
+        setAvisoUbicacion('No se pudo verificar el punto elegido. Inténtalo de nuevo.')
+      }
     }
-  }
-
-  function aplicarUbicacion(latitud: number, longitud: number) {
-    setAvisoUbicacion(null)
-    asignar({ latitud: latitud.toFixed(7), longitud: longitud.toFixed(7) })
-    void completarDivisionPolitica(latitud, longitud)
   }
 
   function usarMiUbicacion() {
@@ -203,7 +219,7 @@ export function SolicitudComunidadForm() {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setMapaVisible(true)
-        aplicarUbicacion(coords.latitude, coords.longitude)
+        void aplicarUbicacion(coords.latitude, coords.longitude)
       },
       () => setAvisoUbicacion(AVISO_SIN_UBICACION),
     )
@@ -277,11 +293,13 @@ export function SolicitudComunidadForm() {
           {mapaVisible && (
             <>
               <p className="solicitud-ubicacion-ayuda">
-                Toca el lugar del huerto en el mapa. La provincia y la parroquia se llenan solas y puedes corregirlas.
+                Toca el lugar del huerto en el mapa. Solo se aceptan puntos de Ecuador y, si ya elegiste la provincia,
+                de esa provincia. La parroquia se llena sola y puedes corregirla.
               </p>
               <MapaUbicacion
                 latitud={campos.latitud}
                 longitud={campos.longitud}
+                limites={LIMITES_PROVINCIA[campos.provincia]}
                 alSeleccionar={aplicarUbicacion}
               />
             </>

@@ -80,6 +80,18 @@ export const handlers = [
   ...usuariosMockHandlers,
   ...solicitudesPublicoMockHandlers,
 
+  http.get('https://nominatim.openstreetmap.org/reverse', () =>
+    HttpResponse.json({
+      address: {
+        municipality: 'Calderón',
+        county: 'Distrito Metropolitano de Quito',
+        state: 'Pichincha',
+        country: 'Ecuador',
+        country_code: 'ec',
+      },
+    }),
+  ),
+
   http.get('*/api/comunidad/huerto', () =>
     HttpResponse.json({
       id: 10,

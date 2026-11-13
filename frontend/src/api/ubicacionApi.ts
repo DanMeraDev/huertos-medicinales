@@ -1,10 +1,12 @@
-export interface DivisionPolitica {
+export interface Ubicacion {
+  codigoPais: string | null
   provincia: string | null
   parroquia: string | null
 }
 
 interface RespuestaGeocodificacion {
   address?: {
+    country_code?: string
     state?: string
     city_district?: string
     municipality?: string
@@ -16,7 +18,9 @@ interface RespuestaGeocodificacion {
 
 const URL_GEOCODIFICACION_INVERSA = 'https://nominatim.openstreetmap.org/reverse'
 
-export async function buscarDivisionPolitica(latitud: number, longitud: number): Promise<DivisionPolitica> {
+export const AVISO_FUERA_DE_ECUADOR = 'Ese punto está fuera de Ecuador. Elige un lugar dentro del país.'
+
+export async function buscarUbicacion(latitud: number, longitud: number): Promise<Ubicacion> {
   const parametros = new URLSearchParams({
     format: 'jsonv2',
     zoom: '14',
@@ -26,10 +30,11 @@ export async function buscarDivisionPolitica(latitud: number, longitud: number):
   })
   const respuesta = await fetch(`${URL_GEOCODIFICACION_INVERSA}?${parametros}`)
   if (!respuesta.ok) {
-    throw new Error('No se pudo identificar la provincia y la parroquia')
+    throw new Error('No se pudo verificar el punto elegido')
   }
   const { address = {} } = (await respuesta.json()) as RespuestaGeocodificacion
   return {
+    codigoPais: address.country_code ?? null,
     provincia: address.state ?? null,
     parroquia:
       address.city_district ?? address.municipality ?? address.town ?? address.village ?? address.city ?? null,
