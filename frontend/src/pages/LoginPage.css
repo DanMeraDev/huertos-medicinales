@@ -5,7 +5,7 @@
 
 @media (min-width: 640px) {
   .login-pagina {
-    max-width: var(--ancho-lectura);
+    max-width: 32rem;
     margin: 0 auto;
     padding: var(--espacio-12) var(--espacio-4);
   }

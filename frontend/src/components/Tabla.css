@@ -1,12 +1,16 @@
+.tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+  background-color: var(--color-superficie);
+  border: 1px solid #d5e4ca;
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+}
+
 .tabla {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background-color: var(--color-superficie);
-  border: 1px solid #d5e4ca;
-  border-radius: var(--radio-md);
-  overflow: hidden;
-  box-shadow: var(--sombra-sm);
   font-size: var(--texto-sm);
 }
 
@@ -18,7 +22,7 @@
 }
 
 .tabla th {
-  background: linear-gradient(135deg, #ecf5e2 0%, #e1efd2 100%);
+  background-color: #e8f2dc;
   font-weight: var(--peso-seminegrita);
   color: #244310;
   border-bottom: 1px solid #cce0bd;
@@ -36,8 +40,14 @@
   border-bottom: none;
 }
 
-.tabla-mensaje {
+.tabla .tabla-mensaje {
   text-align: center;
+  white-space: normal;
   color: #35581b;
   padding: var(--espacio-5) var(--espacio-4);
+}
+
+.tabla-mensaje .kinti-guia {
+  display: block;
+  margin: 0 auto var(--espacio-2);
 }

@@ -7,7 +7,7 @@
 
 .formulario-actividad-ancestral-grilla {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--espacio-5);
   background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
   border: 1px solid #dce6d5;
@@ -36,7 +36,7 @@
 
 .lista-participantes-agregar {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--espacio-3);
 }
 

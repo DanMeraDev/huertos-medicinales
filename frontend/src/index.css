@@ -22,8 +22,14 @@ a {
   text-decoration: none;
 }
 
-input[type='date'] {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
+}
+
+input[type='date'] {
   accent-color: var(--color-primario);
 }
 
