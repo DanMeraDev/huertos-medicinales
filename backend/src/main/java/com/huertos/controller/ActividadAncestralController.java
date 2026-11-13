@@ -8,6 +8,7 @@ import com.huertos.service.ActividadAncestralService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,6 +47,13 @@ public class ActividadAncestralController {
             @PathVariable Long id,
             Authentication authentication) {
         return actividadAncestralService.buscarParaCorregir(authentication.getName(), id);
+    }
+
+    @Operation(summary = "Lista las actividades de la comunidad en estado OBSERVADA_CORREGIR para corregirlas")
+    @GetMapping("/observadas")
+    @PreAuthorize("hasRole('RESPONSABLE_COMUNIDAD')")
+    public List<ActividadParaCorregirResponse> listarObservadas(Authentication authentication) {
+        return actividadAncestralService.listarObservadas(authentication.getName());
     }
 
     @Operation(summary = "Reenvía las evidencias corregidas de una actividad ancestral observada")

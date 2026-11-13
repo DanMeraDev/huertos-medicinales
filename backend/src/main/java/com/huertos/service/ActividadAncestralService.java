@@ -4,6 +4,7 @@ import com.huertos.dto.ActividadAncestralResponse;
 import com.huertos.dto.ActividadParaCorregirResponse;
 import com.huertos.dto.RegistrarActividadAncestralRequest;
 import com.huertos.dto.ReenviarEvidenciasRequest;
+import java.util.List;
 
 public interface ActividadAncestralService {
 
@@ -26,6 +27,15 @@ public interface ActividadAncestralService {
      * @return Actividad con su observación, número de intento y evidencias actuales
      */
     ActividadParaCorregirResponse buscarParaCorregir(String correo, Long id);
+
+    /**
+     * Lista las actividades de la comunidad del responsable que están en estado OBSERVADA_CORREGIR,
+     * con la observación del Técnico MSP, para que el responsable las corrija y reenvíe.
+     *
+     * @param correo Correo electrónico del responsable de comunidad autenticado
+     * @return Actividades observadas de su comunidad pendientes de corrección
+     */
+    List<ActividadParaCorregirResponse> listarObservadas(String correo);
 
     /**
      * Reenvía las evidencias corregidas de una actividad observada: la devuelve a estado PENDIENTE
