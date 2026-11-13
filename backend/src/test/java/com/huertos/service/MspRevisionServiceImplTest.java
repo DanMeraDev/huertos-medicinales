@@ -112,6 +112,7 @@ class MspRevisionServiceImplTest {
 
     @Test
     void dictaminarActividad_apruebaRegistraTecnicoYDelegaLaAcreditacion() {
+        when(actividadAncestralRepository.findParaDictaminarById(21L)).thenReturn(Optional.of(actividad));
         when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
         when(usuarioRepository.findByCorreo("tecnico@msp.gob.ec")).thenReturn(Optional.of(tecnico));
         when(actividadAncestralRepository.save(any(ActividadAncestralMsp.class)))
@@ -136,7 +137,7 @@ class MspRevisionServiceImplTest {
 
     @Test
     void dictaminarActividad_observaParaCorreccionGuardandoLaObservacion() {
-        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+        when(actividadAncestralRepository.findParaDictaminarById(21L)).thenReturn(Optional.of(actividad));
         when(usuarioRepository.findByCorreo("tecnico@msp.gob.ec")).thenReturn(Optional.of(tecnico));
         when(actividadAncestralRepository.save(any(ActividadAncestralMsp.class)))
                 .thenAnswer(invocacion -> invocacion.getArgument(0));
@@ -153,7 +154,7 @@ class MspRevisionServiceImplTest {
 
     @Test
     void dictaminarActividad_exigeObservacionParaObservarParaCorreccion() {
-        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+        when(actividadAncestralRepository.findParaDictaminarById(21L)).thenReturn(Optional.of(actividad));
 
         ReglaNegocioException ex = assertThrows(ReglaNegocioException.class,
                 () -> mspRevisionService.dictaminarActividad("tecnico@msp.gob.ec", 21L,
@@ -167,7 +168,7 @@ class MspRevisionServiceImplTest {
 
     @Test
     void dictaminarActividad_exigeObservacionParaRechazarDefinitivamente() {
-        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+        when(actividadAncestralRepository.findParaDictaminarById(21L)).thenReturn(Optional.of(actividad));
 
         ReglaNegocioException ex = assertThrows(ReglaNegocioException.class,
                 () -> mspRevisionService.dictaminarActividad("tecnico@msp.gob.ec", 21L,
@@ -180,7 +181,7 @@ class MspRevisionServiceImplTest {
 
     @Test
     void dictaminarActividad_rechazaElDictamenPendiente() {
-        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+        when(actividadAncestralRepository.findParaDictaminarById(21L)).thenReturn(Optional.of(actividad));
 
         ReglaNegocioException ex = assertThrows(ReglaNegocioException.class,
                 () -> mspRevisionService.dictaminarActividad("tecnico@msp.gob.ec", 21L,
@@ -193,7 +194,7 @@ class MspRevisionServiceImplTest {
     @Test
     void dictaminarActividad_lanzaConflictoSiLaActividadYaFueDictaminada() {
         actividad.setEstadoVerificacion(EstadoVerificacion.APROBADA);
-        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.of(actividad));
+        when(actividadAncestralRepository.findParaDictaminarById(21L)).thenReturn(Optional.of(actividad));
 
         ConflictoException ex = assertThrows(ConflictoException.class,
                 () -> mspRevisionService.dictaminarActividad("tecnico@msp.gob.ec", 21L,
@@ -207,7 +208,7 @@ class MspRevisionServiceImplTest {
 
     @Test
     void dictaminarActividad_lanzaNoEncontradoSiLaActividadNoExiste() {
-        when(actividadAncestralRepository.findById(21L)).thenReturn(Optional.empty());
+        when(actividadAncestralRepository.findParaDictaminarById(21L)).thenReturn(Optional.empty());
 
         assertThrows(RecursoNoEncontradoException.class,
                 () -> mspRevisionService.dictaminarActividad("tecnico@msp.gob.ec", 21L,

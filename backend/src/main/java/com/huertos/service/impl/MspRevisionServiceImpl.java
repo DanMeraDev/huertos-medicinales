@@ -66,7 +66,7 @@ public class MspRevisionServiceImpl implements MspRevisionService {
     }
 
     private ActividadAncestralMsp buscarActividadPendiente(Long actividadId) {
-        ActividadAncestralMsp actividad = actividadAncestralRepository.findById(actividadId)
+        ActividadAncestralMsp actividad = actividadAncestralRepository.findParaDictaminarById(actividadId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("La actividad ancestral no existe"));
 
         if (actividad.getEstadoVerificacion() != EstadoVerificacion.PENDIENTE) {

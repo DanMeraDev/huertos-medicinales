@@ -61,6 +61,7 @@ public class SolicitudComunidadServiceImpl implements SolicitudComunidadService 
     public SolicitudComunidadResponse registrarSolicitud(CrearSolicitudComunidadRequest request) {
         validarMayoriaDeEdad(request.fechaNacimiento());
         validarQueNoExista(request.nombreComunidad(), request.cedulaSolicitante());
+        validarCorreoSinCuenta(request.correoSolicitante());
         LocalDateTime ahora = LocalDateTime.now(clock);
         SolicitudComunidad solicitud = solicitudMapper.toSolicitudComunidad(request);
         solicitud.setConsentimientoEn(ahora);
@@ -114,7 +115,8 @@ public class SolicitudComunidadServiceImpl implements SolicitudComunidadService 
     }
 
     private SolicitudComunidad buscarPendiente(Long id) {
-        SolicitudComunidad solicitud = buscarSolicitud(id);
+        SolicitudComunidad solicitud = solicitudRepository.findParaResolverById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe la solicitud indicada"));
         if (solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
             throw new ConflictoException("Esta solicitud ya ha sido resuelta previamente por otro técnico");
         }
@@ -168,6 +170,12 @@ public class SolicitudComunidadServiceImpl implements SolicitudComunidadService 
                 || comunidadRepository.existsByResponsableIdentificacion(cedula)) {
             throw new ConflictoException(
                     "Ya existe una solicitud pendiente o una comunidad registrada con el nombre o la cédula indicada");
+        }
+    }
+
+    private void validarCorreoSinCuenta(String correo) {
+        if (usuarioRepository.existsByCorreo(correo)) {
+            throw new ConflictoException("Ya existe una cuenta registrada con el correo electrónico indicado");
         }
     }
 }

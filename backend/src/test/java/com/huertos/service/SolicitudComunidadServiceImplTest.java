@@ -120,6 +120,16 @@ class SolicitudComunidadServiceImplTest {
     }
 
     @Test
+    void rechazaUnCorreoQueYaTieneCuenta() {
+        when(usuarioRepository.existsByCorreo("comunidad.allpa@huertos.gob.ec")).thenReturn(true);
+
+        assertThatThrownBy(() -> servicio.registrarSolicitud(solicitud(LocalDate.of(1990, 5, 14))))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("Ya existe una cuenta registrada con el correo electrónico indicado");
+        verify(solicitudRepository, never()).save(any());
+    }
+
+    @Test
     void rechazaUnNombreConSolicitudPendiente() {
         when(solicitudRepository.existsByNombreComunidadAndEstado(NOMBRE, EstadoSolicitud.PENDIENTE)).thenReturn(true);
 
@@ -185,7 +195,7 @@ class SolicitudComunidadServiceImplTest {
         Usuario tecnico = new Usuario();
         Usuario responsable = new Usuario();
         responsable.setId(8L);
-        when(solicitudRepository.findById(12L)).thenReturn(Optional.of(solicitud));
+        when(solicitudRepository.findParaResolverById(12L)).thenReturn(Optional.of(solicitud));
         when(usuarioRepository.findByCorreo(CORREO_TECNICO)).thenReturn(Optional.of(tecnico));
         when(usuarioService.crearUsuarioInterno(any())).thenReturn(responsable);
         when(comunidadService.registrarComunidadDesdeSolicitud(solicitud, responsable)).thenReturn(comunidadCreada());
@@ -209,7 +219,7 @@ class SolicitudComunidadServiceImplTest {
     void avisaPorCorreoLasCredencialesConLaMismaClaveDeLaCuenta() {
         SolicitudComunidad solicitud = solicitudGuardada(EstadoSolicitud.PENDIENTE);
         Usuario responsable = new Usuario();
-        when(solicitudRepository.findById(12L)).thenReturn(Optional.of(solicitud));
+        when(solicitudRepository.findParaResolverById(12L)).thenReturn(Optional.of(solicitud));
         when(usuarioRepository.findByCorreo(CORREO_TECNICO)).thenReturn(Optional.of(new Usuario()));
         when(usuarioService.crearUsuarioInterno(any())).thenReturn(responsable);
         when(comunidadService.registrarComunidadDesdeSolicitud(solicitud, responsable)).thenReturn(comunidadCreada());
@@ -228,7 +238,7 @@ class SolicitudComunidadServiceImplTest {
     void rechazaGuardandoElMotivoYElTecnico() {
         SolicitudComunidad solicitud = solicitudGuardada(EstadoSolicitud.PENDIENTE);
         Usuario tecnico = new Usuario();
-        when(solicitudRepository.findById(12L)).thenReturn(Optional.of(solicitud));
+        when(solicitudRepository.findParaResolverById(12L)).thenReturn(Optional.of(solicitud));
         when(usuarioRepository.findByCorreo(CORREO_TECNICO)).thenReturn(Optional.of(tecnico));
 
         ResolucionSolicitudResponse respuesta = servicio.rechazarSolicitud(12L,
@@ -247,7 +257,7 @@ class SolicitudComunidadServiceImplTest {
 
     @Test
     void noResuelveUnaSolicitudYaResuelta() {
-        when(solicitudRepository.findById(12L)).thenReturn(Optional.of(solicitudGuardada(EstadoSolicitud.RECHAZADA)));
+        when(solicitudRepository.findParaResolverById(12L)).thenReturn(Optional.of(solicitudGuardada(EstadoSolicitud.RECHAZADA)));
 
         assertThatThrownBy(() -> servicio.aprobarSolicitud(12L, CORREO_TECNICO))
                 .isInstanceOf(ConflictoException.class)
@@ -257,7 +267,7 @@ class SolicitudComunidadServiceImplTest {
 
     @Test
     void avisaCuandoLaSolicitudNoExiste() {
-        when(solicitudRepository.findById(99L)).thenReturn(Optional.empty());
+        when(solicitudRepository.findParaResolverById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> servicio.rechazarSolicitud(99L, new RechazarSolicitudRequest(MOTIVO), CORREO_TECNICO))
                 .isInstanceOf(RecursoNoEncontradoException.class)
