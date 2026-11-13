@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { MemoryRouter, Route, Routes } from 'react-router'
+import { guardarSesion } from '../../api/sesion'
 import { server } from '../../test/mocks/server'
 import { CambiarClaveForm } from './CambiarClaveForm'
 
@@ -45,7 +46,8 @@ describe('CambiarClaveForm', () => {
     )
   })
 
-  it('actualiza la contraseña, avisa el éxito y lleva al inicio', async () => {
+  it('actualiza la contraseña, avisa el éxito, cierra la sesión y lleva al inicio', async () => {
+    guardarSesion({ token: 'token-anterior', rol: 'RESPONSABLE_COMUNIDAD' })
     renderizarFormulario()
 
     const usuario = await llenarClaves('PasswordSegura2026', 'NuevaClaveSegura2027', 'NuevaClaveSegura2027')
@@ -53,6 +55,7 @@ describe('CambiarClaveForm', () => {
 
     expect(await screen.findByRole('status')).toHaveTextContent('Contraseña actualizada exitosamente')
     expect(await screen.findByText('Página de inicio', {}, { timeout: 3000 })).toBeInTheDocument()
+    expect(localStorage.getItem('token')).toBeNull()
   })
 
   it('avisa que la confirmación no coincide sin abrir el modal', async () => {
