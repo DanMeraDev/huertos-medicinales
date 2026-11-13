@@ -12,7 +12,7 @@ export function SubsanarEvidenciaPage() {
   function manejarReenvio() {
     setReenviada(true)
     setTimeout(() => {
-      navegar('/actividades-ancestrales')
+      navegar('/actividades-ancestrales/observadas')
     }, 2000)
   }
 
