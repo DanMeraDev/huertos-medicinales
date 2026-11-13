@@ -39,6 +39,7 @@ describe('ConfiguracionHuertoView', () => {
     render(<ConfiguracionHuertoView />)
 
     expect(await screen.findByRole('heading', { name: /Huerto Allpa Viva/i })).toBeInTheDocument()
+    expect(screen.getByText('Nivel Básico')).toBeInTheDocument()
     expect(screen.getByTestId('layout-split-huerto')).toHaveClass('huerto-split')
     expect(screen.getByLabelText('Área Total (m²)')).toHaveValue(150)
   })

@@ -74,6 +74,17 @@ const OPCIONES_CERCA: OpcionVisual<TipoCerca>[] = [
 const LATITUD_BASE = -0.180653
 const LONGITUD_BASE = -78.467834
 
+const ETIQUETA_TIPO_HUERTO: Record<string, string> = {
+  BASICO: 'Básico',
+  INTERMEDIO: 'Intermedio',
+  AVANZADO: 'Avanzado',
+  MODELO: 'Modelo',
+}
+
+function formatearTipoHuerto(tipoHuerto: string): string {
+  return ETIQUETA_TIPO_HUERTO[tipoHuerto] ?? tipoHuerto
+}
+
 function calcularPosicionPin(latitudTexto: string, longitudTexto: string) {
   const lat = Number(latitudTexto)
   const lon = Number(longitudTexto)
@@ -281,7 +292,11 @@ export function ConfiguracionHuertoView() {
             Parámetros territoriales, agronómicos y de cerramiento según normativa MSP
           </p>
         </div>
-        {huerto && <span className="huerto-config-insignia">Nivel {huerto.tipoHuerto}</span>}
+        {huerto && (
+          <span className="huerto-config-insignia">
+            Nivel {formatearTipoHuerto(huerto.tipoHuerto)}
+          </span>
+        )}
       </header>
 
       {notificacion && (
@@ -323,6 +338,7 @@ export function ConfiguracionHuertoView() {
       <div className="huerto-split" data-testid="layout-split-huerto">
         <div className={pestanaActiva === 'terreno' ? 'huerto-columna' : 'huerto-columna huerto-seccion-oculta'}>
           <article className="huerto-tarjeta">
+            <span className="huerto-seccion-paso">Sección 01 · Ubicación</span>
             <h2 className="huerto-tarjeta-titulo">Georreferenciación del Terreno</h2>
             <p className="huerto-tarjeta-descripcion">
               Arrastra el marcador sobre el visor o sincroniza el GPS en sitio
@@ -378,81 +394,86 @@ export function ConfiguracionHuertoView() {
           </article>
 
           <article className="huerto-tarjeta">
+            <span className="huerto-seccion-paso">Sección 02 · Dimensiones y Diseño</span>
             <h2 className="huerto-tarjeta-titulo">Superficie y Diseño Principal</h2>
             <p className="huerto-tarjeta-descripcion">
               Rango normativo MSP permitido: entre 16.00 m² y 400.00 m²
             </p>
 
-            <CampoTexto
-              etiqueta="Área Total (m²)"
-              type="number"
-              step="0.01"
-              valor={areaTotalM2}
-              alCambiar={setAreaTotalM2}
-              error={
-                !areaEnRangoMsp
-                  ? 'El huerto debe medir entre 16.00 m² y 400.00 m² según lineamientos MSP'
-                  : !areaCompatibleSubhuertos
-                    ? `No puedes reducir a ${areaNumerica} m² porque tus subhuertos ocupan ${areaOcupada} m²`
-                    : undefined
-              }
-            />
-
-            <div className="huerto-medidor-caja">
-              <div className="huerto-medidor-encabezado">
-                <span>Cumplimiento Normativo MSP</span>
-                <span
-                  className={
-                    areaEnRangoMsp && areaCompatibleSubhuertos
-                      ? 'huerto-medidor-texto-valido'
-                      : 'huerto-medidor-texto-invalido'
+            <div className="huerto-superficie-grid">
+              <div className="huerto-superficie-col">
+                <CampoTexto
+                  etiqueta="Área Total (m²)"
+                  type="number"
+                  step="0.01"
+                  valor={areaTotalM2}
+                  alCambiar={setAreaTotalM2}
+                  error={
+                    !areaEnRangoMsp
+                      ? 'El huerto debe medir entre 16.00 m² y 400.00 m² según lineamientos MSP'
+                      : !areaCompatibleSubhuertos
+                        ? `No puedes reducir a ${areaNumerica} m² porque tus subhuertos ocupan ${areaOcupada} m²`
+                        : undefined
                   }
-                >
-                  {areaEnRangoMsp && areaCompatibleSubhuertos ? 'Dentro de norma (16 - 400 m²)' : 'Fuera de norma'}
-                </span>
-              </div>
-              <div className="huerto-medidor-pista">
-                <div
-                  data-testid="barra-medidor-msp"
-                  className={
-                    areaEnRangoMsp && areaCompatibleSubhuertos
-                      ? 'huerto-medidor-barra huerto-medidor-valido'
-                      : 'huerto-medidor-barra huerto-medidor-invalido'
-                  }
-                  style={{ width: `${porcentajeMedidor}%` }}
                 />
+
+                <div className="huerto-medidor-caja">
+                  <div className="huerto-medidor-encabezado">
+                    <span>Cumplimiento Normativo MSP</span>
+                    <span
+                      className={
+                        areaEnRangoMsp && areaCompatibleSubhuertos
+                          ? 'huerto-medidor-texto-valido'
+                          : 'huerto-medidor-texto-invalido'
+                      }
+                    >
+                      {areaEnRangoMsp && areaCompatibleSubhuertos ? 'Dentro de norma (16 - 400 m²)' : 'Fuera de norma'}
+                    </span>
+                  </div>
+                  <div className="huerto-medidor-pista">
+                    <div
+                      data-testid="barra-medidor-msp"
+                      className={
+                        areaEnRangoMsp && areaCompatibleSubhuertos
+                          ? 'huerto-medidor-barra huerto-medidor-valido'
+                          : 'huerto-medidor-barra huerto-medidor-invalido'
+                      }
+                      style={{ width: `${porcentajeMedidor}%` }}
+                    />
+                  </div>
+                  <p className="huerto-medidor-nota">
+                    Área ocupada actualmente por subhuertos: {areaOcupada} m²
+                  </p>
+                </div>
+
+                <div className="huerto-grupo">
+                  <Selector
+                    etiqueta="Orientación Solar"
+                    opciones={OPCIONES_ORIENTACION}
+                    valor={orientacion}
+                    alCambiar={setOrientacion}
+                  />
+                </div>
               </div>
-              <p className="huerto-medidor-nota">
-                Área ocupada actualmente por subhuertos: {areaOcupada} m²
-              </p>
-            </div>
 
-            <div className="huerto-grupo">
-              <Selector
-                etiqueta="Orientación Solar"
-                opciones={OPCIONES_ORIENTACION}
-                valor={orientacion}
-                alCambiar={setOrientacion}
-              />
-            </div>
-
-            <div className="huerto-grupo">
-              <span className="huerto-grupo-etiqueta">Diseño Principal del Huerto</span>
-              <div className="huerto-diseno-grid">
-                {OPCIONES_DISENO.map((opcion) => (
-                  <button
-                    key={opcion.valor}
-                    type="button"
-                    aria-pressed={disenoPrincipal === opcion.valor}
-                    className={
-                      disenoPrincipal === opcion.valor ? 'huerto-chip huerto-chip-activo' : 'huerto-chip'
-                    }
-                    onClick={() => setDisenoPrincipal(opcion.valor)}
-                  >
-                    <span className="huerto-chip-titulo">{opcion.etiqueta}</span>
-                    <span className="huerto-chip-detalle">{opcion.descripcion}</span>
-                  </button>
-                ))}
+              <div className="huerto-superficie-col">
+                <span className="huerto-grupo-etiqueta">Diseño Principal del Huerto</span>
+                <div className="huerto-diseno-grid">
+                  {OPCIONES_DISENO.map((opcion) => (
+                    <button
+                      key={opcion.valor}
+                      type="button"
+                      aria-pressed={disenoPrincipal === opcion.valor}
+                      className={
+                        disenoPrincipal === opcion.valor ? 'huerto-chip huerto-chip-activo' : 'huerto-chip'
+                      }
+                      onClick={() => setDisenoPrincipal(opcion.valor)}
+                    >
+                      <span className="huerto-chip-titulo">{opcion.etiqueta}</span>
+                      <span className="huerto-chip-detalle">{opcion.descripcion}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </article>
@@ -469,8 +490,9 @@ export function ConfiguracionHuertoView() {
         </div>
 
         <div className="huerto-columna">
-          <div className={pestanaActiva === 'suelo' ? undefined : 'huerto-seccion-oculta'}>
+          <div className={pestanaActiva === 'suelo' ? 'huerto-columna' : 'huerto-columna huerto-seccion-oculta'}>
             <article className="huerto-tarjeta">
+              <span className="huerto-seccion-paso">Sección 03 · Edafología y Riego</span>
               <h2 className="huerto-tarjeta-titulo">Suelo y Fuentes de Agua</h2>
               <p className="huerto-tarjeta-descripcion">
                 Selecciona las condiciones edáficas y el sistema de riego predominante
@@ -513,7 +535,8 @@ export function ConfiguracionHuertoView() {
               </div>
             </article>
 
-            <article className="huerto-tarjeta" style={{ marginTop: 'var(--espacio-4)' }}>
+            <article className="huerto-tarjeta">
+              <span className="huerto-seccion-paso">Sección 04 · Nutrición Orgánica</span>
               <h2 className="huerto-tarjeta-titulo">Abonos Naturales</h2>
               <p className="huerto-tarjeta-descripcion">
                 Prácticas ancestrales y orgánicas de nutrición del suelo
@@ -543,8 +566,9 @@ export function ConfiguracionHuertoView() {
             </div>
           </div>
 
-          <div className={pestanaActiva === 'cerramiento' ? undefined : 'huerto-seccion-oculta'}>
+          <div className={pestanaActiva === 'cerramiento' ? 'huerto-columna' : 'huerto-columna huerto-seccion-oculta'}>
             <article className="huerto-tarjeta">
+              <span className="huerto-seccion-paso">Sección 05 · Protección Física</span>
               <h2 className="huerto-tarjeta-titulo">Cerramiento Perimetral</h2>
               <p className="huerto-tarjeta-descripcion">
                 Protección física del huerto frente a animales o factores externos

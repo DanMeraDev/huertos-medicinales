@@ -1,34 +1,64 @@
 .boton {
-  padding: var(--espacio-2) var(--espacio-4);
-  border: none;
-  border-radius: var(--radio-md);
-  font-size: var(--texto-base);
-  font-weight: var(--peso-seminegrita);
-  color: var(--color-texto-inverso);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
   cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
 }
 
 .boton-primario {
-  background-color: var(--color-primario);
+  background: linear-gradient(135deg, #ecf6e0 0%, #d5eac0 100%);
+  color: #2b4f12;
+  border: 1px solid #b2d48f;
+  box-shadow: 0 2px 6px rgba(76, 122, 38, 0.12);
 }
 
 .boton-primario:hover:not(:disabled) {
-  background-color: var(--color-primario-interaccion);
+  background: linear-gradient(135deg, #e1f1ce 0%, #c6e2aa 100%);
+  border-color: #97c16c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(76, 122, 38, 0.18);
 }
 
 .boton-secundario {
-  background-color: var(--color-secundario);
+  background: linear-gradient(135deg, #f8f5f0 0%, #ede6dc 100%);
+  color: #543e29;
+  border: 1px solid #d7cabe;
+  box-shadow: 0 1px 4px rgba(100, 75, 48, 0.08);
 }
 
 .boton-secundario:hover:not(:disabled) {
-  background-color: var(--color-secundario-interaccion);
+  background: linear-gradient(135deg, #f1ebe3 0%, #e3d9cb 100%);
+  border-color: #c4b3a3;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(100, 75, 48, 0.12);
 }
 
 .boton-peligro {
-  background-color: var(--color-error);
+  background: linear-gradient(135deg, #fdf1f1 0%, #f9dede 100%);
+  color: #9b2222;
+  border: 1px solid #e6b6b6;
+  box-shadow: 0 1px 4px rgba(198, 40, 40, 0.08);
+}
+
+.boton-peligro:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fbe4e4 0%, #f4cccc 100%);
+  border-color: #db9a9a;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(198, 40, 40, 0.14);
 }
 
 .boton:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }

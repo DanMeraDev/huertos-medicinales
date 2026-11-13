@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router'
+import { useEffect, useState, type ReactNode } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router'
 import { cerrarSesion, useSesion, type RolUsuario } from '../api/sesion'
 import './Layout.css'
 
@@ -57,11 +57,32 @@ function claseEnlace({ isActive }: { isActive: boolean }) {
   return isActive ? 'layout-enlace layout-enlace-activo' : 'layout-enlace'
 }
 
+function claseEnlaceDrawer({ isActive }: { isActive: boolean }) {
+  return isActive ? 'layout-drawer-enlace layout-drawer-enlace-activo' : 'layout-drawer-enlace'
+}
+
 export function Layout({ children }: LayoutProps) {
   const sesion = useSesion()
   const navegar = useNavigate()
+  const ubicacion = useLocation()
+  const [rutaPanel, setRutaPanel] = useState<string | null>(null)
+  const panelAbierto = rutaPanel === ubicacion.pathname
+
+  useEffect(() => {
+    if (!panelAbierto) {
+      return
+    }
+    function alPresionarTecla(evento: KeyboardEvent) {
+      if (evento.key === 'Escape') {
+        setRutaPanel(null)
+      }
+    }
+    window.addEventListener('keydown', alPresionarTecla)
+    return () => window.removeEventListener('keydown', alPresionarTecla)
+  }, [panelAbierto])
 
   function manejarCerrarSesion() {
+    setRutaPanel(null)
     cerrarSesion()
     navegar('/')
   }
@@ -97,6 +118,22 @@ export function Layout({ children }: LayoutProps) {
           <div className="layout-acciones">
             {sesion ? (
               <div className="layout-sesion">
+                <button
+                  type="button"
+                  className="layout-boton-panel"
+                  aria-expanded={panelAbierto}
+                  aria-controls="drawer-panel-rol"
+                  onClick={() =>
+                    setRutaPanel((actual) =>
+                      actual === ubicacion.pathname ? null : ubicacion.pathname,
+                    )
+                  }
+                >
+                  <span className="layout-panel-icono" aria-hidden="true">
+                    ☰
+                  </span>
+                  <span>Mi Panel</span>
+                </button>
                 <div className="layout-usuario">
                   <span className="layout-usuario-nombre">
                     {sesion.nombreCompleto ?? ETIQUETA_ROL[sesion.rol]}
@@ -118,24 +155,57 @@ export function Layout({ children }: LayoutProps) {
             )}
           </div>
         </div>
+      </header>
 
-        {sesion && opcionesRol.length > 0 && (
-          <div className="layout-barra-rol">
-            <nav className="layout-nav-rol" aria-label="Navegación por rol">
-              <span className="layout-rol-etiqueta">{ETIQUETA_ROL[sesion.rol]}</span>
-              <ul className="layout-menu">
+      {sesion && panelAbierto && opcionesRol.length > 0 && (
+        <div
+          className="layout-drawer-fondo"
+          onClick={() => setRutaPanel(null)}
+        >
+          <aside
+            id="drawer-panel-rol"
+            className="layout-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Panel de ${ETIQUETA_ROL[sesion.rol]}`}
+            onClick={(evento) => evento.stopPropagation()}
+          >
+            <div className="layout-drawer-cabecera">
+              <div className="layout-drawer-identidad">
+                <span className="layout-drawer-rol">{ETIQUETA_ROL[sesion.rol]}</span>
+                <p className="layout-drawer-usuario">
+                  {sesion.nombreCompleto ?? ETIQUETA_ROL[sesion.rol]}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="layout-drawer-cerrar"
+                aria-label="Cerrar menú"
+                onClick={() => setRutaPanel(null)}
+              >
+                ×
+              </button>
+            </div>
+
+            <nav className="layout-drawer-nav" aria-label="Navegación por rol">
+              <ul className="layout-drawer-lista">
                 {opcionesRol.map((opcion) => (
                   <li key={opcion.ruta}>
-                    <NavLink to={opcion.ruta} className={claseEnlace}>
+                    <NavLink
+                      to={opcion.ruta}
+                      className={claseEnlaceDrawer}
+                      onClick={() => setRutaPanel(null)}
+                    >
                       {opcion.nombre}
                     </NavLink>
                   </li>
                 ))}
               </ul>
             </nav>
-          </div>
-        )}
-      </header>
+          </aside>
+        </div>
+      )}
+
       <main className="layout-contenido">{children}</main>
     </div>
   )

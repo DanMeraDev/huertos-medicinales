@@ -1,5 +1,5 @@
 import { Insignia } from '../../components/Insignia'
-import { KintiGuia } from '../../components/KintiGuia'
+import { KintiGuia, type KintiVariante } from '../../components/KintiGuia'
 import { Modal } from '../../components/Modal'
 import type { NivelMiembro, PerfilPublicoMiembroResponse } from './miembrosPublicoApi'
 import './PerfilMiembroModal.css'
@@ -14,6 +14,12 @@ function obtenerTonoNivel(nivel: NivelMiembro): 'exito' | 'advertencia' | 'neutr
   if (nivel === 'MAESTRO') return 'exito'
   if (nivel === 'OFICIAL') return 'advertencia'
   return 'neutro'
+}
+
+function obtenerVarianteKinti(nivel: NivelMiembro): KintiVariante {
+  if (nivel === 'MAESTRO') return 'maestro'
+  if (nivel === 'OFICIAL') return 'oficial'
+  return 'aprendiz'
 }
 
 function formatearFecha(fechaIso: string): string {
@@ -34,7 +40,7 @@ export function PerfilMiembroModal({ abierto, perfil, alCerrar }: PerfilMiembroM
     >
       <div className="perfil-miembro-cuerpo">
         <div className="perfil-miembro-kinti">
-          <KintiGuia variante="celebracion" tamano="sm" />
+          <KintiGuia variante={obtenerVarianteKinti(perfil.nivel)} tamano="md" />
           <p className="perfil-miembro-kinti-saludo">¡Sembrador/a ejemplar de nuestra red!</p>
         </div>
 

@@ -44,6 +44,10 @@ describe('FichaMiembroModal', () => {
     expect(
       screen.getByText(/¡Recién inicia su siembra en el camino de las plantas medicinales!/i),
     ).toBeInTheDocument()
+    expect(screen.getByAltText('Kinti Guía nivel Aprendiz')).toHaveAttribute(
+      'src',
+      '/kinti/kinti-aprendiz.svg',
+    )
 
     rerender(
       <FichaMiembroModal
@@ -56,6 +60,10 @@ describe('FichaMiembroModal', () => {
     expect(
       screen.getByText(/¡Ha demostrado constancia en las labores del huerto!/i),
     ).toBeInTheDocument()
+    expect(screen.getByAltText('Kinti Guía nivel Oficial')).toHaveAttribute(
+      'src',
+      '/kinti/kinti-oficial.svg',
+    )
 
     rerender(
       <FichaMiembroModal
@@ -68,6 +76,10 @@ describe('FichaMiembroModal', () => {
     expect(
       screen.getByText(/¡Un verdadero guardián de los saberes ancestrales!/i),
     ).toBeInTheDocument()
+    expect(screen.getByAltText('Kinti Guía nivel Maestro')).toHaveAttribute(
+      'src',
+      '/kinti/kinti-maestro.svg',
+    )
   })
 
   it('muestra estado suspendido/inactivo con fecha y motivo de baja para miembros inactivos', () => {
