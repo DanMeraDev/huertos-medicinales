@@ -13,6 +13,7 @@ import { catalogoAdminHandlers } from '../../features/catalogo-admin/catalogoAdm
 import { solicitudesMockHandlers } from '../../features/solicitudes/solicitudesMockHandlers'
 import { saberesMockHandlers } from '../../features/saberes-ancestrales/saberesMockHandlers'
 import { actividadesAncestralesMockHandlers } from '../../features/actividades-ancestrales/actividadesAncestralesMockHandlers'
+import { mspRevisionMockHandlers } from '../../features/msp-revision/mspRevisionMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
 import type { DirectorioComunidadResponse } from '../../features/comunidades-publico/comunidadesPublicoApi'
 
@@ -64,6 +65,7 @@ export const handlers = [
   ...talentosMockHandlers,
   ...saberesMockHandlers,
   ...actividadesAncestralesMockHandlers,
+  ...mspRevisionMockHandlers,
   ...solicitudesMockHandlers,
 
   http.get('*/api/comunidades/mi-comunidad', () => HttpResponse.json(mockMiComunidad)),
