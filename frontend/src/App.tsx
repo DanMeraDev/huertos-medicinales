@@ -26,6 +26,7 @@ import { CatalogoActividadesPage } from './pages/CatalogoActividadesPage'
 import { RegistroSiembraPage } from './pages/RegistroSiembraPage'
 import { NuevaActividadAncestralPage } from './pages/NuevaActividadAncestralPage'
 import { RegistroLaborMiembroPage } from './pages/RegistroLaborMiembroPage'
+import { RevisionActividadesPage } from './pages/RevisionActividadesPage'
 import { SubsanarEvidenciaPage } from './pages/SubsanarEvidenciaPage'
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
         <Route path="/comunidad/actividades-miembros/nueva" element={<RegistroLaborMiembroPage />} />
         <Route path="/actividades-ancestrales/nueva" element={<NuevaActividadAncestralPage />} />
         <Route path="/actividades-ancestrales/:id/subsanar" element={<SubsanarEvidenciaPage />} />
+        <Route path="/msp/revision-actividades" element={<RevisionActividadesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />
       </Routes>
     </Layout>
