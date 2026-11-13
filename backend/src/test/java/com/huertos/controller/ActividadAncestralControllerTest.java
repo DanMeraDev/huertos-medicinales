@@ -183,6 +183,39 @@ class ActividadAncestralControllerTest {
 
     @Test
     @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
+    void listarObservadasRetorna200ConLasActividadesObservadasDeLaComunidad() throws Exception {
+        ActividadParaCorregirResponse response = new ActividadParaCorregirResponse(
+                21L,
+                "Ritual de siembra",
+                EstadoVerificacion.OBSERVADA_CORREGIR,
+                1,
+                "La fotografía no muestra el ritual completo",
+                "Bitácora inicial",
+                "actividades/foto-inicial.jpg",
+                null
+        );
+
+        when(actividadAncestralService.listarObservadas(eq("responsable@huertos.gob.ec")))
+                .thenReturn(List.of(response));
+
+        mockMvc.perform(get("/api/actividades-ancestrales/observadas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(21))
+                .andExpect(jsonPath("$[0].tituloSaber").value("Ritual de siembra"))
+                .andExpect(jsonPath("$[0].estado").value("OBSERVADA_CORREGIR"))
+                .andExpect(jsonPath("$[0].numeroIntento").value(1))
+                .andExpect(jsonPath("$[0].observacionMsp").value("La fotografía no muestra el ritual completo"));
+    }
+
+    @Test
+    @WithMockUser(username = "tecnico@msp.gob.ec", roles = "TECNICO_MSP")
+    void listarObservadasRetorna403ParaRolNoAutorizado() throws Exception {
+        mockMvc.perform(get("/api/actividades-ancestrales/observadas"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "responsable@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")
     void reenviarEvidenciasRetorna200ConActividadPendienteEIntentoDos() throws Exception {
         ReenviarEvidenciasRequest request = new ReenviarEvidenciasRequest(
                 "Bitácora corregida con el ritual completo",

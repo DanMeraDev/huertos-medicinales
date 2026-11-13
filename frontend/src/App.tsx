@@ -27,6 +27,7 @@ import { CatalogoActividadesPage } from './pages/CatalogoActividadesPage'
 import { TalentosComunidadPage } from './pages/TalentosComunidadPage'
 import { RegistroSiembraPage } from './pages/RegistroSiembraPage'
 import { NuevaActividadAncestralPage } from './pages/NuevaActividadAncestralPage'
+import { BandejaObservadasPage } from './pages/BandejaObservadasPage'
 import { RegistroLaborMiembroPage } from './pages/RegistroLaborMiembroPage'
 import { RevisionActividadesPage } from './pages/RevisionActividadesPage'
 import { SubsanarEvidenciaPage } from './pages/SubsanarEvidenciaPage'
@@ -65,6 +66,7 @@ export default function App() {
         <Route path="/consulta-miembro" element={<ConsultaMiembroPage />} />
         <Route path="/comunidad/actividades-miembros/nueva" element={<RegistroLaborMiembroPage />} />
         <Route path="/actividades-ancestrales/nueva" element={<NuevaActividadAncestralPage />} />
+        <Route path="/actividades-ancestrales/observadas" element={<BandejaObservadasPage />} />
         <Route path="/actividades-ancestrales/:id/subsanar" element={<SubsanarEvidenciaPage />} />
         <Route path="/msp/revision-actividades" element={<RevisionActividadesPage />} />
         <Route path="*" element={<NoEncontradaPage />} />

@@ -35,6 +35,7 @@ const OPCIONES_POR_ROL: Record<RolUsuario, OpcionMenu[]> = {
     { nombre: 'Catálogo de Labores', ruta: '/comunidad/actividades-catalogo' },
     { nombre: 'Registrar Labor', ruta: '/comunidad/actividades-miembros/nueva' },
     { nombre: 'Saberes del Huerto', ruta: '/actividades-ancestrales/nueva' },
+    { nombre: 'Subsanar Evidencias', ruta: '/actividades-ancestrales/observadas' },
     { nombre: 'Insignias y Talentos', ruta: '/comunidad/talentos' },
   ],
   TECNICO_MSP: [

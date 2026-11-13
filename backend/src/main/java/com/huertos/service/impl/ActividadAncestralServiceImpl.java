@@ -24,6 +24,7 @@ import com.huertos.repository.MiembroRepository;
 import com.huertos.repository.SaberAncestralRepository;
 import com.huertos.service.ActividadAncestralService;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -96,6 +97,19 @@ public class ActividadAncestralServiceImpl implements ActividadAncestralService 
     public ActividadParaCorregirResponse buscarParaCorregir(String correo, Long id) {
         ActividadAncestralMsp actividad = buscarActividadDeLaComunidad(correo, id);
         return actividadAncestralMapper.toActividadParaCorregirResponse(actividad);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ActividadParaCorregirResponse> listarObservadas(String correo) {
+        Comunidad comunidad = comunidadRepository.findByResponsableCorreo(correo)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ninguna comunidad asociada al responsable autenticado"));
+
+        return actividadAncestralRepository
+                .findByComunidadIdAndEstadoVerificacionOrderByCreadoEnAsc(comunidad.getId(), EstadoVerificacion.OBSERVADA_CORREGIR)
+                .stream()
+                .map(actividadAncestralMapper::toActividadParaCorregirResponse)
+                .toList();
     }
 
     @Override

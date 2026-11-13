@@ -12,6 +12,9 @@ public interface ActividadAncestralMspRepository extends JpaRepository<Actividad
 
     List<ActividadAncestralMsp> findByEstadoVerificacionOrderByCreadoEnAsc(EstadoVerificacion estado);
 
+    List<ActividadAncestralMsp> findByComunidadIdAndEstadoVerificacionOrderByCreadoEnAsc(
+            Long comunidadId, EstadoVerificacion estado);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<ActividadAncestralMsp> findParaDictaminarById(Long id);
 }

@@ -91,6 +91,10 @@ export function buscarActividadParaCorregir(id: number): Promise<ActividadParaCo
   return apiGet<ActividadParaCorregirResponse>(`/actividades-ancestrales/${id}`)
 }
 
+export function listarObservadas(): Promise<ActividadParaCorregirResponse[]> {
+  return apiGet<ActividadParaCorregirResponse[]>('/actividades-ancestrales/observadas')
+}
+
 export function reenviarEvidencias(
   id: number,
   datos: ReenviarEvidenciasRequest,

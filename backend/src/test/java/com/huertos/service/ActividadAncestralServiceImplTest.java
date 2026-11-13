@@ -351,6 +351,34 @@ class ActividadAncestralServiceImplTest {
         assertNull(respuesta.evidenciaVideoUrl());
     }
 
+    @Test
+    void listarObservadas_devuelveLasActividadesObservadasDeLaComunidad() {
+        when(comunidadRepository.findByResponsableCorreo("responsable@huertos.gob.ec"))
+                .thenReturn(Optional.of(comunidad));
+        when(actividadAncestralRepository.findByComunidadIdAndEstadoVerificacionOrderByCreadoEnAsc(
+                3L, EstadoVerificacion.OBSERVADA_CORREGIR))
+                .thenReturn(List.of(actividadObservada(1)));
+
+        List<ActividadParaCorregirResponse> respuesta = actividadAncestralService
+                .listarObservadas("responsable@huertos.gob.ec");
+
+        assertEquals(1, respuesta.size());
+        assertEquals(21L, respuesta.get(0).id());
+        assertEquals("Ritual de siembra", respuesta.get(0).tituloSaber());
+        assertEquals(EstadoVerificacion.OBSERVADA_CORREGIR, respuesta.get(0).estado());
+        assertEquals("La fotografía no muestra el ritual completo", respuesta.get(0).observacionMsp());
+    }
+
+    @Test
+    void listarObservadas_lanzaNoEncontradoSiResponsableNoTieneComunidad() {
+        when(comunidadRepository.findByResponsableCorreo("solo@huertos.gob.ec"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                RecursoNoEncontradoException.class,
+                () -> actividadAncestralService.listarObservadas("solo@huertos.gob.ec"));
+    }
+
     private ActividadAncestralMsp actividadObservada(int numeroIntento) {
         ActividadAncestralMsp actividad = new ActividadAncestralMsp();
         actividad.setId(21L);
