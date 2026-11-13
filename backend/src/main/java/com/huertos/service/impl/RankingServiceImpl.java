@@ -35,6 +35,10 @@ public class RankingServiceImpl implements RankingService {
         return resultado;
     }
 
+    /**
+     * Obtiene el ranking de miembros activos ordenados por puntos descendente,
+     * calculando el total de insignias obtenidas y asignando la posición correlativa.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<RankingMiembroResponse> obtenerRankingMiembros() {
