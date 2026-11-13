@@ -4,6 +4,7 @@ import com.huertos.config.ConstantesGamificacion;
 import com.huertos.exception.RecursoNoEncontradoException;
 import com.huertos.exception.ReglaNegocioException;
 import com.huertos.model.ActividadAncestralMsp;
+import com.huertos.model.ActividadComunidad;
 import com.huertos.model.ActividadMspParticipante;
 import com.huertos.model.Comunidad;
 import com.huertos.model.EstadoVerificacion;
@@ -11,7 +12,9 @@ import com.huertos.model.Huerto;
 import com.huertos.model.Miembro;
 import com.huertos.model.MiembroInsignia;
 import com.huertos.model.NivelMiembro;
+import com.huertos.model.RegistroActividadMiembro;
 import com.huertos.model.SaberAncestral;
+import com.huertos.model.TalentoComunidad;
 import com.huertos.model.TipoOrigenInsignia;
 import com.huertos.repository.ActividadAncestralMspRepository;
 import com.huertos.repository.ComunidadRepository;
@@ -22,6 +25,7 @@ import com.huertos.repository.RegistroActividadMiembroRepository;
 import com.huertos.repository.TalentoComunidadRepository;
 import com.huertos.service.GamificacionService;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,7 +51,56 @@ public class GamificacionServiceImpl implements GamificacionService {
     @Override
     @Transactional
     public void procesarActividadCotidiana(Long registroActividadId) {
-        // Stub inicial para TDD
+        RegistroActividadMiembro registro = registroActividadMiembroRepository.findById(registroActividadId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Registro de actividad cotidiana no encontrado con id: " + registroActividadId));
+
+        Miembro miembro = registro.getMiembro();
+        ActividadComunidad actividad = registro.getActividadComunidad();
+        Comunidad comunidad = registro.getComunidad();
+
+        int puntosPorHora = (actividad != null && actividad.getPuntosPorHora() > 0)
+                ? actividad.getPuntosPorHora()
+                : PUNTOS_POR_HORA;
+        int puntosCalculados = registro.getHorasTrabajadas() * puntosPorHora;
+        registro.setPuntosOtorgados(puntosCalculados);
+        registroActividadMiembroRepository.save(registro);
+
+        if (miembro != null) {
+            acreditarPuntosAMiembro(miembro, puntosCalculados);
+            if (actividad != null) {
+                procesarTalentosComunitarios(miembro, comunidad, actividad, registro);
+            }
+        }
+    }
+
+    private void procesarTalentosComunitarios(Miembro miembro, Comunidad comunidad, ActividadComunidad actividad, RegistroActividadMiembro registro) {
+        long repeticiones = registroActividadMiembroRepository.countByMiembroIdAndActividadComunidadId(miembro.getId(), actividad.getId());
+        List<TalentoComunidad> talentos = talentoComunidadRepository.findByActividadComunidadIdAndActivoTrue(actividad.getId());
+
+        for (TalentoComunidad talento : talentos) {
+            if (repeticiones >= talento.getMetaRepeticiones()) {
+                boolean yaPosee = miembroInsigniaRepository.existsByMiembroIdAndTalentoComunidadId(miembro.getId(), talento.getId());
+                if (!yaPosee) {
+                    MiembroInsignia insignia = construirInsigniaTalento(miembro, comunidad != null ? comunidad : talento.getComunidad(), talento, registro.getFechaActividad());
+                    miembroInsigniaRepository.save(insignia);
+                    log.info("Talento comunitario '{}' otorgado al miembro id {} por actividad id {}",
+                            talento.getNombreInsignia(), miembro.getId(), actividad.getId());
+                }
+            }
+        }
+    }
+
+    private MiembroInsignia construirInsigniaTalento(Miembro miembro, Comunidad comunidad, TalentoComunidad talento, LocalDate fechaActividad) {
+        MiembroInsignia insignia = new MiembroInsignia();
+        insignia.setMiembro(miembro);
+        insignia.setComunidad(comunidad);
+        insignia.setTipoOrigen(TipoOrigenInsignia.TALENTO_COMUNIDAD);
+        insignia.setNombreInsignia(talento.getNombreInsignia());
+        insignia.setDescripcion(talento.getDescripcion());
+        insignia.setIconoCodigo(talento.getIconoCodigo());
+        insignia.setTalentoComunidad(talento);
+        insignia.setFechaObtencion(fechaActividad != null ? fechaActividad : LocalDate.now());
+        return insignia;
     }
 
     @Override
