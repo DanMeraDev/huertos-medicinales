@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import '../../components/Boton.css'
 import { Insignia } from '../../components/Insignia'
@@ -21,6 +21,7 @@ const formatoMetros = new Intl.NumberFormat('es-EC')
 
 export interface FichaTecnicaViewProps {
   planta: PlantaDetalle
+  pie?: ReactNode
 }
 
 function formatearAltitud(minima: number | null, maxima: number | null) {
@@ -107,7 +108,7 @@ function FotoConInsignia({ planta }: FichaTecnicaViewProps) {
   )
 }
 
-function FichaEscritorio({ planta }: FichaTecnicaViewProps) {
+function FichaEscritorio({ planta, pie }: FichaTecnicaViewProps) {
   const idParametros = useId()
 
   return (
@@ -140,13 +141,14 @@ function FichaEscritorio({ planta }: FichaTecnicaViewProps) {
         </div>
         <div className="ficha-tecnica-columna">
           <FichaMedica planta={planta} />
+          {pie}
         </div>
       </div>
     </div>
   )
 }
 
-function FichaMovil({ planta }: FichaTecnicaViewProps) {
+function FichaMovil({ planta, pie }: FichaTecnicaViewProps) {
   const idParametros = useId()
 
   return (
@@ -162,6 +164,7 @@ function FichaMovil({ planta }: FichaTecnicaViewProps) {
         <ParametrosCultivo planta={planta} className="ficha-tecnica-parametros-fila" />
       </section>
       <FichaMedica planta={planta} />
+      {pie}
       <Link to={RUTA_CATALOGO} className="boton boton-secundario ficha-tecnica-volver-inferior">
         Volver al catálogo
       </Link>
@@ -169,8 +172,8 @@ function FichaMovil({ planta }: FichaTecnicaViewProps) {
   )
 }
 
-export function FichaTecnicaView({ planta }: FichaTecnicaViewProps) {
+export function FichaTecnicaView({ planta, pie }: FichaTecnicaViewProps) {
   const esEscritorio = useEsEscritorio()
 
-  return esEscritorio ? <FichaEscritorio planta={planta} /> : <FichaMovil planta={planta} />
+  return esEscritorio ? <FichaEscritorio planta={planta} pie={pie} /> : <FichaMovil planta={planta} pie={pie} />
 }

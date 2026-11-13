@@ -6,6 +6,7 @@ import { Notificacion } from '../components/Notificacion'
 import { ModalConfirmacionBaja } from '../features/catalogo-admin/ModalConfirmacionBaja'
 import { esTecnicoMsp } from '../features/catalogo-admin/sesionTecnicoMsp'
 import { FichaTecnicaView } from '../features/catalogo-plantas/FichaTecnicaView'
+import { KintiFichaPlanta } from '../features/catalogo-plantas/KintiFichaPlanta'
 import { leerIdPlanta } from '../features/catalogo-plantas/leerIdPlanta'
 import { MensajeDeNavegacion } from '../features/catalogo-plantas/MensajeDeNavegacion'
 import { obtenerDetallePlanta } from '../features/catalogo-plantas/plantasApi'
@@ -49,7 +50,7 @@ function FichaDetalle({ planta }: { planta: PlantaDetalle }) {
   return (
     <div className="detalle-planta">
       {tecnicoMsp && <AccionesTecnico id={planta.id} alDarDeBaja={() => setConfirmando(true)} />}
-      <FichaTecnicaView planta={planta} />
+      <FichaTecnicaView planta={planta} pie={<KintiFichaPlanta planta={planta} />} />
       {tecnicoMsp && (
         <ModalConfirmacionBaja
           plantaId={planta.id}

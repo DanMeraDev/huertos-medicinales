@@ -1,0 +1,61 @@
+.kinti-catalogo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.kinti-catalogo-imagen {
+  flex: 0 0 auto;
+  width: 4rem;
+  height: 4rem;
+}
+
+.kinti-catalogo-globo {
+  position: relative;
+  min-width: 0;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: var(--borde-ancho) solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+  font-size: var(--texto-sm);
+  line-height: 1.4;
+  color: var(--color-texto);
+}
+
+.kinti-catalogo-globo::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -0.5rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-bottom: var(--borde-ancho) solid var(--color-borde);
+  border-left: var(--borde-ancho) solid var(--color-borde);
+  background-color: var(--color-superficie);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@media (min-width: 768px) {
+  .kinti-catalogo {
+    gap: var(--espacio-4);
+  }
+
+  .kinti-catalogo-imagen {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .kinti-catalogo-globo {
+    max-width: 28rem;
+    padding: var(--espacio-3) var(--espacio-4);
+    font-size: var(--texto-base);
+  }
+}
+
+@media (min-width: 1024px) {
+  .kinti-catalogo-imagen {
+    width: 7rem;
+    height: 7rem;
+  }
+}

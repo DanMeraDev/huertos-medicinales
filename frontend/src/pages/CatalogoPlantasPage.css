@@ -41,9 +41,25 @@
 
 @media (min-width: 1024px) {
   .catalogo-pagina-cabecera {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
+    grid-template-areas:
+      'titulo titulo'
+      'kinti buscador';
+    align-items: end;
+    column-gap: var(--espacio-6);
+  }
+
+  .catalogo-pagina-titulo {
+    grid-area: titulo;
+  }
+
+  .catalogo-pagina-cabecera .kinti-catalogo {
+    grid-area: kinti;
+  }
+
+  .catalogo-pagina-cabecera .buscador-plantas {
+    grid-area: buscador;
   }
 
   .catalogo-pagina-titulo {
