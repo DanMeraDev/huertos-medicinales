@@ -1,4 +1,5 @@
 import { FormularioActividadAncestral } from '../features/actividades-ancestrales/FormularioActividadAncestral'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 
 export function NuevaActividadAncestralPage() {
   return (
@@ -21,6 +22,10 @@ export function NuevaActividadAncestralPage() {
       >
         Registrar Actividad Ancestral
       </h1>
+      <ConsejoKinti
+        variante="sabiduria"
+        mensaje="Comparte los saberes de tu huerto. Una foto clara ayuda al Técnico MSP a validarlos más rápido."
+      />
       <FormularioActividadAncestral />
     </div>
   )

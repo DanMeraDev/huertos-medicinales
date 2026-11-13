@@ -1,4 +1,5 @@
 import { RutaSecuencialSaberes } from '../features/saberes-ancestrales/RutaSecuencialSaberes'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 import './SaberesAncestralesPage.css'
 
 export function SaberesAncestralesPage() {
@@ -10,6 +11,10 @@ export function SaberesAncestralesPage() {
         huerto medicinal, con su nombre en kichwa, su fase lunar ideal, sus
         herramientas tradicionales y la insignia oficial que otorga.
       </p>
+      <ConsejoKinti
+        variante="lunar"
+        mensaje="Sigue la ruta paso a paso y respeta la fase lunar de cada labor: así lo enseñan nuestros mayores."
+      />
       <RutaSecuencialSaberes />
     </main>
   )

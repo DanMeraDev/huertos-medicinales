@@ -7,6 +7,7 @@ import { ModalBajaMaterial } from '../features/bodega/ModalBajaMaterial'
 import type { MaterialVegetalResponse } from '../features/bodega/types'
 import { obtenerMiComunidad } from '../features/comunidades/comunidadesApi'
 import { obtenerDirectorioComunidades } from '../features/comunidades-publico/comunidadesPublicoApi'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 import './InventarioBodegaPage.css'
 
 export type RolUsuario = 'RESPONSABLE_COMUNIDAD' | 'TECNICO_MSP'
@@ -148,6 +149,11 @@ export function InventarioBodegaPage({
           Consulta y supervisión del material vegetal disponible en las bodegas comunitarias.
         </p>
       </div>
+
+      <ConsejoKinti
+        variante="dia"
+        mensaje="Revisa el material vegetal disponible antes de planificar una siembra."
+      />
 
       {errorPagina && <Notificacion tipo="error" mensaje={errorPagina} />}
       {mensajeExito && <Notificacion tipo="exito" mensaje={mensajeExito} />}

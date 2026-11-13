@@ -5,6 +5,7 @@ import { PodioComunidades } from '../features/ranking/PodioComunidades'
 import { TablaRankingComunidades } from '../features/ranking/TablaRankingComunidades'
 import { obtenerRankingComunidades } from '../features/ranking/rankingApi'
 import type { RankingComunidad } from '../features/ranking/types'
+import { ConsejoKinti } from '../components/ConsejoKinti'
 import './RankingComunidadesPage.css'
 
 export function RankingComunidadesPage() {
@@ -46,6 +47,11 @@ export function RankingComunidadesPage() {
           Tabla de posiciones de comunidades de huertos medicinales en Ecuador, visualizando los puntos acumulados por actividades oficiales y saberes ancestrales.
         </p>
       </header>
+
+      <ConsejoKinti
+        variante="celebracion"
+        mensaje="¡Cada labor en el huerto suma! Así van las comunidades más activas del país."
+      />
 
       <nav className="ranking-pestanas" aria-label="Selector de ranking">
         <Link to="/ranking/comunidades" className="ranking-pestana ranking-pestana-activa">
