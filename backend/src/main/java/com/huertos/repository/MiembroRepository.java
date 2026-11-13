@@ -10,4 +10,6 @@ public interface MiembroRepository extends JpaRepository<Miembro, Long> {
     Optional<Miembro> findByCedula(String cedula);
 
     List<Miembro> findByActivoTrueOrderByPuntosTotalesDescCreadoEnAsc();
+
+    Optional<Miembro> findByCedulaAndActivoTrue(String cedula);
 }

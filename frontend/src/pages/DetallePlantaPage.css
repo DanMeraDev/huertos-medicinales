@@ -23,6 +23,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--espacio-3);
+  margin-bottom: var(--espacio-6);
 }
 
 .detalle-planta-accion {
@@ -37,5 +38,6 @@
   .detalle-planta-acciones {
     flex-direction: row;
     justify-content: flex-end;
+    margin-bottom: 0;
   }
 }

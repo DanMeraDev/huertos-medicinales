@@ -1,8 +1,9 @@
-import { ApiError, apiGet, apiPost, apiPostFormData, apiPut } from '../../api/client'
+import { ApiError, apiGet, apiPatch, apiPost, apiPostFormData, apiPut } from '../../api/client'
 import { MENSAJE_FORMATO_NO_ADMITIDO, MENSAJE_IMAGEN_DEMASIADO_GRANDE } from '../../components/CargadorImagen'
 import type {
   ActualizarPlantaRequest,
   CrearPlantaRequest,
+  DarBajaPlantaRequest,
   FotografiaSubidaResponse,
   PlantaDetalleResponse,
 } from './types'
@@ -31,4 +32,8 @@ export function obtenerPlantaParaEditar(id: number) {
 
 export function actualizarPlanta(id: number, datos: ActualizarPlantaRequest) {
   return apiPut<PlantaDetalleResponse>(`/msp/plantas/${id}`, datos)
+}
+
+export function darDeBajaPlanta(id: number, datos: DarBajaPlantaRequest) {
+  return apiPatch<void>(`/msp/plantas/${id}/baja`, datos)
 }

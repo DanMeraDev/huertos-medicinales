@@ -3,9 +3,11 @@ package com.huertos.service.impl;
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.CambiarEstadoMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
+import com.huertos.dto.InsigniaObtenidaDto;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.MiembroResumenResponse;
+import com.huertos.dto.PerfilPublicoMiembroResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.exception.ConflictoException;
 import com.huertos.exception.RecursoNoEncontradoException;
@@ -17,6 +19,7 @@ import com.huertos.model.Miembro;
 import com.huertos.model.Usuario;
 import com.huertos.repository.ComunidadMiembroRepository;
 import com.huertos.repository.ComunidadRepository;
+import com.huertos.repository.MiembroInsigniaRepository;
 import com.huertos.repository.MiembroRepository;
 import com.huertos.repository.UsuarioRepository;
 import com.huertos.service.MiembroService;
@@ -38,6 +41,7 @@ public class MiembroServiceImpl implements MiembroService {
     private final ComunidadMiembroRepository comunidadMiembroRepository;
     private final ComunidadRepository comunidadRepository;
     private final UsuarioRepository usuarioRepository;
+    private final MiembroInsigniaRepository miembroInsigniaRepository;
     private final MiembroMapper miembroMapper;
     private final Clock clock;
 
@@ -227,6 +231,28 @@ public class MiembroServiceImpl implements MiembroService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario"));
         return obtenerFichaInterna(usuario.getId(), miembroId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PerfilPublicoMiembroResponse obtenerPerfilPublicoPorCedula(String cedula) {
+        Miembro miembro = miembroRepository.findByCedulaAndActivoTrue(cedula)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No se encontró ningún voluntario registrado con la cédula ingresada. Verifica el número o anímate a registrar una nueva comunidad"));
+
+        List<String> comunidades = comunidadMiembroRepository
+                .findByMiembroIdAndActivoEnComunidadTrue(miembro.getId())
+                .stream()
+                .map(relacion -> relacion.getComunidad().getNombre())
+                .toList();
+
+        List<InsigniaObtenidaDto> insignias = miembroInsigniaRepository
+                .findByMiembroIdOrderByFechaObtencionDesc(miembro.getId())
+                .stream()
+                .map(miembroMapper::toInsigniaObtenidaDto)
+                .toList();
+
+        return miembroMapper.toPerfilPublicoResponse(miembro, comunidades, insignias);
     }
 
     private void validarCedula(String cedula) {

@@ -1,0 +1,18 @@
+.consulta-miembro-pagina {
+  width: 100%;
+  padding: var(--espacio-4);
+}
+
+.consulta-miembro-titulo {
+  font-size: var(--texto-2xl);
+  color: var(--color-primario);
+  margin-bottom: var(--espacio-4);
+}
+
+@media (min-width: 640px) {
+  .consulta-miembro-pagina {
+    max-width: var(--ancho-lectura);
+    margin: 0 auto;
+    padding: var(--espacio-12) var(--espacio-4);
+  }
+}

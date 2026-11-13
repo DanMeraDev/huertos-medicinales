@@ -2,12 +2,16 @@ package com.huertos.mapper;
 
 import com.huertos.dto.ActualizarMiembroRequest;
 import com.huertos.dto.FichaInternaMiembroResponse;
+import com.huertos.dto.InsigniaObtenidaDto;
 import com.huertos.dto.MiembroDetalleResponse;
 import com.huertos.dto.MiembroEstadoResponse;
 import com.huertos.dto.MiembroResumenResponse;
+import com.huertos.dto.PerfilPublicoMiembroResponse;
 import com.huertos.dto.RegistrarMiembroRequest;
 import com.huertos.model.ComunidadMiembro;
 import com.huertos.model.Miembro;
+import com.huertos.model.MiembroInsignia;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -81,4 +85,20 @@ public interface MiembroMapper {
     @Mapping(target = "fechaBaja", source = "relacion.fechaBaja")
     @Mapping(target = "motivoBaja", source = "relacion.motivoBaja")
     FichaInternaMiembroResponse toFichaInternaResponse(Miembro miembro, ComunidadMiembro relacion, int edad);
+
+    @Mapping(target = "nombre", source = "nombreInsignia")
+    @Mapping(target = "descripcion", source = "descripcion")
+    @Mapping(target = "tipo", expression = "java(insignia.getTipoOrigen() != null ? insignia.getTipoOrigen().name() : null)")
+    @Mapping(target = "fechaObtencion", source = "fechaObtencion")
+    InsigniaObtenidaDto toInsigniaObtenidaDto(MiembroInsignia insignia);
+
+    @Mapping(target = "nombreCompleto", expression = "java(miembro.getNombres() + \" \" + miembro.getApellidos())")
+    @Mapping(target = "nivel", source = "miembro.nivel")
+    @Mapping(target = "puntosTotales", source = "miembro.puntosTotales")
+    @Mapping(target = "comunidades", source = "comunidades")
+    @Mapping(target = "insignias", source = "insignias")
+    PerfilPublicoMiembroResponse toPerfilPublicoResponse(
+            Miembro miembro,
+            List<String> comunidades,
+            List<InsigniaObtenidaDto> insignias);
 }

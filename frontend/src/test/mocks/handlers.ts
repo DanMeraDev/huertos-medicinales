@@ -6,12 +6,14 @@ import { rankingMockHandlers } from '../../features/ranking/rankingMockHandlers'
 import { bodegaMockHandlers } from '../../features/bodega/bodegaMockHandlers'
 import { calendarioLunarMockHandlers } from '../../features/calendario-lunar/calendarioLunarMockHandlers'
 import { miembrosHandlers } from '../../features/miembros/miembrosMockHandlers'
+import { miembrosPublicoMockHandlers } from '../../features/miembros-publico/miembrosPublicoMockHandlers'
 import { talentosMockHandlers } from '../../features/talentos/talentosMockHandlers'
 import { plantasHandlers } from '../../features/catalogo-plantas/plantasMockHandlers'
 import { catalogoAdminHandlers } from '../../features/catalogo-admin/catalogoAdminMockHandlers'
 import { solicitudesMockHandlers } from '../../features/solicitudes/solicitudesMockHandlers'
 import { saberesMockHandlers } from '../../features/saberes-ancestrales/saberesMockHandlers'
 import { actividadesAncestralesMockHandlers } from '../../features/actividades-ancestrales/actividadesAncestralesMockHandlers'
+import { mspRevisionMockHandlers } from '../../features/msp-revision/mspRevisionMockHandlers'
 import type { ActualizarComunidadRequest, ComunidadDetalleResponse } from '../../features/comunidades/comunidadesApi'
 import type { DirectorioComunidadResponse } from '../../features/comunidades-publico/comunidadesPublicoApi'
 
@@ -59,9 +61,11 @@ export const handlers = [
   ...rankingMockHandlers,
   ...calendarioLunarMockHandlers,
   ...miembrosHandlers,
+  ...miembrosPublicoMockHandlers,
   ...talentosMockHandlers,
   ...saberesMockHandlers,
   ...actividadesAncestralesMockHandlers,
+  ...mspRevisionMockHandlers,
   ...solicitudesMockHandlers,
 
   http.get('*/api/comunidades/mi-comunidad', () => HttpResponse.json(mockMiComunidad)),
