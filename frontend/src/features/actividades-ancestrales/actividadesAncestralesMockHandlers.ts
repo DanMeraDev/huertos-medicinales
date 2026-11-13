@@ -62,6 +62,9 @@ export const actividadesAncestralesMockHandlers = [
     }
     return HttpResponse.json(respuesta, { status: 201 })
   }),
+  http.get('*/api/actividades-ancestrales/observadas', () =>
+    HttpResponse.json([mockActividadObservada]),
+  ),
   http.get('*/api/actividades-ancestrales/:id', ({ params }) =>
     HttpResponse.json({ ...mockActividadObservada, id: Number(params.id) }),
   ),
