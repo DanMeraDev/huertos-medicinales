@@ -41,8 +41,6 @@ const OPCIONES_POR_ROL: Record<RolUsuario, OpcionMenu[]> = {
     { nombre: 'Revisión Actividades', ruta: '/msp/revision-actividades' },
     { nombre: 'Nueva Planta', ruta: '/admin/plantas/nueva' },
     { nombre: 'Bodega', ruta: '/bodega/inventario' },
-    { nombre: 'Configurar Huerto', ruta: '/huerto/configuracion' },
-    { nombre: 'Subhuertos', ruta: '/huerto/subhuertos' },
   ],
   TECNICO_SIS: [{ nombre: 'Crear Usuario', ruta: '/usuarios/nuevo' }],
 }
