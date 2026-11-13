@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError } from '../../api/client'
+import { cerrarSesion } from '../../api/sesion'
 import { Boton } from '../../components/Boton'
 import { CampoTexto } from '../../components/CampoTexto'
 import { Modal } from '../../components/Modal'
@@ -42,6 +43,7 @@ export function CambiarClaveForm() {
     setAviso(null)
     try {
       const respuesta = await cambiarClave(claves)
+      cerrarSesion()
       setAviso({ tipo: 'exito', mensaje: respuesta.mensaje })
     } catch (falla) {
       if (!(falla instanceof ApiError)) {

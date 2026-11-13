@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.RegistrarSiembraRequest;
 import com.huertos.dto.SiembraDetalleResponse;
@@ -39,6 +40,9 @@ class SiembraControllerTest {
 
     @MockitoBean
     private SiembraService siembraService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     @WithMockUser(username = "resp@huertos.gob.ec", roles = "RESPONSABLE_COMUNIDAD")

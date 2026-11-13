@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.ActualizarPlantaRequest;
 import com.huertos.dto.CrearPlantaRequest;
@@ -76,6 +77,9 @@ class PlantaAdminControllerTest {
 
     @MockitoBean
     private PlantaAdminService plantaAdminService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.huertos.repository.UsuarioRepository;
 import com.huertos.config.SecurityConfig;
 import com.huertos.dto.CalendarioLunarResponse;
 import com.huertos.model.FaseLunar;
@@ -36,6 +37,9 @@ class CalendarioLunarPublicoControllerTest {
 
     @MockitoBean
     private CalendarioLunarService calendarioLunarService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @Test
     void consultaLaFaseActualSinTokenYDevuelve200() throws Exception {
