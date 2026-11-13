@@ -25,4 +25,28 @@ describe('MapaUbicacion', () => {
 
     expect(container.querySelector('.mapa-ubicacion-marcador')).toBeInTheDocument()
   })
+
+  it('centra el mapa en los límites recibidos', () => {
+    const alSeleccionar = vi.fn()
+    render(
+      <MapaUbicacion
+        latitud=""
+        longitud=""
+        limites={[
+          [-0.721056, -79.3709027],
+          [0.3272715, -77.8397334],
+        ]}
+        alSeleccionar={alSeleccionar}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
+      clientX: 0,
+      clientY: 0,
+    })
+
+    const [latitud, longitud] = alSeleccionar.mock.calls[0]
+    expect(latitud).toBeCloseTo(-0.197, 1)
+    expect(longitud).toBeCloseTo(-78.605, 1)
+  })
 })

@@ -42,6 +42,15 @@ async function llenarFormulario({ cedula = '1710034065' } = {}) {
   return usuario
 }
 
+const URL_GEOCODIFICACION_INVERSA = 'https://nominatim.openstreetmap.org/reverse'
+
+function pulsarCentroDelMapa() {
+  fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
+    clientX: 0,
+    clientY: 0,
+  })
+}
+
 function simularGeolocalizacion(getCurrentPosition: Geolocation['getCurrentPosition']) {
   Object.defineProperty(navigator, 'geolocation', { value: { getCurrentPosition }, configurable: true })
 }
@@ -168,15 +177,72 @@ describe('SolicitudComunidadForm', () => {
     const usuario = userEvent.setup()
 
     await usuario.click(screen.getByRole('button', { name: 'Seleccionar en el mapa' }))
-    fireEvent.click(screen.getByRole('application', { name: 'Mapa para elegir la ubicación' }), {
-      clientX: 0,
-      clientY: 0,
-    })
+    pulsarCentroDelMapa()
 
-    expect(Number((screen.getByLabelText('Latitud') as HTMLInputElement).value)).toBeCloseTo(-1.5, 1)
-    expect(Number((screen.getByLabelText('Longitud') as HTMLInputElement).value)).toBeCloseTo(-78.5, 1)
     expect(await screen.findByDisplayValue('Calderón')).toBe(screen.getByLabelText('Parroquia'))
     expect(screen.getByLabelText('Provincia')).toHaveValue('Pichincha')
+    expect(Number((screen.getByLabelText('Latitud') as HTMLInputElement).value)).toBeCloseTo(-1.5, 1)
+    expect(Number((screen.getByLabelText('Longitud') as HTMLInputElement).value)).toBeCloseTo(-78.5, 1)
+  })
+
+  it('no acepta un punto del mapa fuera de Ecuador', async () => {
+    server.use(
+      http.get(URL_GEOCODIFICACION_INVERSA, () =>
+        HttpResponse.json({
+          address: { city: 'Tumbes', state: 'Tumbes', country: 'Perú', country_code: 'pe' },
+        }),
+      ),
+    )
+    renderizar()
+    const usuario = userEvent.setup()
+
+    await usuario.click(screen.getByRole('button', { name: 'Seleccionar en el mapa' }))
+    pulsarCentroDelMapa()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Ese punto está fuera de Ecuador. Elige un lugar dentro del país.',
+    )
+    expect(screen.getByLabelText('Latitud')).toHaveValue(null)
+    expect(screen.getByLabelText('Provincia')).toHaveValue('')
+  })
+
+  it('con la provincia elegida centra el mapa en ella y no acepta puntos de otra provincia', async () => {
+    const consultados: URL[] = []
+    server.use(
+      http.get(URL_GEOCODIFICACION_INVERSA, ({ request }) => {
+        consultados.push(new URL(request.url))
+        return HttpResponse.json({
+          address: { municipality: 'Calderón', state: 'Pichincha', country: 'Ecuador', country_code: 'ec' },
+        })
+      }),
+    )
+    renderizar()
+    const usuario = userEvent.setup()
+
+    await usuario.selectOptions(screen.getByLabelText('Provincia'), 'Azuay')
+    await usuario.click(screen.getByRole('button', { name: 'Seleccionar en el mapa' }))
+    pulsarCentroDelMapa()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Ese punto está fuera de Azuay. Elige un lugar dentro de la provincia o cambia la provincia.',
+    )
+    expect(Number(consultados[0].searchParams.get('lat'))).toBeCloseTo(-3.09, 1)
+    expect(Number(consultados[0].searchParams.get('lon'))).toBeCloseTo(-79.09, 1)
+    expect(screen.getByLabelText('Latitud')).toHaveValue(null)
+    expect(screen.getByLabelText('Provincia')).toHaveValue('Azuay')
+  })
+
+  it('con la provincia elegida acepta un punto dentro de ella', async () => {
+    renderizar()
+    const usuario = userEvent.setup()
+
+    await usuario.selectOptions(screen.getByLabelText('Provincia'), 'Pichincha')
+    await usuario.click(screen.getByRole('button', { name: 'Seleccionar en el mapa' }))
+    pulsarCentroDelMapa()
+
+    expect(await screen.findByDisplayValue('Calderón')).toBe(screen.getByLabelText('Parroquia'))
+    expect(Number((screen.getByLabelText('Latitud') as HTMLInputElement).value)).toBeCloseTo(-0.197, 1)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('usa la ubicación actual del dispositivo para llenar las coordenadas', async () => {
@@ -187,9 +253,9 @@ describe('SolicitudComunidadForm', () => {
 
     await userEvent.setup().click(screen.getByRole('button', { name: 'Usar mi ubicación actual' }))
 
+    expect(await screen.findByDisplayValue('Calderón')).toBe(screen.getByLabelText('Parroquia'))
     expect(screen.getByLabelText('Latitud')).toHaveValue(-0.0987123)
     expect(screen.getByLabelText('Longitud')).toHaveValue(-78.4321456)
-    expect(await screen.findByDisplayValue('Calderón')).toBe(screen.getByLabelText('Parroquia'))
   })
 
   it('avisa cuando no puede obtener la ubicación actual', async () => {
