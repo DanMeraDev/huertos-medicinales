@@ -1,5 +1,35 @@
 import { http, HttpResponse } from 'msw'
-import type { RankingComunidad } from './types'
+import type { RankingComunidad, RankingMiembro } from './types'
+
+export const rankingMiembrosMock: RankingMiembro[] = [
+  {
+    posicion: 1,
+    miembroId: 101,
+    nombres: 'Carmen',
+    apellidos: 'Chuquimarca',
+    nivel: 'MAESTRO',
+    puntosTotales: 320,
+    totalInsignias: 6,
+  },
+  {
+    posicion: 2,
+    miembroId: 102,
+    nombres: 'Luis',
+    apellidos: 'Guamán',
+    nivel: 'OFICIAL',
+    puntosTotales: 145,
+    totalInsignias: 3,
+  },
+  {
+    posicion: 3,
+    miembroId: 103,
+    nombres: 'Ana',
+    apellidos: 'Tipantuña',
+    nivel: 'APRENDIZ',
+    puntosTotales: 45,
+    totalInsignias: 1,
+  },
+]
 
 export const rankingMock: RankingComunidad[] = [
   {
@@ -69,4 +99,5 @@ export const rankingMock: RankingComunidad[] = [
 
 export const rankingMockHandlers = [
   http.get('*/api/publico/ranking/comunidades', () => HttpResponse.json(rankingMock)),
+  http.get('*/api/publico/ranking/miembros', () => HttpResponse.json(rankingMiembrosMock)),
 ]

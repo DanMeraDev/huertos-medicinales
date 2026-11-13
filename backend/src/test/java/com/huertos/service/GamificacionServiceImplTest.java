@@ -24,6 +24,8 @@ import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.HuertoRepository;
 import com.huertos.repository.MiembroInsigniaRepository;
 import com.huertos.repository.MiembroRepository;
+import com.huertos.repository.RegistroActividadMiembroRepository;
+import com.huertos.repository.TalentoComunidadRepository;
 import com.huertos.service.impl.GamificacionServiceImpl;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,6 +57,12 @@ class GamificacionServiceImplTest {
 
     @Mock
     private MiembroInsigniaRepository miembroInsigniaRepository;
+
+    @Mock
+    private RegistroActividadMiembroRepository registroActividadMiembroRepository;
+
+    @Mock
+    private TalentoComunidadRepository talentoComunidadRepository;
 
     @InjectMocks
     private GamificacionServiceImpl gamificacionService;

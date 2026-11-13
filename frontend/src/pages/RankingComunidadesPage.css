@@ -28,6 +28,45 @@
   line-height: var(--interlineado-normal);
 }
 
+.ranking-pestanas {
+  display: flex;
+  justify-content: center;
+  gap: var(--espacio-2);
+  margin-bottom: var(--espacio-4);
+  flex-wrap: wrap;
+}
+
+.ranking-pestana {
+  padding: var(--espacio-2) var(--espacio-4);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto-secundario);
+  text-decoration: none;
+  font-weight: var(--peso-medio);
+  font-size: var(--texto-sm);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.ranking-pestana:hover {
+  background-color: var(--color-superficie-alt);
+  color: var(--color-texto);
+}
+
+.ranking-pestana-activa {
+  background-color: var(--color-primario);
+  color: #ffffff;
+  border-color: var(--color-primario);
+}
+
+.ranking-pestana-activa:hover {
+  background-color: var(--color-primario-oscuro, var(--color-primario));
+  color: #ffffff;
+}
+
 .ranking-pagina-contenido {
   display: flex;
   flex-direction: column;

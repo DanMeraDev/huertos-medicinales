@@ -17,6 +17,7 @@ import { MiComunidadPage } from './pages/MiComunidadPage'
 import { NoEncontradaPage } from './pages/NoEncontradaPage'
 import { SolicitarComunidadPage } from './pages/SolicitarComunidadPage'
 import { RankingComunidadesPage } from './pages/RankingComunidadesPage'
+import { RankingVoluntariosPage } from './pages/RankingVoluntariosPage'
 import { RegistrarMiembroPage } from './pages/RegistrarMiembroPage'
 import { MiembrosComunidadPage } from './pages/MiembrosComunidadPage'
 import { SolicitudesPage } from './pages/SolicitudesPage'
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/usuarios/nuevo" element={<CrearUsuarioPage />} />
         <Route path="/solicitar-comunidad" element={<SolicitarComunidadPage />} />
         <Route path="/ranking/comunidades" element={<RankingComunidadesPage />} />
+        <Route path="/ranking/voluntarios" element={<RankingVoluntariosPage />} />
         <Route path="/comunidad/miembros" element={<MiembrosComunidadPage />} />
         <Route path="/comunidad/miembros/nuevo" element={<RegistrarMiembroPage />} />
         <Route path="/calendario-lunar" element={<CalendarioLunarPage />} />

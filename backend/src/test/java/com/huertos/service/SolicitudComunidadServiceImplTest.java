@@ -9,8 +9,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.huertos.dto.ComunidadResponse;
+import com.huertos.dto.CredencialesEmailDto;
 import com.huertos.dto.CrearSolicitudComunidadRequest;
+import com.huertos.dto.CrearUsuarioRequest;
 import com.huertos.dto.RechazarSolicitudRequest;
+import com.huertos.dto.RechazoSolicitudEmailDto;
 import com.huertos.dto.ResolucionSolicitudResponse;
 import com.huertos.dto.SolicitudDetalleCompletoResponse;
 import com.huertos.dto.SolicitudResumenResponse;
@@ -42,8 +45,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
 class SolicitudComunidadServiceImplTest {
@@ -73,12 +78,15 @@ class SolicitudComunidadServiceImplTest {
     @Mock
     private ComunidadService comunidadService;
 
+    @Mock
+    private ApplicationEventPublisher eventos;
+
     private SolicitudComunidadService servicio;
 
     @BeforeEach
     void crearServicio() {
         servicio = new SolicitudComunidadServiceImpl(solicitudRepository, comunidadRepository, RELOJ,
-                Mappers.getMapper(SolicitudComunidadMapper.class), usuarioRepository, usuarioService, comunidadService);
+                Mappers.getMapper(SolicitudComunidadMapper.class), usuarioRepository, usuarioService, comunidadService, eventos);
     }
 
     @Test
@@ -198,6 +206,25 @@ class SolicitudComunidadServiceImplTest {
     }
 
     @Test
+    void avisaPorCorreoLasCredencialesConLaMismaClaveDeLaCuenta() {
+        SolicitudComunidad solicitud = solicitudGuardada(EstadoSolicitud.PENDIENTE);
+        Usuario responsable = new Usuario();
+        when(solicitudRepository.findById(12L)).thenReturn(Optional.of(solicitud));
+        when(usuarioRepository.findByCorreo(CORREO_TECNICO)).thenReturn(Optional.of(new Usuario()));
+        when(usuarioService.crearUsuarioInterno(any())).thenReturn(responsable);
+        when(comunidadService.registrarComunidadDesdeSolicitud(solicitud, responsable)).thenReturn(comunidadCreada());
+
+        servicio.aprobarSolicitud(12L, CORREO_TECNICO);
+
+        ArgumentCaptor<CrearUsuarioRequest> cuenta = ArgumentCaptor.forClass(CrearUsuarioRequest.class);
+        verify(usuarioService).crearUsuarioInterno(cuenta.capture());
+        ArgumentCaptor<Object> evento = ArgumentCaptor.forClass(Object.class);
+        verify(eventos).publishEvent(evento.capture());
+        assertThat(evento.getValue()).isEqualTo(new CredencialesEmailDto("comunidad.allpa@huertos.gob.ec",
+                "Segundo Tránsito Amaguaña", NOMBRE, cuenta.getValue().password()));
+    }
+
+    @Test
     void rechazaGuardandoElMotivoYElTecnico() {
         SolicitudComunidad solicitud = solicitudGuardada(EstadoSolicitud.PENDIENTE);
         Usuario tecnico = new Usuario();
@@ -214,6 +241,8 @@ class SolicitudComunidadServiceImplTest {
         assertThat(solicitud.getRevisadoPor()).isSameAs(tecnico);
         assertThat(solicitud.getFechaRevision()).isEqualTo(AHORA);
         verify(usuarioService, never()).crearUsuarioInterno(any());
+        verify(eventos).publishEvent((Object) new RechazoSolicitudEmailDto("comunidad.allpa@huertos.gob.ec",
+                "Segundo Tránsito Amaguaña", NOMBRE, MOTIVO));
     }
 
     @Test

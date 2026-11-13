@@ -3,12 +3,18 @@ package com.huertos;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -145,5 +151,57 @@ class PlantasMspSeedIntegrationTest {
                 """.formatted(SOLO_SEMILLA), Integer.class);
 
         assertThat(fueraDeRango).isZero();
+    }
+
+    @Test
+    void losTextosNoCitanAnexosNiTablasDelDocumentoDelMsp() {
+        Integer conReferencias = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*) FROM plantas
+                WHERE %s
+                  AND (usos_medicinales LIKE '%%Anexo%%' OR usos_medicinales LIKE '%%Tabla%%'
+                       OR preparacion_dosificacion LIKE '%%Anexo%%' OR preparacion_dosificacion LIKE '%%Tabla%%'
+                       OR contraindicaciones LIKE '%%Anexo%%' OR contraindicaciones LIKE '%%Tabla%%')
+                """.formatted(SOLO_SEMILLA), Integer.class);
+
+        assertThat(conReferencias).isZero();
+    }
+
+    @Test
+    void conservaLosTextosSinLaReferenciaAlDocumento() {
+        String valeriana = jdbcTemplate.queryForObject(
+                "SELECT usos_medicinales FROM plantas WHERE nombre_cientifico = 'Valeriana officinalis'", String.class);
+        String marco = jdbcTemplate.queryForObject(
+                "SELECT usos_medicinales FROM plantas WHERE nombre_cientifico = 'Ambrosia arborescens'", String.class);
+
+        assertThat(valeriana).isEqualTo("Sedante y antiespasmódica: ayuda en el insomnio, la ansiedad y el "
+                + "nerviosismo, y calma los calambres.");
+        assertThat(marco).isEqualTo("Planta protectora del huerto. Se usa en limpias energéticas y en baños y "
+                + "frotaciones para dolores del cuerpo y reumatismo. Ingrediente del abono líquido natural.");
+    }
+
+    @Test
+    void cadaFotoDeLaSemillaTieneSuArchivoEnElJar() {
+        List<String> rutas = jdbcTemplate.queryForList(
+                "SELECT fotografia_url FROM plantas WHERE " + SOLO_SEMILLA, String.class);
+
+        assertThat(rutas)
+                .filteredOn(ruta -> !new ClassPathResource("fotos-iniciales/" + ruta).exists())
+                .isEmpty();
+    }
+
+    @Test
+    void cadaFotoInicialTieneSuFilaDeCreditos() throws IOException {
+        List<String> fotos = Arrays.stream(new PathMatchingResourcePatternResolver()
+                        .getResources("classpath:fotos-iniciales/plantas/*"))
+                .map(Resource::getFilename)
+                .toList();
+        List<String> creditos = new ClassPathResource("fotos-iniciales/creditos.csv")
+                .getContentAsString(StandardCharsets.UTF_8)
+                .lines()
+                .skip(1)
+                .map(linea -> linea.substring(0, linea.indexOf(',')))
+                .toList();
+
+        assertThat(creditos).containsExactlyInAnyOrderElementsOf(fotos);
     }
 }
