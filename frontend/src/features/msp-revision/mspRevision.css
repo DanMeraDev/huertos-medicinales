@@ -1,5 +1,42 @@
 .msp-bandeja {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
   width: 100%;
+}
+
+.msp-bandeja-kinti {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4) var(--espacio-5);
+  background: linear-gradient(135deg, #ecf5e2 0%, #f8fbf4 60%, #fff6ea 100%);
+  border: 1px solid #d5e4ca;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.msp-bandeja-kinti p {
+  margin: 0;
+  font-size: var(--texto-base);
+  font-weight: var(--peso-seminegrita);
+  color: #244310;
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  .msp-bandeja-kinti {
+    flex-direction: row;
+    text-align: left;
+    gap: var(--espacio-4);
+    padding: var(--espacio-5) var(--espacio-6);
+  }
+
+  .msp-bandeja-kinti p {
+    font-size: var(--texto-lg);
+  }
 }
 
 .msp-bandeja .tabla thead {
@@ -16,7 +53,11 @@
 
 .msp-bandeja .tabla tr {
   padding: var(--espacio-3) 0;
-  border-bottom: var(--borde-ancho) solid var(--color-borde);
+  border-bottom: 1px solid #d5e4ca;
+}
+
+.msp-bandeja .tabla tr:last-child {
+  border-bottom: none;
 }
 
 .msp-bandeja .tabla td {
@@ -34,8 +75,8 @@
   flex-direction: column;
   gap: var(--espacio-4);
   padding: var(--espacio-4);
-  background-color: var(--color-superficie);
-  border: var(--borde-ancho) solid var(--color-borde);
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf2 100%);
+  border: 1px solid #dce6d5;
   border-radius: var(--radio-lg);
   box-shadow: var(--sombra-sm);
 }
@@ -129,26 +170,36 @@
 }
 
 @media (min-width: 1024px) {
+  .msp-bandeja .tabla {
+    display: table;
+    width: 100%;
+  }
+
   .msp-bandeja .tabla thead {
     display: table-header-group;
   }
 
-  .msp-bandeja .tabla,
-  .msp-bandeja .tabla tbody,
-  .msp-bandeja .tabla tr,
-  .msp-bandeja .tabla td {
-    display: table-cell;
+  .msp-bandeja .tabla tbody {
+    display: table-row-group;
     width: auto;
   }
 
   .msp-bandeja .tabla tr {
+    display: table-row;
+    width: auto;
     padding: 0;
     border-bottom: none;
   }
 
   .msp-bandeja .tabla td {
+    display: table-cell;
+    width: auto;
     padding: var(--espacio-3) var(--espacio-4);
-    border-bottom: var(--borde-ancho) solid var(--color-borde);
+    border-bottom: 1px solid #e3eedb;
+  }
+
+  .msp-bandeja .tabla tbody tr:last-child td {
+    border-bottom: none;
   }
 
   .msp-bandeja .boton {
