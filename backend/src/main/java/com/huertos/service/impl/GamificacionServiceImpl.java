@@ -18,6 +18,8 @@ import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.HuertoRepository;
 import com.huertos.repository.MiembroInsigniaRepository;
 import com.huertos.repository.MiembroRepository;
+import com.huertos.repository.RegistroActividadMiembroRepository;
+import com.huertos.repository.TalentoComunidadRepository;
 import com.huertos.service.GamificacionService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,14 @@ public class GamificacionServiceImpl implements GamificacionService {
     private final MiembroRepository miembroRepository;
     private final ActividadAncestralMspRepository actividadMspRepository;
     private final MiembroInsigniaRepository miembroInsigniaRepository;
+    private final RegistroActividadMiembroRepository registroActividadMiembroRepository;
+    private final TalentoComunidadRepository talentoComunidadRepository;
+
+    @Override
+    @Transactional
+    public void procesarActividadCotidiana(Long registroActividadId) {
+        // Stub inicial para TDD
+    }
 
     @Override
     @Transactional

@@ -9,4 +9,6 @@ public interface GamificacionService {
     NivelMiembro evaluarAscensoNivel(Long miembroId);
 
     void otorgarInsigniaOficial(Long actividadId);
+
+    void procesarActividadCotidiana(Long registroActividadId);
 }
