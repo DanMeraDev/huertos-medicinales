@@ -4,6 +4,7 @@ import com.huertos.dto.RankingComunidadResponse;
 import com.huertos.dto.RankingMiembroResponse;
 import com.huertos.mapper.RankingMapper;
 import com.huertos.model.Comunidad;
+import com.huertos.model.Miembro;
 import com.huertos.repository.ComunidadRepository;
 import com.huertos.repository.MiembroInsigniaRepository;
 import com.huertos.repository.MiembroRepository;
@@ -37,6 +38,13 @@ public class RankingServiceImpl implements RankingService {
     @Override
     @Transactional(readOnly = true)
     public List<RankingMiembroResponse> obtenerRankingMiembros() {
-        return List.of();
+        List<Miembro> miembros = miembroRepository.findByActivoTrueOrderByPuntosTotalesDescCreadoEnAsc();
+        List<RankingMiembroResponse> resultado = new ArrayList<>(miembros.size());
+        for (int i = 0; i < miembros.size(); i++) {
+            Miembro miembro = miembros.get(i);
+            long totalInsignias = miembroInsigniaRepository.countByMiembroId(miembro.getId());
+            resultado.add(rankingMapper.toResponse(miembro, i + 1, totalInsignias));
+        }
+        return resultado;
     }
 }
