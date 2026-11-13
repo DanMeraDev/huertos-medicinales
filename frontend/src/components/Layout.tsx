@@ -17,6 +17,7 @@ const MODULOS = [
   { nombre: 'Calendario Lunar', ruta: '/calendario-lunar' },
   { nombre: 'Rankings', ruta: '/ranking/comunidades' },
   { nombre: 'Insignias y Talentos', ruta: '/comunidad/talentos' },
+  { nombre: 'Consultar Voluntario', ruta: '/consulta-miembro' },
   { nombre: 'Solicitudes', ruta: '/solicitudes' },
 ]
 
