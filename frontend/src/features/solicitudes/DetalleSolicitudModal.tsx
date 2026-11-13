@@ -1,4 +1,5 @@
 import { Boton } from '../../components/Boton'
+import { MapaUbicacion } from '../../components/MapaUbicacion'
 import { Modal } from '../../components/Modal'
 import { calcularEdad, formatearFecha, legible } from './formatoSolicitud'
 import type { SolicitudDetalleCompletoResponse } from './solicitudesApi'
@@ -53,6 +54,13 @@ export function DetalleSolicitudModal({ solicitud, alCerrar, alAprobar, alRechaz
               valor={solicitud.subtiposSolicitados.split(',').map(legible).join(', ')}
             />
           </dl>
+          <div className="solicitud-mapa">
+            <MapaUbicacion
+              latitud={String(solicitud.latitud)}
+              longitud={String(solicitud.longitud)}
+              etiqueta="Ubicación de la comunidad en el mapa"
+            />
+          </div>
         </section>
         <section className="solicitud-bloque">
           <h3>Solicitante</h3>

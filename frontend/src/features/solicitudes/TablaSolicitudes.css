@@ -64,6 +64,10 @@
   border-radius: var(--radio-md);
 }
 
+.solicitud-mapa {
+  margin-top: var(--espacio-3);
+}
+
 .solicitud-bloque h3 {
   margin: 0 0 var(--espacio-2);
   font-size: var(--texto-lg);

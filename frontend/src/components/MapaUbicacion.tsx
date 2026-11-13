@@ -7,7 +7,8 @@ interface MapaUbicacionProps {
   latitud: string
   longitud: string
   limites?: [[number, number], [number, number]]
-  alSeleccionar: (latitud: number, longitud: number) => void
+  etiqueta?: string
+  alSeleccionar?: (latitud: number, longitud: number) => void
 }
 
 const CENTRO_ECUADOR: L.LatLngTuple = [-1.5, -78.5]
@@ -25,7 +26,13 @@ function aCoordenada(valor: string) {
 
 const ICONO_MARCADOR = L.divIcon({ className: 'mapa-ubicacion-marcador', iconSize: [22, 22] })
 
-export function MapaUbicacion({ latitud, longitud, limites, alSeleccionar }: MapaUbicacionProps) {
+export function MapaUbicacion({
+  latitud,
+  longitud,
+  limites,
+  etiqueta = 'Mapa para elegir la ubicación',
+  alSeleccionar,
+}: MapaUbicacionProps) {
   const contenedorRef = useRef<HTMLDivElement>(null)
   const mapaRef = useRef<L.Map | null>(null)
   const marcadorRef = useRef<L.Marker | null>(null)
@@ -50,7 +57,7 @@ export function MapaUbicacion({ latitud, longitud, limites, alSeleccionar }: Map
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap',
     }).addTo(mapa)
-    mapa.on('click', ({ latlng }) => alSeleccionarRef.current(latlng.lat, latlng.lng))
+    mapa.on('click', ({ latlng }) => alSeleccionarRef.current?.(latlng.lat, latlng.lng))
     mapaRef.current = mapa
     return () => {
       mapa.remove()
@@ -85,9 +92,9 @@ export function MapaUbicacion({ latitud, longitud, limites, alSeleccionar }: Map
   return (
     <div
       ref={contenedorRef}
-      className="mapa-ubicacion"
+      className={alSeleccionar ? 'mapa-ubicacion' : 'mapa-ubicacion mapa-ubicacion-solo-lectura'}
       role="application"
-      aria-label="Mapa para elegir la ubicación"
+      aria-label={etiqueta}
     />
   )
 }
