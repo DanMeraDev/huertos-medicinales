@@ -49,4 +49,14 @@ describe('MapaUbicacion', () => {
     expect(latitud).toBeCloseTo(-0.197, 1)
     expect(longitud).toBeCloseTo(-78.605, 1)
   })
+
+  it('sin alSeleccionar solo muestra la ubicación con la etiqueta recibida', () => {
+    render(<MapaUbicacion latitud="-0.0987123" longitud="-78.4321456" etiqueta="Ubicación de la comunidad en el mapa" />)
+
+    const mapa = screen.getByRole('application', { name: 'Ubicación de la comunidad en el mapa' })
+    fireEvent.click(mapa, { clientX: 0, clientY: 0 })
+
+    expect(mapa).toHaveClass('mapa-ubicacion-solo-lectura')
+    expect(mapa.querySelector('.mapa-ubicacion-marcador')).toBeInTheDocument()
+  })
 })

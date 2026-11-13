@@ -52,6 +52,14 @@ describe('TablaSolicitudes', () => {
     expect(within(ficha).getByRole('button', { name: 'No aprobar' })).toBeInTheDocument()
   })
 
+  it('muestra en el mapa la ubicación de la comunidad propuesta', async () => {
+    await abrirDetalle()
+
+    const ficha = await screen.findByRole('dialog', { name: 'Solicitud de Huerto Comunitario Allpa Viva' })
+    const mapa = within(ficha).getByRole('application', { name: 'Ubicación de la comunidad en el mapa' })
+    expect(mapa.querySelector('.mapa-ubicacion-marcador')).toBeInTheDocument()
+  })
+
   it('aprueba tras confirmar, avisa el resultado y actualiza la tabla', async () => {
     const usuario = await abrirDetalle()
     await usuario.click(await screen.findByRole('button', { name: 'Aprobar' }))
