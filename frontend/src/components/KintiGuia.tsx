@@ -9,6 +9,9 @@ export type KintiVariante =
   | 'sabiduria'
   | 'alerta'
   | 'dia'
+  | 'aprendiz'
+  | 'oficial'
+  | 'maestro'
 
 export type KintiTamanoPreset = 'sm' | 'md' | 'lg' | 'xl'
 
@@ -63,6 +66,21 @@ function obtenerConfiguracionVariante(variante?: KintiVariante | string): Config
       return {
         archivo: 'kinti-alerta.svg',
         altPorDefecto: 'Kinti Guía en estado de alerta',
+      }
+    case 'aprendiz':
+      return {
+        archivo: 'kinti-aprendiz.svg',
+        altPorDefecto: 'Kinti Guía nivel Aprendiz',
+      }
+    case 'oficial':
+      return {
+        archivo: 'kinti-oficial.svg',
+        altPorDefecto: 'Kinti Guía nivel Oficial',
+      }
+    case 'maestro':
+      return {
+        archivo: 'kinti-maestro.svg',
+        altPorDefecto: 'Kinti Guía nivel Maestro',
       }
     case 'sabiduria':
     case 'dia':
